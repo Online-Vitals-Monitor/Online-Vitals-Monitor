@@ -3,7 +3,7 @@ import MonitorView from './pages/monitorView';
 import ValuesView from './pages/controlVitalsView';
 import './App.css';
 
-function App() {
+const App: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
