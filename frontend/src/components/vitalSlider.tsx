@@ -67,6 +67,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                     step={step}
                     min={min}
                     max={max}
+                    sx={{mx:2}}
                 />
            
                 <Button 
