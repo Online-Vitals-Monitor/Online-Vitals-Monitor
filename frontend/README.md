@@ -2,6 +2,22 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Prerequisites
+
+There are a few dependencies before being able to run this project<br>
+
+- npm
+
+```bash
+npm install
+```
+
+- react-scripts
+
+```bash
+npm install react-scripts@5.0.1 --save
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
