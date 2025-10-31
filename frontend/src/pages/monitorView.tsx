@@ -27,9 +27,9 @@ function generateECGData(): number[] {
   return [...beat_scaled, ...beat_scaled, ...beat_scaled];  // tile multiple beats so we fill a strip spannign horizontally
 }
 
-function generatePlethData() {}
-function generateBPData() {}
-function generateEtco2Data() {}
+// function generatePlethData() {} // disabled for CI to pass
+// function generateBPData() {}
+// function generateEtco2Data() {}
 
 const MonitorView: React.FC = () => {
   const [vitals, setVitals] = useState<Vitals>({

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Button, Container, Paper, Box, Typography, Slider, TextField, IconButton } from '@mui/material';
+import React from 'react';
+// import { useState } from 'react'; // disabled for CI to pass
+import { Button, Box, Typography, Slider } from '@mui/material';
+// import { Container, Paper, TextField, IconButton } from '@mui/material'; // disabled for CI to pass
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { red } from '@mui/material/colors';
+// import { red } from '@mui/material/colors';  // disabled for CI to pass
 
 /*Interface to pass in props for react-slider from @mui material ui 
  https://mui.com/material-ui/react-slider/*/
