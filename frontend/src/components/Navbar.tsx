@@ -23,7 +23,14 @@ const Navbar: React.FC = () => {
             }}
             >
             <Container maxWidth="xl">
-                <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between'}}>
+                <Toolbar 
+                    disableGutters 
+                    sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        }}
+                >
 
                 {/*we will put the logo here when we find one*/}
                 <Typography
@@ -37,18 +44,32 @@ const Navbar: React.FC = () => {
                         letterSpacing: '.2rem',
                         color: 'inherit',
                         textDecoration: 'none',
+                        flexShrink: 0,
                     }}>
                     BJCLMK Monitor
                 </Typography>
             
-                <Box sx={{ ml: 'auto', display: { xs: 'none', md: 'flex', gap: 4} }}>
+                <Box sx={{ 
+                    display: 'flex',
+                    gap: 2,
+                    ml: 'auto', 
+                    flexWrap: 'wrap',
+                    justifyContent: 'flex-end',
+                    }}
+                >
                     <Menu
                         id="menu-appbar"
                         anchorEl={anchorElNav}
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                         open={Boolean(anchorElNav)}
-                        sx={{ display: { xs: 'block', md: 'none' } }}
+                        sx={{ 
+                            display: 'flex',
+                            gap: 2,
+                            ml: 'auto',
+                            flexWrap: 'wrap',
+                            justifyContent: 'flex-end',
+                        }}
                     >
                     {routes.map((route) => (
                         <MenuItem key={route.page}>
@@ -64,7 +85,11 @@ const Navbar: React.FC = () => {
                     </Menu>
                 </Box>
 
-                <Box sx={{ ml: 'auto', display: { xs: 'none', md: 'flex' }}}>
+                <Box sx={{ 
+                    ml: 'auto', 
+                    display: 'flex'
+                    }}
+                >
                     {routes.map((route) => (
                         <Button
                             key={route.page}
