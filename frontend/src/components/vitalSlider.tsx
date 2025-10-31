@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
+// import { useState } from 'react'; // disabled for CI to pass
 import { Button, Box, Typography, Slider } from '@mui/material';
-import { Container, Paper, TextField, IconButton } from '@mui/material'; // disabled for CI to pass
+// import { Container, Paper, TextField, IconButton } from '@mui/material'; // disabled for CI to pass
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 // import { red } from '@mui/material/colors';  // disabled for CI to pass

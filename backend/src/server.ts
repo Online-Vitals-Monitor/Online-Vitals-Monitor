@@ -5,7 +5,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// TODO: add routes
 app.get("/api/vitals", (_req, res) => res.json({ heartRate: 72, respRate: 14 }));
 
 if (require.main === module) {
