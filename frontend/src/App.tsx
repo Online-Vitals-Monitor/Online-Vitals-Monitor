@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MonitorView from './pages/monitorView';
 import ValuesView from './pages/controlVitalsView';
 import Navbar from './components/Navbar';

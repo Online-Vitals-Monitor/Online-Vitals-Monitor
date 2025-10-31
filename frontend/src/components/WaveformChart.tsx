@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import {useEffect} from "react";
 import {LineChart, Interpolation} from "chartist";
 
 type WaveformChartProps = {
