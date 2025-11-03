@@ -4,8 +4,7 @@ of Done.
 
 
 ## Code of Conduct
-Reference the project/community behavior expectations and reporting process.
-
+Our outlines for community behavior and reporting is outlined here in our [Team Charter](https://docs.google.com/document/d/19p_YiyR0qCr-rs2crD8rEdsUUafsTqhl/edit?usp=sharing&ouid=112689279272282278804&rtpof=true&sd=true). Project behavior and git procedures are written below for user guidelines.
 
 ## Getting Started
 
@@ -54,9 +53,25 @@ A rebase should happen locally before opening a pull request to keep commit hist
 ```git fetch origin``` -> ```git rebase main```
 
 ## Issues & Planning
-Explain how to file issues, required templates/labels, estimation, and
-triage/assignment practices.
 
+All opened tasks are viewable through the [Project Planner](https://github.com/orgs/Online-Vitals-Monitor/projects/3). Within the project, items are clearly labeled with the following to describe the current status:
++ Backlog
++ In Progress
++ Done
++ Ready
+All tasks require a description and a status label. Assignments are doled out during team meetings or can be assigned by the individual user. Time estimations are done on a week by week basis, with prior discussion of realistic due dates done before assignment.
+
+Issues are clearly labeled with the following:
++ feature
++ bug
++ documentation
++ duplicate
++ help wanted
++ invalid
++ question
++ verification
+
+And require a description, asignee, and the relevant [requirement name](https://docs.google.com/document/d/1W0BTbp3VCnYrPEEZz8Con-w3b9ZCTxbzSmS2EL8qqKI/edit?usp=drive_link).
 
 ## Commit Messages
 State the convention (e.g., Conventional Commits), include examples, and how to
@@ -77,6 +92,15 @@ Examples:
 Name the formatter/linter, config file locations, and the exact commands to
 check/fix locally.
 
+We use **ESLint** to maintain code quality and consistent formatting across the project.
+Users can run the following commands to fix linting issues before running:
+
++```npm run lint```
++```npm run lint -- --fix```
+
+Configuration files can be found in the ```/backend``` and ```/frontend``` folders respectively:
++ /backend/tsconfig.json
++ frontend/tsconfig.json
 
 ## Testing
 Define required test types, how to run tests, expected coverage thresholds, and
