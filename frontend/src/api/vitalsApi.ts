@@ -1,6 +1,10 @@
 export interface Vitals {
   heartRate: number;
   respRate: number;
+  o2Saturation: number;
+  systolicBP: number;
+  diastolicBP: number;
+  eTCO2: number;
 }
 
 const API_URL = 'http://localhost:4000/api/vitals';

@@ -1,41 +1,183 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getVitals, updateVitals, Vitals } from '../api/vitalsApi';
-
+import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton, Button } from '@mui/material';
 import VitalSlider from '../components/vitalSlider';
 
+/* Styling */
+const valueStyle = {
+  width: 70,
+  textAlign: 'center',
+  userSelect: 'none',
+  fontWeight: 'bold',
+  fontSize: '1.2rem',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  ml: 3,
+  minHeight: 50,
+};
+
+const valueBoxStyle = {
+  minWidth: 120,
+  bgcolor: 'grey.300',
+  ml: 2,
+  px: 1,
+  py: 4,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  pointerEvents: 'auto',
+};
+
 const ControlVitalsView: React.FC = () => {
-  const [vitals, setVitals] = useState<Vitals>({ heartRate: 0, respRate: 0 });
+  const [vitals, setVitals] = useState<Vitals>({
+    heartRate: 0,
+    respRate: 0,
+    o2Saturation: 0,
+    systolicBP: 0,
+    diastolicBP: 0,
+    eTCO2: 0,
+  });
+
+  // Mode state 'live' or 'push'
+  const [updateMode, setUpdateMode] = useState<'live' | 'push'>('live');
+  // Local pending state for push updates
+  const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
+
+  const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    document.title = 'Controller'
-
-  fetchVitals();
+    document.title = 'Controller';
+    fetchVitals();
   }, []);
 
-  // gets vitals from back end
+  // fetch vitals from API
   const fetchVitals = async () => {
-    const data = await getVitals();
-    setVitals(data);
+    try {
+      const data = await getVitals();
+      setVitals(data);
+      // Sync pendingVitals with API values if entering push mode
+      setPendingVitals(data);
+    } catch (err) {
+      console.error('Error fetching vitals:', err);
+    }
   };
 
-  // works with slider values
-  const handleHeartRateChange = async (value: number) => {
-    setVitals((prev) => ({ ...prev, heartRate: value }));
-    await updateVitals({ heartRate: value }); // send update to backend
+// handlers for each vital, adapts for both modes
+  const handleVitalChange = (key: keyof Vitals, value: number) => {
+    if (updateMode === 'live') {
+      setVitals((prev) => ({ ...prev, [key]: value }));
+
+      if (updateTimeout.current) clearTimeout(updateTimeout.current);
+      updateTimeout.current = setTimeout(() => {
+        updateVitals({ [key]: value });
+      }, 400);
+    } else {
+      // push mode: only update local pending changes
+      setPendingVitals((prev) => prev ? { ...prev, [key]: value } : { ...vitals, [key]: value });
+    }
   };
 
-  const handleRespRateChange = async (value: number) => {
-    setVitals((prev) => ({ ...prev, respRate: value }));
-    await updateVitals({ respRate: value }); // send update to backend
+  // Save handler for push mode
+  const handleSaveClick = async () => {
+    if (updateMode === 'push' && pendingVitals) {
+      await updateVitals(pendingVitals);
+      setVitals(pendingVitals); // show updated values
+    }
   };
 
+  const CurrentValueDisplay = ({ value }: { value: number }) => (
+    <Box sx={valueBoxStyle}>
+      <Paper sx={valueStyle}>{value}</Paper>
+    </Box>
+  );
+
+  // values displayed depend on mode
+  const sliderValues = updateMode === 'live' ? vitals : (pendingVitals || vitals);
 
   return (
-    <div className='slider-containers'>
-      <VitalSlider title="Heart Rate" step={1} min={30} max={180} currentVal={vitals.heartRate} onChange={handleHeartRateChange} />
-      <VitalSlider title="Respiratory Rate" step={1} min={0} max={12} currentVal={vitals.respRate} onChange={handleRespRateChange} />
-    </div>
+    <Box sx={{ px: 4, py: 3, maxWidth: 900, mx: 'auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+          <Typography variant="h5" fontWeight="bold">
+            Control Vitals
+          </Typography>
+        </Box>
+        <Box sx={{ minWidth: 120 }}>
+          <Typography variant="h6" fontWeight="bold" textAlign="right">
+            Current Values
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Vital sliders */}
+      <Box sx={{ display: 'flex', alignItems: 'center'}}>
+        <VitalSlider title="Heart Rate" step={1} min={30} max={250} currentVal={sliderValues.heartRate} onChange={(v) => handleVitalChange('heartRate', v)} />
+        <CurrentValueDisplay value={vitals.heartRate} />
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center'}}>
+        <VitalSlider title="Respiratory Rate" step={1} min={0} max={60} currentVal={sliderValues.respRate} onChange={(v) => handleVitalChange('respRate', v)} />
+        <CurrentValueDisplay value={vitals.respRate} />
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center'}}>
+        <VitalSlider title="SpO2" step={1} min={0} max={100} currentVal={sliderValues.o2Saturation} onChange={(v) => handleVitalChange('o2Saturation', v)} />
+        <CurrentValueDisplay value={vitals.o2Saturation} />
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center'}}>
+        <VitalSlider title="Systolic BP" step={1} min={0} max={250} currentVal={sliderValues.systolicBP} onChange={(v) => handleVitalChange('systolicBP', v)} />
+        <CurrentValueDisplay value={vitals.systolicBP} />
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center'}}>
+        <VitalSlider title="Diastolic BP" step={1} min={0} max={250} currentVal={sliderValues.diastolicBP} onChange={(v) => handleVitalChange('diastolicBP', v)} />
+        <CurrentValueDisplay value={vitals.diastolicBP} />
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center'}}>
+        <VitalSlider title="ETCO2" step={1} min={0} max={20} currentVal={sliderValues.eTCO2} onChange={(v) => handleVitalChange('eTCO2', v)} />
+        <CurrentValueDisplay value={vitals.eTCO2} />
+      </Box>
+
+      {/* Toggle and Save Button Section */}
+      <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+        <ToggleButtonGroup
+          color="primary"
+          value={updateMode}
+          exclusive
+          onChange={(_, v) => {
+            if (v) {
+              if (v === 'push') {
+                // When switching to push, reset pendingVitals to current live vitals
+                setPendingVitals(vitals);
+              }
+              setUpdateMode(v);
+            }
+          }}
+          aria-label="Update Mode"
+        >
+          <ToggleButton value="live" aria-label="Live updates">
+            Live Updates
+          </ToggleButton>
+          <ToggleButton value="push" aria-label="Push updates">
+            Push Updates
+          </ToggleButton>
+        </ToggleButtonGroup>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={updateMode === "live"}
+          onClick={handleSaveClick}
+          sx={{ minWidth: 120, bgcolor: updateMode === 'live' ? 'grey.400' : 'primary.main' }}
+        >
+          Save
+        </Button>
+      </Box>
+    </Box>
   );
 };
+
 
 export default ControlVitalsView;
