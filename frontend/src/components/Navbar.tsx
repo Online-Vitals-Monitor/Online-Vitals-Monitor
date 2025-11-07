@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppBar, Box, Toolbar, Typography, Dialog, DialogTitle, DialogContent, Container, Button, MenuItem, IconButton, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Dialog, DialogTitle, DialogContent, Container, Button, IconButton, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
 
@@ -13,7 +13,6 @@ const routes = [
 const Navbar: React.FC = () => {
 
     const [openSettings, setOpenSettings] = React.useState(false);
-    const [anchorElNav] = React.useState<null | HTMLElement>(null);
 
     //Selected vitals from menu: use this later to determine which vitals to render on control/monitor view?
     const [selectedVitals, setSelectedVitals] = React.useState<string[]>(['heartRate', 'respRate']); 
