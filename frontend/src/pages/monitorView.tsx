@@ -35,6 +35,10 @@ const MonitorView: React.FC = () => {
   const [vitals, setVitals] = useState<Vitals>({
     heartRate: 0, 
     respRate: 0, 
+    o2Saturation: 0,
+    systolicBP: 0,
+    diastolicBP: 0,
+    eTCO2: 0,
   });
 
   const fetchVitals = async () => {  // from backend

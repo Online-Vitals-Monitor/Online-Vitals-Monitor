@@ -1,10 +1,7 @@
-import React from 'react';
-// import { useState } from 'react'; // disabled for CI to pass
-import { Button, Box, Typography, Slider } from '@mui/material';
-// import { Container, Paper, TextField, IconButton } from '@mui/material'; // disabled for CI to pass
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Box, Typography, Slider, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-// import { red } from '@mui/material/colors';  // disabled for CI to pass
 
 /*Interface to pass in props for react-slider from @mui material ui 
  https://mui.com/material-ui/react-slider/*/
@@ -26,8 +23,21 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
     currentVal,
     onChange,
 }) => {
-    
-    /* event handler for buttons */
+    const [inputVal, setInputVal] = useState(
+        currentVal !== undefined && currentVal !== null ? currentVal.toString() : ''
+    );
+    const typingTimeout = useRef<NodeJS.Timeout | null>(null);
+
+    // keep text field in sync when currentVal changes externally
+    useEffect(() => {
+        const strVal = currentVal !== undefined && currentVal !== null ? currentVal.toString() : '';
+        setInputVal(prevInputVal => {
+            if (strVal !== prevInputVal) {
+            return strVal;
+            }
+            return prevInputVal; // no change, so no re-render
+        });
+    }, [currentVal]);
 
     //increment the button
     const handleIncrement = () => {
@@ -41,17 +51,47 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
         onChange(Math.max(currentVal - step, min));
     }
 
-    
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newInput = e.target.value;
+        setInputVal(newInput); // always update textbox immediately
+
+        if (typingTimeout.current) clearTimeout(typingTimeout.current);
+        typingTimeout.current = setTimeout(() => {
+            const parsed = parseFloat(newInput);
+            if (!isNaN(parsed)) {
+            let clamped = Math.min(Math.max(parsed, min), max);
+            onChange(clamped);          // update slider value/state
+            setInputVal(clamped.toString()); // forcibly reset input text to clamped value
+            }
+        }, 1000);
+    };
+
+
     /* return */
     return(
-        <Box sx={{ width: 300, mb: 4}}>
+        <Box sx={{ width: 600, mb: 4}}>
 
             <Typography variant="h6" gutterBottom>
-                {title}: {currentVal}
+                {title}:
             </Typography>
 
-            <Box sx={{ display: 'flex', alignItems: 'center '}}>
-                
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <TextField
+                    type="number"
+                    value={inputVal}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                        width: 100,
+                        mr: 3,
+                        'input::-webkit-outer-spin-button': { display: 'none' },
+                        'input::-webkit-inner-spin-button': { display: 'none' },
+                        'input[type=number]': { MozAppearance: 'textfield' },
+                    }}
+                    slotProps={{ htmlInput: { min, max } }}
+                />
+
                 <Button 
                     variant="contained"
                     color="error"          
@@ -64,7 +104,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                 <Slider
                     aria-label={title}
                     value={currentVal}                               
-                    onChange={(_, newValue) => onChange(newValue as number)}  //set the react state value
+                    onChange={(_, newValue) => onChange(newValue as number)} 
                     valueLabelDisplay="auto"
                     step={step}
                     min={min}
@@ -80,7 +120,6 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                 >
                     <AddIcon />
                 </Button>
-
             </Box>
         </Box>
     );
