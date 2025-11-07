@@ -14,7 +14,9 @@ const Navbar: React.FC = () => {
 
     const [openSettings, setOpenSettings] = React.useState(false);
     const [anchorElNav] = React.useState<null | HTMLElement>(null);
-    const [selectedVitals, setSelectedVitals] = React.useState<string[]>(['heartRate', 'bloodPressure']);
+
+    //Selected vitals from menu: use this later to determine which vitals to render on control/monitor view?
+    const [selectedVitals, setSelectedVitals] = React.useState<string[]>(['heartRate', 'respRate']); 
 
 
     //open handler for the settings dialog
@@ -115,22 +117,22 @@ const Navbar: React.FC = () => {
                                         size="small"
                                     >
                                         <ToggleButton value="heartRate" aria-label="heart rate">Heart Rate</ToggleButton>
-                                        <ToggleButton value="bloodPressure" aria-label="blood pressure">Blood Pressure</ToggleButton>
-                                        <ToggleButton value="oxygenLevel" aria-label="oxygen level">Oxygen Level</ToggleButton>
-                                        <ToggleButton value="temperature" aria-label="temperature">Temperature</ToggleButton>
+                                        <ToggleButton value="respRate" aria-label="respiratory rate">Respiratory Rate</ToggleButton>
+                                        <ToggleButton value="o2Saturation" aria-label="oxygen saturation">Oxygen Saturation</ToggleButton>
+                                        <ToggleButton value="systolicBP" aria-label="systolic blood pressure">Systolic Blood Pressure</ToggleButton>
+                                        <ToggleButton value="diastolicBP" aria-label="disatolic blood pressure">Disatolic Blood Pressure</ToggleButton>
+                                        <ToggleButton value="eTCO2" aria-label="end tial carbon dioxide">End-Tidal Carbon Dioxide</ToggleButton>
+
                                     </ToggleButtonGroup>
                                 </Box>
-
                                 <Box sx={{ mb: 3 }}>
                                     <Typography variant='h6' sx={{ mb:1 }}>Size</Typography>
                                     <Typography variant='body1' sx={{ mb:1 }}>Adjust vital size here: (Add later)</Typography>
                                 </Box>
-
                                 <Box sx={{ mb: 3 }}>
                                     <Typography variant='h6' sx={{ mb:1 }}>Arrangement</Typography>
                                     <Typography variant='body1' sx={{ mb:1 }}>Rerrange the vitals on hte monitor view: (Add later)</Typography>
                                 </Box>
-
                                 <Button
                                     variant='contained'
                                     color="error"
@@ -140,7 +142,6 @@ const Navbar: React.FC = () => {
                                 </Button>
                             </DialogContent>
                         </Dialog>
-                 
                     </Box>
                 </Toolbar>
             </Container>
