@@ -34,7 +34,7 @@ const Navbar: React.FC = () => {
             elevation={1}
             sx={{
                 backgroundColor: 'white',
-                color: 'red',
+                color: 'magenta',
                 borderBottom: '2px solid grey', 
             }}
             >
