@@ -23,7 +23,7 @@ jobs:
 
       - name: Tests
         working-directory: backend
-        run: npm test
+        run: npm test -- --coverage
 
   frontend-tests:
     runs-on: ubuntu-latest
