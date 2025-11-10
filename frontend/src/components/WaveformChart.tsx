@@ -1,12 +1,12 @@
-import {useEffect} from "react";
-import {LineChart, Interpolation} from "chartist";
+import { useEffect } from "react";
+import { LineChart, Interpolation } from "chartist";
 
-type WaveformChartProps = {
-  elementId: string;   // DOM id of div
-  data: number[];     // array of y-values 
+interface WaveformChartProps {
+  elementId: string; // DOM id of div
+  data: number[]; // array of y-values
   color: string;
-  height: number; 
-};
+  height: number;
+}
 
 // NO ANIMATION FOR NOW, JUST STATIC
 export default function WaveformChart({
@@ -32,23 +32,24 @@ export default function WaveformChart({
         showLabel: false,
         offset: 0,
         low: 0,
-        high: 100, 
+        high: 100,
       },
     };
 
     const chart = new LineChart(
       "#" + elementId,
-      { // no labels, single line
-        labels: [],  
-        series: [data], 
+      {
+        // no labels, single line
+        labels: [],
+        series: [data],
       },
-      chartOptions
+      chartOptions,
     );
 
     // after Chartist injects the SVG, color the line
     setTimeout(() => {
       const lineEl = document.querySelector(
-        `#${elementId} .ct-series-a .ct-line`
+        `#${elementId} .ct-series-a .ct-line`,
       ) as SVGPathElement | null;
 
       if (lineEl) {

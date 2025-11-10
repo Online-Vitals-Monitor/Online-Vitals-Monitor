@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import { getVitals, Vitals } from '../api/vitalsApi';
+import React, { useState, useEffect } from "react";
+import { getVitals, Vitals } from "../api/vitalsApi";
 import WaveformChart from "../components/WaveformChart";
 
 function generateECGData(): number[] {
@@ -7,7 +7,8 @@ function generateECGData(): number[] {
   const g = (x: number, center: number, width: number, ampl: number) =>
     ampl * Math.exp(-0.5 * ((x - center) / width) ** 2);
 
-  const beat: number[] = Array.from({length: N}, (_, i) => {  // one heartbeat
+  const beat: number[] = Array.from({ length: N }, (_, i) => {
+    // one heartbeat
     const x = i / N;
     // P wave -> Q dip -> R spike -> S dip -> T wave
     const p = g(x, 0.15, 0.035, 0.1);
@@ -23,8 +24,7 @@ function generateECGData(): number[] {
   const maxV = Math.max(...beat);
   const beat_scaled = beat.map((v) => ((v - minV) / (maxV - minV)) * 100);
 
-
-  return [...beat_scaled, ...beat_scaled, ...beat_scaled];  // tile multiple beats so we fill a strip spannign horizontally
+  return [...beat_scaled, ...beat_scaled, ...beat_scaled]; // tile multiple beats so we fill a strip spannign horizontally
 }
 
 // function generatePlethData() {} // disabled for CI to pass
@@ -33,15 +33,16 @@ function generateECGData(): number[] {
 
 const MonitorView: React.FC = () => {
   const [vitals, setVitals] = useState<Vitals>({
-    heartRate: 0, 
-    respRate: 0, 
+    heartRate: 0,
+    respRate: 0,
     o2Saturation: 0,
     systolicBP: 0,
     diastolicBP: 0,
     eTCO2: 0,
   });
 
-  const fetchVitals = async () => {  // from backend
+  const fetchVitals = async () => {
+    // from backend
     const data = await getVitals();
     setVitals(data);
   };
@@ -90,7 +91,6 @@ const MonitorView: React.FC = () => {
           height={120}
         />
       </div>
-
     </div>
   );
 };

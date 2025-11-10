@@ -12,7 +12,7 @@ describe("GET /api/vitals", () => {
 
 describe("PUT -> GET /api/vitals", () => {
   it("updates and reads back vitals", async () => {
-    const data = {heartRate: 90, respRate: 18};
+    const data = { heartRate: 90, respRate: 18 };
 
     const put = await request(app).put("/api/vitals").send(data);
     expect(put.status).toBe(200);

@@ -1,15 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MonitorView from './pages/monitorView';
-import ValuesView from './pages/controlVitalsView';
-import Navbar from './components/Navbar';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MonitorView from "./pages/monitorView";
+import ValuesView from "./pages/controlVitalsView";
+import Navbar from "./components/Navbar";
+import "./App.css";
 
 const App: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
         <Router>
-          <Navbar/>
+          <Navbar />
           <Routes>
             <Route path="/" element={<MonitorView />} />
             <Route path="/values" element={<ValuesView />} />
@@ -18,6 +18,6 @@ const App: React.FC = () => {
       </header>
     </div>
   );
-}
+};
 
 export default App;

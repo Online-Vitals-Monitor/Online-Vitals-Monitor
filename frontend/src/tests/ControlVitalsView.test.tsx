@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import ControlVitalsView from "../pages/controlVitalsView";
 import * as vitalsApi from "../api/vitalsApi";
 
@@ -28,24 +34,31 @@ describe("ControlVitalsView", () => {
   it("renders received vitals correctly", async () => {
     render(<ControlVitalsView />);
 
-    const heartRateSlider = await screen.findByRole("slider", { name: /Heart Rate/i });
+    const heartRateSlider = await screen.findByRole("slider", {
+      name: /Heart Rate/i,
+    });
     await waitFor(() => expect(heartRateSlider).toHaveValue("60"));
 
-    const respRateSlider = await screen.findByRole("slider", { name: /Respiratory Rate/i });
-    await waitFor(() => expect(respRateSlider).toHaveValue("16"));  // use the mocked value as string
+    const respRateSlider = await screen.findByRole("slider", {
+      name: /Respiratory Rate/i,
+    });
+    await waitFor(() => expect(respRateSlider).toHaveValue("16")); // use the mocked value as string
 
     const spo2Slider = await screen.findByRole("slider", { name: /SpO2/i });
     await waitFor(() => expect(spo2Slider).toHaveValue("98"));
 
-    const systolicBPslider = await screen.findByRole("slider", { name: /Systolic BP/i });
+    const systolicBPslider = await screen.findByRole("slider", {
+      name: /Systolic BP/i,
+    });
     await waitFor(() => expect(systolicBPslider).toHaveValue("120"));
 
-    const diastolicBPslider = await screen.findByRole("slider", { name: /Diastolic BP/i });
+    const diastolicBPslider = await screen.findByRole("slider", {
+      name: /Diastolic BP/i,
+    });
     await waitFor(() => expect(diastolicBPslider).toHaveValue("80"));
 
     const etco2Slider = await screen.findByRole("slider", { name: /ETCO2/i });
-    await waitFor(() => expect(etco2Slider).toHaveValue("5")); 
-
+    await waitFor(() => expect(etco2Slider).toHaveValue("5"));
   });
 
   it("calls updateVitals with correct value when slider changes", async () => {
@@ -64,7 +77,7 @@ describe("ControlVitalsView", () => {
 
     // Wait for updateVitals to be called with the correct argument
     await waitFor(() =>
-      expect(updateVitalsMock).toHaveBeenCalledWith({ heartRate: 70 })
+      expect(updateVitalsMock).toHaveBeenCalledWith({ heartRate: 70 }),
     );
   });
 
