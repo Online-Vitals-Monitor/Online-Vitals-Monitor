@@ -3,9 +3,24 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main, dev]
+    branches: [linting]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run lint:ci
   backend-tests:
     runs-on: ubuntu-latest
     steps:
