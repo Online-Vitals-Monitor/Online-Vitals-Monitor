@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getVitals, updateVitals, Vitals } from '../api/vitalsApi';
-import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton, Button } from '@mui/material';
+import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton, Button, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 import VitalSlider from '../components/vitalSlider';
 
 /* Styling */
@@ -21,6 +21,7 @@ const valueBoxStyle = {
   minWidth: 120,
   bgcolor: 'grey.300',
   ml: 2,
+  mb: 1,
   px: 1,
   py: 4,
   display: 'flex',
@@ -43,8 +44,16 @@ const ControlVitalsView: React.FC = () => {
   const [updateMode, setUpdateMode] = useState<'live' | 'push'>('live');
   // Local pending state for push updates
   const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
-
   const updateTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Preset values
+  const presetConfigs = [
+    { name: 'Reset Defaults', values: { heartRate: 60, respRate: 14, o2Saturation: 100, systolicBP: 120, diastolicBP: 80, eTCO2: 4.0 } },
+    { name: 'Shock', values: { heartRate: 140, respRate: 25, systolicBP: 80, diastolicBP: 60 } },
+    { name: 'Hypoxia', values: { respRate: 25, o2Saturation: 86 } },
+    { name: 'Increased ICP', values: { heartRate: 50, respRate: 10, systolicBP: 190, diastolicBP: 100 } },
+  ];
+  const [selectedPreset, setSelectedPreset] = useState('');
 
   useEffect(() => {
     document.title = 'Controller';
@@ -63,18 +72,30 @@ const ControlVitalsView: React.FC = () => {
     }
   };
 
-// handlers for each vital, adapts for both modes
-  const handleVitalChange = (key: keyof Vitals, value: number) => {
-    if (updateMode === 'live') {
-      setVitals((prev) => ({ ...prev, [key]: value }));
+  // Preset handler
+  const handlePresetChange = (event: SelectChangeEvent) => {
+    const newPreset = presetConfigs.find(cfg => cfg.name === event.target.value);
+    if (newPreset) {
+      // Merge only the preset fields into the current vitals
+      setVitals(prev => ({ ...prev, ...newPreset.values }));
+      if (updateMode === 'push') setPendingVitals(prev => ({ ...(prev || vitals), ...newPreset.values }));
+      setSelectedPreset('');
+    }
+  };
 
+  // handlers for each vital, adapts for both modes
+  const handleVitalChange = (key: keyof Vitals, value: number) => {
+    if (key === 'eTCO2') {
+    value = Math.round(value * 10) / 10; // Ensures one decimal digit
+    }
+    if (updateMode === 'live') {
+      setVitals(prev => ({ ...prev, [key]: value }));
       if (updateTimeout.current) clearTimeout(updateTimeout.current);
       updateTimeout.current = setTimeout(() => {
         updateVitals({ [key]: value });
       }, 400);
     } else {
-      // push mode: only update local pending changes
-      setPendingVitals((prev) => prev ? { ...prev, [key]: value } : { ...vitals, [key]: value });
+      setPendingVitals(prev => prev ? { ...prev, [key]: value } : { ...vitals, [key]: value });
     }
   };
 
@@ -96,23 +117,31 @@ const ControlVitalsView: React.FC = () => {
   const sliderValues = updateMode === 'live' ? vitals : (pendingVitals || vitals);
 
   return (
-    <Box sx={{ px: 4, py: 3, maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ px: 4, py: 3, maxWidth: 1200, mx: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          <Typography variant="h5" fontWeight="bold">
-            Control Vitals
-          </Typography>
-        </Box>
-        <Box sx={{ minWidth: 120 }}>
-          <Typography variant="h6" fontWeight="bold" textAlign="right">
-            Current Values
-          </Typography>
-        </Box>
+        <Typography variant="h5" fontWeight="bold" textAlign="left">New Values</Typography>
+
+        <FormControl sx={{ minWidth: 250, maxWidth: 400, mx: 'auto' }}>
+          <InputLabel id="preset-select-label">Preset (applied immediately)</InputLabel>
+          <Select
+            labelId="preset-select-label"
+            id="preset-select"
+            value={selectedPreset}
+            label="Preset (applied immediately)"
+            onChange={handlePresetChange}
+          >
+            {presetConfigs.map(preset => (
+              <MenuItem key={preset.name} value={preset.name}>{preset.name}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Typography variant="h6" fontWeight="bold" textAlign="right">Current Values</Typography>
       </Box>
 
-      {/* Vital sliders */}
+      {/* Vital sliders - inefficient code but the sliders break when using other methods*/}
       <Box sx={{ display: 'flex', alignItems: 'center'}}>
-        <VitalSlider title="Heart Rate" step={1} min={30} max={250} currentVal={sliderValues.heartRate} onChange={(v) => handleVitalChange('heartRate', v)} />
+        <VitalSlider title="Heart Rate" step={1} min={0} max={250} currentVal={sliderValues.heartRate} onChange={(v) => handleVitalChange('heartRate', v)} />
         <CurrentValueDisplay value={vitals.heartRate} />
       </Box>
 
@@ -137,7 +166,7 @@ const ControlVitalsView: React.FC = () => {
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center'}}>
-        <VitalSlider title="ETCO2" step={1} min={0} max={20} currentVal={sliderValues.eTCO2} onChange={(v) => handleVitalChange('eTCO2', v)} />
+        <VitalSlider title="ETCO2" step={0.1} min={0} max={20} currentVal={sliderValues.eTCO2} onChange={(v) => handleVitalChange('eTCO2', v)} />
         <CurrentValueDisplay value={vitals.eTCO2} />
       </Box>
 
@@ -172,7 +201,7 @@ const ControlVitalsView: React.FC = () => {
           onClick={handleSaveClick}
           sx={{ minWidth: 120, bgcolor: updateMode === 'live' ? 'grey.400' : 'primary.main' }}
         >
-          Save
+          Save New Vitals 
         </Button>
       </Box>
     </Box>
