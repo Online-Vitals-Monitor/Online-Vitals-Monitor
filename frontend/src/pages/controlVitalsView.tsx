@@ -44,7 +44,6 @@ const ControlVitalsView: React.FC = () => {
   const [updateMode, setUpdateMode] = useState<'live' | 'push'>('live');
   // Local pending state for push updates
   const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
-  const updateTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Preset values
   const presetConfigs = [
@@ -52,8 +51,12 @@ const ControlVitalsView: React.FC = () => {
     { name: 'Shock', values: { heartRate: 140, respRate: 25, systolicBP: 80, diastolicBP: 60 } },
     { name: 'Hypoxia', values: { respRate: 25, o2Saturation: 86 } },
     { name: 'Increased ICP', values: { heartRate: 50, respRate: 10, systolicBP: 190, diastolicBP: 100 } },
+    { name: 'Zero', values: { heartRate: 0, respRate: 0, o2Saturation: 0, systolicBP: 0, diastolicBP: 0, eTCO2: 0 } },
   ];
   const [selectedPreset, setSelectedPreset] = useState('');
+
+  // BP difference
+  const [savedDiff, setSavedDiff] = useState<number>(0);
 
   useEffect(() => {
     document.title = 'Controller';
@@ -76,26 +79,46 @@ const ControlVitalsView: React.FC = () => {
   const handlePresetChange = (event: SelectChangeEvent) => {
     const newPreset = presetConfigs.find(cfg => cfg.name === event.target.value);
     if (newPreset) {
-      // Merge only the preset fields into the current vitals
       setVitals(prev => ({ ...prev, ...newPreset.values }));
       if (updateMode === 'push') setPendingVitals(prev => ({ ...(prev || vitals), ...newPreset.values }));
       setSelectedPreset('');
     }
   };
 
-  // handlers for each vital, adapts for both modes
+  // Handler for vitals, adapts for live/push modes
   const handleVitalChange = (key: keyof Vitals, value: number) => {
     if (key === 'eTCO2') {
     value = Math.round(value * 10) / 10; // Ensures one decimal digit
     }
+
+    const current = updateMode === 'live' ? vitals : (pendingVitals ?? vitals);
+    let updated = { ...current, [key]: value };
+
+    const min = 0, max = 250
+    if (key == 'systolicBP'){
+      if (current.diastolicBP !== 0) {
+        const currentDiff = current.systolicBP - current.diastolicBP;
+        updated.diastolicBP = Math.max(value - currentDiff, min);
+        if (updated.diastolicBP === 0) {
+          setSavedDiff(currentDiff);
+        }
+      } else {
+        if (savedDiff !== null && value > savedDiff) {
+          updated.diastolicBP = Math.max(value - savedDiff, min);
+        }
+      }
+    }
+
+    if (key == 'diastolicBP'){
+       if (value >= updated.systolicBP) {
+        updated.systolicBP = Math.min(value + 1, max);
+       }
+    }
+
     if (updateMode === 'live') {
-      setVitals(prev => ({ ...prev, [key]: value }));
-      if (updateTimeout.current) clearTimeout(updateTimeout.current);
-      updateTimeout.current = setTimeout(() => {
-        updateVitals({ [key]: value });
-      }, 400);
+      setVitals(updated);
     } else {
-      setPendingVitals(prev => prev ? { ...prev, [key]: value } : { ...vitals, [key]: value });
+      setPendingVitals(updated);
     }
   };
 
