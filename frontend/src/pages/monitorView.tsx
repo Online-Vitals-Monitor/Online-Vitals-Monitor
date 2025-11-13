@@ -82,12 +82,16 @@ const MonitorView: React.FC = () => {
 
       <div className="col-12 mb-4">
         <small className="text-muted">ECG bpm {vitals.heartRate || 72}</small>
-        <div id="ecg_waveform" className="ct-chart" />
+        {/* can be adapted for different types of waveforms (need to add them to WaveformChart.tsx) */}
         <WaveformChart
           elementId="ecg_waveform"
-          data={ecgData}
+          data={generateECGData()}
           color="#00ff4f"
           height={120}
+          speed={vitals.heartRate / 30}
+          easing="power1.inOut"
+          waveformType='ecg'
+          width={300}
         />
       </div>
 

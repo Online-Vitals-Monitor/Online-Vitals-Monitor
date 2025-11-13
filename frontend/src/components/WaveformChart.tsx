@@ -1,67 +1,111 @@
-import {useEffect} from "react";
-import {LineChart, Interpolation} from "chartist";
+import React, { useEffect, useRef } from "react";
+import {
+  Chart,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+} from "chart.js";
+import { gsap } from "gsap"; // for smooth easing and sync with API
+
+// set chart type/components and expected values to recieve
+Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale);
 
 type WaveformChartProps = {
-  elementId: string;   // DOM id of div
-  data: number[];     // array of y-values 
+  elementId: string;
+  data: number[];
   color: string;
-  height: number; 
+  height: number;
+  speed?: number; // how fast it scrolls
+  easing?: string; // GSAP easing name
+  waveformType?: "ecg"; // add | "other options" | in the future 
+  width: number;
 };
 
-// NO ANIMATION FOR NOW, JUST STATIC
-export default function WaveformChart({
+export default function WaveformChart({ 
   elementId,
   data,
   color,
-  height = 140,
+  height,
+  speed = 10,
+  easing = "Power2.inOut",
+  waveformType = "ecg",
+  width,
 }: WaveformChartProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null); // drawn in canvas
+  const chartRef = useRef<Chart | null>(null); // chart instance
+  const speedRef = useRef<number>(speed);
+  const offsetRef = useRef<number>(0);
+
+  // set up the chart
   useEffect(() => {
-    const chartOptions = {
-      height,
-      showPoint: false,
-      fullWidth: true,
-      lineSmooth: Interpolation.monotoneCubic(), // makes it smooth like a monitor trace
-      chartPadding: 0,
-      axisX: {
-        showGrid: false,
-        showLabel: false,
-        offset: 0,
-      },
-      axisY: {
-        showGrid: false,
-        showLabel: false,
-        offset: 0,
-        low: 0,
-        high: 100, 
-      },
-    };
+    if (!canvasRef.current) return;
 
-    const chart = new LineChart(
-      "#" + elementId,
-      { // no labels, single line
-        labels: [],  
-        series: [data], 
+    const ctx = canvasRef.current.getContext("2d");
+    if (!ctx) return;
+
+    chartRef.current = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: data.map((_, i) => i),
+        datasets: [
+          {
+            data,
+            borderColor: color,
+            borderWidth: 2,
+            // tension: waveformType === "pleth" ? 0.6 : 0.4, // smoother for pleth
+            pointRadius: 0,
+          },
+        ],
       },
-      chartOptions
-    );
-
-    // after Chartist injects the SVG, color the line
-    setTimeout(() => {
-      const lineEl = document.querySelector(
-        `#${elementId} .ct-series-a .ct-line`
-      ) as SVGPathElement | null;
-
-      if (lineEl) {
-        lineEl.style.stroke = color;
-        lineEl.style.strokeWidth = "2px";
+      options: {
+        animation: false,
+        responsive: true,
+        scales: {
+          x: { display: false },
+          y: { display: false },
+        },
+        plugins: { legend: { display: false } },
       }
-    }, 0);
+    });
 
-    // cleaning up old Chartist instance
     return () => {
-      (chart as any)?.detach?.();
+      chartRef.current?.destroy();
     };
-  }, [elementId, data, color, height]);
+  }, [data, color, waveformType]);
 
-  return null;
+  // set up continuous scrolling animation
+  useEffect(() => {
+    let animationFrame: number;
+
+    const animate = () => {
+      const chart = chartRef.current;
+      if (!chart) return;
+
+      offsetRef.current = (offsetRef.current + speedRef.current) % data.length;
+      const shifted = [
+        ...data.slice(offsetRef.current),
+        ...data.slice(0, offsetRef.current),
+      ];
+      chart.data.datasets[0].data = shifted;
+      chart.update();
+
+      animationFrame = requestAnimationFrame(animate);
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [data]);
+
+  // easing functions
+  useEffect(() => {
+    gsap.to(speedRef, {
+      duration: 1.0,
+      value: speed,
+      ease: easing,
+    });
+  }, [speed, easing])
+
+  return <canvas id={elementId} ref={canvasRef} height={height} width={width || 600} style={{ border: "1px solid lime" }}/>;
 }
