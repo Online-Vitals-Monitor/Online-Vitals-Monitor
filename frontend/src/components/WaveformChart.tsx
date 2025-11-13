@@ -107,5 +107,5 @@ export default function WaveformChart({
     });
   }, [speed, easing])
 
-  return <canvas id={elementId} ref={canvasRef} height={height} width={width || 600} style={{ border: "1px solid lime" }}/>;
+  return <canvas id={elementId} ref={canvasRef} height={height} width={width || 600}/>;
 }
