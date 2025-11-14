@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import {
   Chart,
   LineController,
@@ -13,29 +13,45 @@ Chart.register(LineController, LineElement, PointElement, LinearScale);
 
 type WaveformChartProps = {
   elementId: string;
-  data: number[];
+  beatData: number[]; // one beat of data
   color: string;
   height: number;
-  speed?: number; // how fast it scrolls
   easing?: string; // GSAP easing name
   waveformType?: "ecg"; // add | "other options" | in the future 
   width: number;
+  mmPerSecond?: number; // waveform speed - 25 mm/sec for standard ECG waveform speed
 };
 
 export default function WaveformChart({ 
   elementId,
-  data,
+  beatData,
   color,
   height,
-  speed = 10,
   easing = "Power2.inOut",
   waveformType = "ecg",
   width,
+  mmPerSecond = 25,
 }: WaveformChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null); // drawn in canvas
   const chartRef = useRef<Chart | null>(null); // chart instance
-  const speedRef = useRef<number>(speed);
-  const offsetRef = useRef<number>(0);
+  // const offsetRef = useRef<number>(0);
+
+  // set up rolling buffer
+  const bufferRef = useRef<number[]>([]); // set up buffer for waveform
+  useEffect(() => {
+    bufferRef.current = new Array(width).fill(0)
+  }, [width]);
+
+  // set up one single beat
+  const beat = useMemo(() => beatData, [beatData]);
+  let beatIndex = 0;
+
+  // generate the next beat
+  const nextSample = () => {
+    const s = beat[beatIndex];
+    beatIndex = (beatIndex + 1) % beat.length;
+    return s;
+  }
 
   // set up the chart
   useEffect(() => {
@@ -47,13 +63,11 @@ export default function WaveformChart({
     chartRef.current = new Chart(ctx, {
       type: "line",
       data: {
-        labels: new Array(data.length).fill(""),
         datasets: [
           {
-            data: data.map((y, i) => ({x: i, y})), // create linear x positions
+            data: bufferRef.current.map((y, x) => ({x, y})), // create linear x positions in the buffer
             borderColor: color,
             borderWidth: 2,
-            // tension: waveformType === "pleth" ? 0.6 : 0.4, // smoother for pleth
             pointRadius: 0,
             spanGaps: false, // prevents GSAP from connecting the last point to the first point
           },
@@ -67,7 +81,7 @@ export default function WaveformChart({
             type: "linear",
             display: false,
             min: 0,
-            max: data.length, // change to width of window
+            max: width // change to width of window
           },
           y: {
             display: false
@@ -80,43 +94,51 @@ export default function WaveformChart({
     return () => {
       chartRef.current?.destroy();
     };
-  }, [data, color, waveformType]);
+  }, [color, waveformType, width]);
 
-  // set up continuous scrolling animation
+  // set up continuous scrolling animation at mm/sec (25 for ecg)
   useEffect(() => {
     let animationFrame: number;
+
+    const pxPerMm = 3.78; // general monitor pixel desnity
+    const pxPerSec = mmPerSecond * pxPerMm; // generate the correct number of pixels / second based on the waveform speed
+    const pxPerFrame = pxPerSec / 60; // 60 fps
+
+    let subPixel = 0;
 
     const animate = () => {
       const chart = chartRef.current;
       if (!chart) return;
 
-      offsetRef.current = (offsetRef.current + speedRef.current) % data.length;
-      
-      // animate waveforms by modifying x
-      const shifted = data.map((y, i) => ({
-        x: (i - offsetRef.current + data.length) % data.length,
-        y,
-      }))
-      .sort((a, b) => a.x - b.x); // keep x in ascending order so things are always drawn left to right
+      subPixel += pxPerFrame;
 
-      chart.data.datasets[0].data = shifted;
-      chart.update();
+      // shift by 1 px when we need to
+      while (subPixel >= 1) {
+        subPixel -= 1;
+
+        bufferRef.current.shift(); // shift to the right one pixel
+        bufferRef.current.push(nextSample()); // add new sample
+      }
+
+      // update waveform dataset
+      chart.data.datasets[0].data = bufferRef.current.map((y, x) => ({x, y}));
+      chart.update("none");
 
       animationFrame = requestAnimationFrame(animate);
     };
 
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
-  }, [data]);
+  }, [width, mmPerSecond]);
 
-  // easing functions
-  useEffect(() => {
-    gsap.to(speedRef, {
-      duration: 1.0,
-      current: speed,
-      ease: easing,
-    });
-  }, [speed, easing])
+  // // easing functions
+  // useEffect(() => {
+  //   gsap.to(speedRef, {
+  //     duration: 1.0,
+  //     current: speed,
+  //     ease: easing,
+  //   });
+  // }, [speed, easing])
 
-  return <canvas id={elementId} ref={canvasRef} height={height} width={width || 600}/>;
+  return <canvas id={elementId} ref={canvasRef} height={height} width={width}/>;
 }

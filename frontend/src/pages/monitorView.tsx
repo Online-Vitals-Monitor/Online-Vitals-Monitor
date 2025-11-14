@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo, useRef} from 'react';
 import { getVitals, Vitals } from '../api/vitalsApi';
 import WaveformChart from "../components/WaveformChart";
 
@@ -52,8 +52,30 @@ const MonitorView: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // measure layout elements (for fitting waveforms)
+  const hrRef = useRef<HTMLDivElement>(null);
+  const waveformContainerRef = useRef<HTMLDivElement>(null);
+  const [waveformWidth, setWaveformWidth] = useState(300); // default
+
+  useEffect(() => {
+    function computeWidth() {
+      const hrBox = hrRef.current;
+      const wrapper = waveformContainerRef.current;
+      if (!hrBox || !wrapper) return;
+
+      const hrWidth = hrBox.offsetWidth;
+      const fullWidth = wrapper.offsetWidth;
+
+      setWaveformWidth(Math.max(100, fullWidth - hrWidth - 16));
+    }
+
+    computeWidth();
+    window.addEventListener("resize", computeWidth);
+    return () => window.removeEventListener("resize", computeWidth);
+  }, []);
+
   // memoize ecg data so it doesn't regenerate every time
-  const ecgData = useMemo(() => generateECGData(), []);
+  const ecgBeat = useMemo(() => generateECGData(), []);
   // const plethData = generatePlethData(); // add other waveforms
   // const bpData = generateBPData();
   // const etco2Data = generateEtco2Data();
@@ -85,13 +107,13 @@ const MonitorView: React.FC = () => {
         {/* can be adapted for different types of waveforms (need to add them to WaveformChart.tsx) */}
         <WaveformChart
           elementId="ecg_waveform"
-          data={ecgData}
+          beatData={ecgBeat}
           color="#00ff4f"
           height={120}
-          speed={vitals.heartRate / 30}
           easing="power1.inOut"
           waveformType='ecg'
-          width={300}
+          width={waveformWidth}
+          mmPerSecond={25}
         />
       </div>
 
