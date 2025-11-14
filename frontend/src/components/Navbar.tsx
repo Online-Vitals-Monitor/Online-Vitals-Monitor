@@ -5,8 +5,18 @@ import { Link } from 'react-router-dom';
 
 //routes object: Add pages/routes here if needed
 const routes = [
-    {page: 'Monitor', path: '/'},
-    {page: 'Control Vitals', path:'/values'},
+    {page: 'Monitor',        path: '/'      },
+    {page: 'Control Vitals', path:'/values' },
+];
+
+//array storing possible vital types: Added new vitals here if needed
+ const vitalLabels = [
+    { value: 'heartRate',    label: 'Heart Rate'               },
+    { value: 'respRate',     label: 'Respiratory Rate'         },
+    { value: 'o2Saturation', label: 'Oxygen Saturation'        },
+    { value: 'systolicBP',   label: 'Systolic Blood Pressure'  },
+    { value: 'diastolicBP',  label: 'Diastolic Blood Pressure' },
+    { value: 'eTCO2',        label: 'End-Tidal Carbon Dioxide' },
 ];
 
 //navbar based off of: https://mui.com/material-ui/react-app-bar/
@@ -115,13 +125,11 @@ const Navbar: React.FC = () => {
                                         aria-label="vital visibility"
                                         size="small"
                                     >
-                                        <ToggleButton value="heartRate" aria-label="heart rate">Heart Rate</ToggleButton>
-                                        <ToggleButton value="respRate" aria-label="respiratory rate">Respiratory Rate</ToggleButton>
-                                        <ToggleButton value="o2Saturation" aria-label="oxygen saturation">Oxygen Saturation</ToggleButton>
-                                        <ToggleButton value="systolicBP" aria-label="systolic blood pressure">Systolic Blood Pressure</ToggleButton>
-                                        <ToggleButton value="diastolicBP" aria-label="disatolic blood pressure">Disatolic Blood Pressure</ToggleButton>
-                                        <ToggleButton value="eTCO2" aria-label="end tial carbon dioxide">End-Tidal Carbon Dioxide</ToggleButton>
-
+                                        {vitalLabels.map((vital) => (
+                                            <ToggleButton key={vital.value} value={vital.value} aria-label={vital.label}>
+                                                {vital.label}
+                                            </ToggleButton>
+                                        ))}
                                     </ToggleButtonGroup>
                                 </Box>
                                 <Box sx={{ mb: 3 }}>
