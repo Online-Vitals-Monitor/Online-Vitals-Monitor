@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { getVitals, Vitals } from '../api/vitalsApi';
 import WaveformChart from "../components/WaveformChart";
 
@@ -22,7 +22,6 @@ function generateECGData(): number[] {
   const minV = Math.min(...beat);
   const maxV = Math.max(...beat);
   const beat_scaled = beat.map((v) => ((v - minV) / (maxV - minV)) * 100);
-
 
   return [...beat_scaled, ...beat_scaled, ...beat_scaled];  // tile multiple beats so we fill a strip spannign horizontally
 }
@@ -53,8 +52,9 @@ const MonitorView: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const ecgData = generateECGData();
-  // const plethData = generatePlethData(); // for later
+  // memoize ecg data so it doesn't regenerate every time
+  const ecgData = useMemo(() => generateECGData(), []);
+  // const plethData = generatePlethData(); // add other waveforms
   // const bpData = generateBPData();
   // const etco2Data = generateEtco2Data();
 
@@ -85,7 +85,7 @@ const MonitorView: React.FC = () => {
         {/* can be adapted for different types of waveforms (need to add them to WaveformChart.tsx) */}
         <WaveformChart
           elementId="ecg_waveform"
-          data={generateECGData()}
+          data={ecgData}
           color="#00ff4f"
           height={120}
           speed={vitals.heartRate / 30}

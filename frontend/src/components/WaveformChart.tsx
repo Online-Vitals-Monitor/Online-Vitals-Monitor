@@ -48,7 +48,7 @@ export default function WaveformChart({
     chartRef.current = new Chart(ctx, {
       type: "line",
       data: {
-        labels: data.map((_, i) => i),
+        labels: new Array(data.length).fill(""),
         datasets: [
           {
             data,
@@ -102,7 +102,7 @@ export default function WaveformChart({
   useEffect(() => {
     gsap.to(speedRef, {
       duration: 1.0,
-      value: speed,
+      current: speed,
       ease: easing,
     });
   }, [speed, easing])
