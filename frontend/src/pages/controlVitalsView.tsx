@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getVitals, updateVitals, Vitals } from '../api/vitalsApi';
 import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton, Button, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, Backdrop, Drawer } from '@mui/material';
 import VitalSlider from '../components/vitalSlider';
@@ -123,7 +123,7 @@ const ControlVitalsView: React.FC = () => {
     let updated = { ...current, [key]: value };
 
     const min = 0, max = 250
-    if (key == 'systolicBP'){
+    if (key === 'systolicBP'){
       if (current.diastolicBP !== 0) {
         const currentDiff = current.systolicBP - current.diastolicBP;
         updated.diastolicBP = Math.max(value - currentDiff, min);
@@ -137,7 +137,7 @@ const ControlVitalsView: React.FC = () => {
       }
     }
 
-    if (key == 'diastolicBP'){
+    if (key === 'diastolicBP'){
        if (value >= updated.systolicBP) {
         updated.systolicBP = Math.min(value + 1, max);
        }
