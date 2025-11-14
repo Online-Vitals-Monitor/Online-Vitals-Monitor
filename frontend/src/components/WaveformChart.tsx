@@ -6,7 +6,7 @@ import {
   PointElement,
   LinearScale,
 } from "chart.js";
-import { gsap } from "gsap"; // for smooth easing and sync with API
+// import { gsap } from "gsap"; // for smooth easing and sync with API
 
 // set chart type/components and expected values to recieve
 Chart.register(LineController, LineElement, PointElement, LinearScale);
