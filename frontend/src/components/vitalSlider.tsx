@@ -69,12 +69,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
 
     /* return */
     return(
-        <Box sx={{ width: 600, mb: 4}}>
-
-            <Typography variant="h6" gutterBottom>
-                {title}:
-            </Typography>
-
+        <Box sx={{ width: 850, mb: 4}}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <TextField
                     type="number"
@@ -83,11 +78,13 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                     variant="outlined"
                     size="small"
                     sx={{
-                        width: 100,
+                        width: 150,
                         mr: 3,
+                        'input': {textAlign: 'center'},
                         'input::-webkit-outer-spin-button': { display: 'none' },
                         'input::-webkit-inner-spin-button': { display: 'none' },
                         'input[type=number]': { MozAppearance: 'textfield' },
+
                     }}
                     slotProps={{ htmlInput: { min, max } }}
                 />
@@ -100,23 +97,27 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                 >
                     <RemoveIcon />
                 </Button>
-
-                <Slider
-                    aria-label={title}
-                    value={currentVal}                               
-                    onChange={(_, newValue) => onChange(newValue as number)} 
-                    valueLabelDisplay="auto"
-                    step={step}
-                    min={min}
-                    max={max}
-                    sx={{mx:2}}
-                />
+                
+                <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, mx:2 }}>
+                    <Typography variant="h6" gutterBottom sx={{ textAlign: 'left' }}>
+                        {title}:
+                    </Typography>
+                    <Slider
+                        aria-label={title}
+                        value={currentVal}                               
+                        onChange={(_, newValue) => onChange(newValue as number)} 
+                        valueLabelDisplay="auto"
+                        step={step}
+                        min={min}
+                        max={max}
+                    />
+                </Box>
            
                 <Button 
                     variant="contained"
                     color="error"          
                     onClick={handleIncrement}
-                    sx={{ minHeight: 50, minWidth: 55, p: 0 }}
+                    sx={{ minHeight: 50, minWidth: 55, p: 0, ml: 2 }}
                 >
                     <AddIcon />
                 </Button>

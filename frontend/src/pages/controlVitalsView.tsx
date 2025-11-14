@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getVitals, updateVitals, Vitals } from '../api/vitalsApi';
-import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton, Button } from '@mui/material';
+import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton, Button, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, Backdrop, Drawer } from '@mui/material';
 import VitalSlider from '../components/vitalSlider';
 
-/* Styling */
+// Styling
 const valueStyle = {
   width: 70,
   textAlign: 'center',
@@ -21,6 +21,7 @@ const valueBoxStyle = {
   minWidth: 120,
   bgcolor: 'grey.300',
   ml: 2,
+  mb: 1,
   px: 1,
   py: 4,
   display: 'flex',
@@ -28,6 +29,26 @@ const valueBoxStyle = {
   alignItems: 'stretch',
   pointerEvents: 'auto',
 };
+
+interface VitalControlProps {
+  title: string; value: number; onChange: (value: number) => void; step: number; min: number; max: number;
+}
+
+const VitalControl: React.FC<VitalControlProps> = ({
+  title, value, onChange, step, min, max, }) => (
+  <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+    <VitalSlider
+      title={title} step={step} min={min} max={max} currentVal={value} onChange={onChange}
+    />
+    <CurrentValueDisplay value={value} />
+  </Box>
+);
+
+const CurrentValueDisplay = ({ value }: { value: number }) => (
+  <Box sx={valueBoxStyle}>
+    <Paper sx={valueStyle}>{value}</Paper>
+  </Box>
+);
 
 const ControlVitalsView: React.FC = () => {
   const [vitals, setVitals] = useState<Vitals>({
@@ -44,7 +65,26 @@ const ControlVitalsView: React.FC = () => {
   // Local pending state for push updates
   const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
 
-  const updateTimeout = useRef<NodeJS.Timeout | null>(null);
+  // Preset values
+  const presetConfigs = [
+    { name: 'Reset Defaults', values: { heartRate: 60, respRate: 14, o2Saturation: 100, systolicBP: 120, diastolicBP: 80, eTCO2: 4.0 } },
+    { name: 'Shock', values: { heartRate: 140, respRate: 25, systolicBP: 80, diastolicBP: 60 } },
+    { name: 'Hypoxia', values: { respRate: 25, o2Saturation: 86 } },
+    { name: 'Increased ICP', values: { heartRate: 50, respRate: 10, systolicBP: 190, diastolicBP: 100 } },
+    { name: 'Zero', values: { heartRate: 0, respRate: 0, o2Saturation: 0, systolicBP: 0, diastolicBP: 0, eTCO2: 0 } },
+  ];
+  const [selectedPreset, setSelectedPreset] = useState('');
+
+  // Display menu
+  const [displayMenuOpen, setDisplayMenuOpen] = useState(false);
+
+  // BP difference
+  const [savedDiff, setSavedDiff] = useState<number>(0);
+
+  // ETCO2 units
+  const [etco2Unit, setEtco2Unit] = useState<'kPa' | 'mmHg'>('kPa');
+  const etco2Max = etco2Unit === 'kPa' ? 20 : 150;
+  const etco2DisplayValue = etco2Unit === 'kPa' ? vitals.eTCO2 : Math.round(vitals.eTCO2 * 7.5);
 
   useEffect(() => {
     document.title = 'Controller';
@@ -63,18 +103,51 @@ const ControlVitalsView: React.FC = () => {
     }
   };
 
-// handlers for each vital, adapts for both modes
-  const handleVitalChange = (key: keyof Vitals, value: number) => {
-    if (updateMode === 'live') {
-      setVitals((prev) => ({ ...prev, [key]: value }));
+  // Preset handler
+  const handlePresetChange = (event: SelectChangeEvent) => {
+    const newPreset = presetConfigs.find(cfg => cfg.name === event.target.value);
+    if (newPreset) {
+      setVitals(prev => ({ ...prev, ...newPreset.values }));
+      if (updateMode === 'push') setPendingVitals(prev => ({ ...(prev || vitals), ...newPreset.values }));
+      setSelectedPreset('');
+    }
+  };
 
-      if (updateTimeout.current) clearTimeout(updateTimeout.current);
-      updateTimeout.current = setTimeout(() => {
-        updateVitals({ [key]: value });
-      }, 400);
+  // Handler for vitals, adapts for live/push modes
+  const handleVitalChange = (key: keyof Vitals, value: number) => {
+    if (key === 'eTCO2') {
+    value = Math.round(value * 10) / 10; // Ensures one decimal digit
+    }
+
+    const current = updateMode === 'live' ? vitals : (pendingVitals ?? vitals);
+    let updated = { ...current, [key]: value };
+
+    const min = 0, max = 250
+    if (key === 'systolicBP'){
+      if (current.diastolicBP !== 0) {
+        const currentDiff = current.systolicBP - current.diastolicBP;
+        updated.diastolicBP = Math.max(value - currentDiff, min);
+        if (updated.diastolicBP === 0) {
+          setSavedDiff(currentDiff);
+        }
+      } else {
+        if (savedDiff !== null && value > savedDiff) {
+          updated.diastolicBP = Math.max(value - savedDiff, min);
+        }
+      }
+    }
+
+    if (key === 'diastolicBP'){
+       if (value >= updated.systolicBP) {
+        updated.systolicBP = Math.min(value + 1, max);
+       }
+    }
+
+    if (updateMode === 'live') {
+      setVitals(updated);
+      updateVitals(updated);
     } else {
-      // push mode: only update local pending changes
-      setPendingVitals((prev) => prev ? { ...prev, [key]: value } : { ...vitals, [key]: value });
+      setPendingVitals(updated);
     }
   };
 
@@ -82,66 +155,61 @@ const ControlVitalsView: React.FC = () => {
   const handleSaveClick = async () => {
     if (updateMode === 'push' && pendingVitals) {
       await updateVitals(pendingVitals);
-      setVitals(pendingVitals); // show updated values
+      setVitals(pendingVitals);
     }
   };
-
-  const CurrentValueDisplay = ({ value }: { value: number }) => (
-    <Box sx={valueBoxStyle}>
-      <Paper sx={valueStyle}>{value}</Paper>
-    </Box>
-  );
 
   // values displayed depend on mode
   const sliderValues = updateMode === 'live' ? vitals : (pendingVitals || vitals);
 
   return (
-    <Box sx={{ px: 4, py: 3, maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ px: 4, py: 3, maxWidth: 1200, mx: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          <Typography variant="h5" fontWeight="bold">
-            Control Vitals
-          </Typography>
-        </Box>
-        <Box sx={{ minWidth: 120 }}>
-          <Typography variant="h6" fontWeight="bold" textAlign="right">
-            Current Values
-          </Typography>
-        </Box>
+        <Typography variant="h5" fontWeight="bold" textAlign="left">
+          New Values
+        </Typography>
+
+        <FormControl sx={{ minWidth: 250, maxWidth: 400, mx: 'auto' }}>
+          <InputLabel id="preset-select-label">Preset (applied immediately)</InputLabel>
+          <Select
+            labelId="preset-select-label"
+            id="preset-select"
+            value={selectedPreset}
+            label="Preset (applied immediately)"
+            onChange={handlePresetChange}
+          >
+            {presetConfigs.map((preset) => (
+              <MenuItem key={preset.name} value={preset.name}>
+                {preset.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <Typography variant="h6" fontWeight="bold" textAlign="right">
+          Current Values
+        </Typography>
       </Box>
 
-      {/* Vital sliders */}
-      <Box sx={{ display: 'flex', alignItems: 'center'}}>
-        <VitalSlider title="Heart Rate" step={1} min={30} max={250} currentVal={sliderValues.heartRate} onChange={(v) => handleVitalChange('heartRate', v)} />
-        <CurrentValueDisplay value={vitals.heartRate} />
-      </Box>
+      {/* Vital Sliders */}
+      <VitalControl title="Heart Rate" value={sliderValues.heartRate} onChange={(v) => handleVitalChange('heartRate', v)} step={1} min={0} max={250} />
+      <VitalControl title="Respiratory Rate" value={sliderValues.respRate} onChange={(v) => handleVitalChange('respRate', v)} step={1} min={0} max={60} />
+      <VitalControl title="SpO2" value={sliderValues.o2Saturation} onChange={(v) => handleVitalChange('o2Saturation', v)} step={1} min={0} max={100} />
+      <VitalControl title="Systolic BP" value={sliderValues.systolicBP} onChange={(v) => handleVitalChange('systolicBP', v)} step={1} min={0} max={250} />
+      <VitalControl title="Diastolic BP" value={sliderValues.diastolicBP} onChange={(v) => handleVitalChange('diastolicBP', v)} step={1} min={0} max={250} />
+      <VitalControl
+        title={`ETCO2 (${etco2Unit})`}
+        value={etco2DisplayValue}
+        onChange={(value) => {
+          const backendValue = etco2Unit === 'kPa' ? value : value / 7.5;
+          handleVitalChange('eTCO2', backendValue);
+        }}
+        step={etco2Unit === 'kPa' ? 0.1 : 1}
+        min={0}
+        max={etco2Max}
+      />
 
-      <Box sx={{ display: 'flex', alignItems: 'center'}}>
-        <VitalSlider title="Respiratory Rate" step={1} min={0} max={60} currentVal={sliderValues.respRate} onChange={(v) => handleVitalChange('respRate', v)} />
-        <CurrentValueDisplay value={vitals.respRate} />
-      </Box>
-
-      <Box sx={{ display: 'flex', alignItems: 'center'}}>
-        <VitalSlider title="SpO2" step={1} min={0} max={100} currentVal={sliderValues.o2Saturation} onChange={(v) => handleVitalChange('o2Saturation', v)} />
-        <CurrentValueDisplay value={vitals.o2Saturation} />
-      </Box>
-
-      <Box sx={{ display: 'flex', alignItems: 'center'}}>
-        <VitalSlider title="Systolic BP" step={1} min={0} max={250} currentVal={sliderValues.systolicBP} onChange={(v) => handleVitalChange('systolicBP', v)} />
-        <CurrentValueDisplay value={vitals.systolicBP} />
-      </Box>
-
-      <Box sx={{ display: 'flex', alignItems: 'center'}}>
-        <VitalSlider title="Diastolic BP" step={1} min={0} max={250} currentVal={sliderValues.diastolicBP} onChange={(v) => handleVitalChange('diastolicBP', v)} />
-        <CurrentValueDisplay value={vitals.diastolicBP} />
-      </Box>
-
-      <Box sx={{ display: 'flex', alignItems: 'center'}}>
-        <VitalSlider title="ETCO2" step={1} min={0} max={20} currentVal={sliderValues.eTCO2} onChange={(v) => handleVitalChange('eTCO2', v)} />
-        <CurrentValueDisplay value={vitals.eTCO2} />
-      </Box>
-
-      {/* Toggle and Save Button Section */}
+      {/* Toggle, Save Button, and Display Settings */}
       <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
         <ToggleButtonGroup
           color="primary"
@@ -164,20 +232,76 @@ const ControlVitalsView: React.FC = () => {
           <ToggleButton value="push" aria-label="Push updates">
             Push Updates
           </ToggleButton>
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={updateMode === 'live'}
+            onClick={handleSaveClick}
+            sx={{ minWidth: 120, ml: 2, bgcolor: updateMode === 'live' ? 'grey.400' : 'primary.main' }}
+          >
+            Save New Vitals
+          </Button>
         </ToggleButtonGroup>
+
+        {/* Display Menu button */}
         <Button
           variant="contained"
-          color="primary"
-          disabled={updateMode === "live"}
-          onClick={handleSaveClick}
-          sx={{ minWidth: 120, bgcolor: updateMode === 'live' ? 'grey.400' : 'primary.main' }}
+          sx={{ bgcolor: 'grey.600', mt: 2, fontWeight: 'bold' }}
+          onClick={() => setDisplayMenuOpen(true)}
         >
-          Save
+          Open Display Settings
         </Button>
+
+        {/* Backdrop (dimming layer) */}
+        <Backdrop
+          open={displayMenuOpen}
+          sx={{ zIndex: (theme) => theme.zIndex.drawer - 1, color: '#fff' }}
+          onClick={() => setDisplayMenuOpen(false)}
+        />
+
+        {/* Slide-in menu on the right */}
+        <Drawer
+          anchor="right"
+          open={displayMenuOpen}
+          onClose={() => setDisplayMenuOpen(false)}
+          slotProps={{
+            paper: {
+              sx: { width: 300, p: 2, bgcolor: 'background.paper' },
+            },
+          }}
+        >
+          <Typography variant="h6" mb={2}>
+            Display Settings
+          </Typography>
+          <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+            ETCO₂ Units
+          </Typography>
+          <ToggleButtonGroup
+            value={etco2Unit}
+            exclusive
+            onChange={(_, newVal) => {
+              if (newVal) setEtco2Unit(newVal);
+            }}
+            aria-label="etco2-units"
+            color="primary"
+            size="small"
+          >
+            <ToggleButton value="kPa" aria-label="kPa">
+              kPa
+            </ToggleButton>
+            <ToggleButton value="mmHg" aria-label="mmHg">
+              mmHg
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <Button sx={{ mt: 3, bgcolor: 'grey.300' }} onClick={() => setDisplayMenuOpen(false)}>
+            Close Menu
+          </Button>
+        </Drawer>
       </Box>
     </Box>
   );
 };
+
 
 
 export default ControlVitalsView;

@@ -11,11 +11,11 @@ interface Vitals {
 
 // vitals object to store info (until we get a database up)
 let vitals: Vitals = {
-  heartRate: 65,
-  respRate: 10,
+  heartRate: 60,
+  respRate: 14,
   o2Saturation: 100,
-  systolicBP: 188,
-  diastolicBP: 177,
+  systolicBP: 120,
+  diastolicBP: 80,
   eTCO2: 4,
 };
 

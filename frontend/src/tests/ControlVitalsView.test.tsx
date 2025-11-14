@@ -32,7 +32,7 @@ describe("ControlVitalsView", () => {
     await waitFor(() => expect(heartRateSlider).toHaveValue("60"));
 
     const respRateSlider = await screen.findByRole("slider", { name: /Respiratory Rate/i });
-    await waitFor(() => expect(respRateSlider).toHaveValue("16"));  // use the mocked value as string
+    await waitFor(() => expect(respRateSlider).toHaveValue("16"));
 
     const spo2Slider = await screen.findByRole("slider", { name: /SpO2/i });
     await waitFor(() => expect(spo2Slider).toHaveValue("98"));
@@ -64,7 +64,7 @@ describe("ControlVitalsView", () => {
 
     // Wait for updateVitals to be called with the correct argument
     await waitFor(() =>
-      expect(updateVitalsMock).toHaveBeenCalledWith({ heartRate: 70 })
+      expect(updateVitalsMock).toHaveBeenCalledWith(expect.objectContaining({ heartRate: 70 }))
     );
   });
 
