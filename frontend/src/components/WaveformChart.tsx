@@ -5,12 +5,11 @@ import {
   LineElement,
   PointElement,
   LinearScale,
-  CategoryScale,
 } from "chart.js";
 import { gsap } from "gsap"; // for smooth easing and sync with API
 
 // set chart type/components and expected values to recieve
-Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale);
+Chart.register(LineController, LineElement, PointElement, LinearScale);
 
 type WaveformChartProps = {
   elementId: string;
@@ -51,11 +50,12 @@ export default function WaveformChart({
         labels: new Array(data.length).fill(""),
         datasets: [
           {
-            data,
+            data: data.map((y, i) => ({x: i, y})), // create linear x positions
             borderColor: color,
             borderWidth: 2,
             // tension: waveformType === "pleth" ? 0.6 : 0.4, // smoother for pleth
             pointRadius: 0,
+            spanGaps: false, // prevents GSAP from connecting the last point to the first point
           },
         ],
       },
@@ -63,8 +63,15 @@ export default function WaveformChart({
         animation: false,
         responsive: true,
         scales: {
-          x: { display: false },
-          y: { display: false },
+          x: {
+            type: "linear",
+            display: false,
+            min: 0,
+            max: data.length, // change to width of window
+          },
+          y: {
+            display: false
+          },
         },
         plugins: { legend: { display: false } },
       }
@@ -84,10 +91,14 @@ export default function WaveformChart({
       if (!chart) return;
 
       offsetRef.current = (offsetRef.current + speedRef.current) % data.length;
-      const shifted = [
-        ...data.slice(offsetRef.current),
-        ...data.slice(0, offsetRef.current),
-      ];
+      
+      // animate waveforms by modifying x
+      const shifted = data.map((y, i) => ({
+        x: (i - offsetRef.current + data.length) % data.length,
+        y,
+      }))
+      .sort((a, b) => a.x - b.x); // keep x in ascending order so things are always drawn left to right
+
       chart.data.datasets[0].data = shifted;
       chart.update();
 
