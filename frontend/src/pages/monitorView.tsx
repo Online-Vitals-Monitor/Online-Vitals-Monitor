@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo, useRef} from 'react';
 import { getVitals, Vitals } from '../api/vitalsApi';
 import WaveformChart from "../components/WaveformChart";
 
@@ -22,7 +22,6 @@ function generateECGData(): number[] {
   const minV = Math.min(...beat);
   const maxV = Math.max(...beat);
   const beat_scaled = beat.map((v) => ((v - minV) / (maxV - minV)) * 100);
-
 
   return [...beat_scaled, ...beat_scaled, ...beat_scaled];  // tile multiple beats so we fill a strip spannign horizontally
 }
@@ -53,8 +52,31 @@ const MonitorView: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const ecgData = generateECGData();
-  // const plethData = generatePlethData(); // for later
+  // measure layout elements (for fitting waveforms)
+  const hrRef = useRef<HTMLDivElement>(null);
+  const waveformContainerRef = useRef<HTMLDivElement>(null);
+  const [waveformWidth, setWaveformWidth] = useState(300); // default
+
+  useEffect(() => {
+    function computeWidth() {
+      const hrBox = hrRef.current;
+      const wrapper = waveformContainerRef.current;
+      if (!hrBox || !wrapper) return;
+
+      const hrWidth = hrBox.offsetWidth;
+      const fullWidth = wrapper.offsetWidth;
+
+      setWaveformWidth(Math.max(100, fullWidth - hrWidth - 16));
+    }
+
+    computeWidth();
+    window.addEventListener("resize", computeWidth);
+    return () => window.removeEventListener("resize", computeWidth);
+  }, []);
+
+  // memoize ecg data so it doesn't regenerate every time
+  const ecgBeat = useMemo(() => generateECGData(), []);
+  // const plethData = generatePlethData(); // add other waveforms
   // const bpData = generateBPData();
   // const etco2Data = generateEtco2Data();
 
@@ -82,12 +104,16 @@ const MonitorView: React.FC = () => {
 
       <div className="col-12 mb-4">
         <small className="text-muted">ECG bpm {vitals.heartRate || 72}</small>
-        <div id="ecg_waveform" className="ct-chart" />
+        {/* can be adapted for different types of waveforms (need to add them to WaveformChart.tsx) */}
         <WaveformChart
           elementId="ecg_waveform"
-          data={ecgData}
+          beatData={ecgBeat}
           color="#00ff4f"
           height={120}
+          easing="power1.inOut"
+          waveformType='ecg'
+          width={waveformWidth}
+          mmPerSecond={25}
         />
       </div>
 
