@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useCallback } from "react";
 import {
   Chart,
   LineController,
@@ -44,14 +44,15 @@ export default function WaveformChart({
 
   // set up one single beat
   const beat = useMemo(() => beatData, [beatData]);
-  let beatIndex = 0;
+
+  const beatIndexRef = useRef(0);
 
   // generate the next beat
-  const nextSample = () => {
-    const s = beat[beatIndex];
-    beatIndex = (beatIndex + 1) % beat.length;
+  const nextSample = useCallback(() => {
+    const s = beat[beatIndexRef.current];
+    beatIndexRef.current = (beatIndexRef.current + 1) % beat.length;
     return s;
-  }
+  }, [beat]);
 
   // set up the chart
   useEffect(() => {
@@ -129,7 +130,7 @@ export default function WaveformChart({
 
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
-  }, [width, mmPerSecond]);
+  }, [width, mmPerSecond, nextSample]);
 
   // // easing functions
   // useEffect(() => {
