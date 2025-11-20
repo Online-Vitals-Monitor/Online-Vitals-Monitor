@@ -2,6 +2,7 @@ import * as React from 'react';
 import { AppBar, Box, Toolbar, Typography, Dialog, DialogTitle, DialogContent, Container, Button, IconButton, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
+import { useVitals } from '../contexts/vitalsContext';
 
 //routes object: Add pages/routes here if needed
 const routes = [
@@ -24,17 +25,33 @@ const Navbar: React.FC = () => {
 
     const [openSettings, setOpenSettings] = React.useState(false);
 
-    //Selected vitals from menu: use this later to determine which vitals to render on control/monitor view?
-    const [selectedVitals, setSelectedVitals] = React.useState<string[]>(['heartRate', 'respRate']); 
+    //global context of selected vitals
+    const { state, dispatch } = useVitals();
+    const selectedFromContext = state.selected;
+
+    //temp selected vitals from menu when modal is open
+    const [tempSelected, setTempSelected] = React.useState<string[]>(selectedFromContext);
+
+    React.useEffect(() => {
+        setTempSelected(selectedFromContext);
+    }, [selectedFromContext]);
 
 
     //open handler for the settings dialog
     const handleOpenSettings = () => {
+        setTempSelected(selectedFromContext);
         setOpenSettings(true);
     };
 
     //close handler for the settings dialog
     const handleCloseSettings = () => {
+        setTempSelected(selectedFromContext);
+        setOpenSettings(false);
+    };
+
+    //commit vital selection changes into the context
+    const handleSaveAndClose = () => {
+        dispatch({ type: 'SET_SELECTED', payload: tempSelected as any });
         setOpenSettings(false);
     };
     
@@ -120,8 +137,12 @@ const Navbar: React.FC = () => {
                                     <Typography variant='body1' sx={{ mb:1 }}>Select vitals to display:</Typography>
 
                                     <ToggleButtonGroup
-                                        value={selectedVitals}
-                                        onChange={(event, newVitals) => setSelectedVitals(newVitals)}
+                                        value={tempSelected}
+                                        onChange={(event, newVitals) => {
+                                            //sanitize array if nothing is selected
+                                            const sanitzedArray = Array.isArray(newVitals) ? newVitals : [];
+                                            setTempSelected(sanitzedArray);
+                                        }}
                                         aria-label="vital visibility"
                                         size="small"
                                     >
@@ -145,7 +166,14 @@ const Navbar: React.FC = () => {
                                     color="error"
                                     onClick={handleCloseSettings}
                                 >
-                                    Close
+                                   Discard Changes & Close 
+                                </Button>
+                                <Button
+                                    variant='contained'
+                                    color="error"
+                                    onClick={handleSaveAndClose}
+                                >
+                                   Save & Close 
                                 </Button>
                             </DialogContent>
                         </Dialog>
