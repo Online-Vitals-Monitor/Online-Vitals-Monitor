@@ -15,7 +15,7 @@ const VitalCard: React.FC<VitalProps> = ({
     }) => 
 {
     return (
-        <div className={'vital-card ${className}'}>
+        <div className={`vital-card ${className}`}>
             <div className='card text-center'>
                 <div className='card-body'>
                     <h5 className='card-title'>{title}</h5>
