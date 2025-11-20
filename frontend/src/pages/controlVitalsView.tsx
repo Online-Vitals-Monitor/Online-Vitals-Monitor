@@ -143,6 +143,10 @@ const ControlVitalsView: React.FC = () => {
        }
     }
 
+    // Clamp both BP values to [0, 250] after adjustments
+    updated.systolicBP = Math.min(Math.max(updated.systolicBP, min), max);
+    updated.diastolicBP = Math.min(Math.max(updated.diastolicBP, min), max);
+
     if (updateMode === 'live') {
       setVitals(updated);
       updateVitals(updated);
