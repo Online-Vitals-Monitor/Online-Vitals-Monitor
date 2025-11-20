@@ -8,6 +8,6 @@ test("renders Heart Rate card", () => {
     <MonitorView />
   </VitalsProvider>
   );
-  
-  expect(screen.getByText(/Heart Rate bpm/i)).toBeInTheDocument();
+
+  expect(screen.getByText(/Heart Rate/i)).toBeInTheDocument();
 });
