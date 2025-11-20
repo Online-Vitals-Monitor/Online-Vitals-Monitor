@@ -1,0 +1,26 @@
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 24px;
+}
+
+.vital-card{
+  width: 100%;
+}
+
+.vital-card .card-body{
+  padding: 0.75rem;
+}
+
+.ecg-container {
+    grid-column: 1 / -1;
+}
+
+.vitals-grid-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
