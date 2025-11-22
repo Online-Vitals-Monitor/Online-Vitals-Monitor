@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { getVitals, updateVitals, Vitals } from '../api/vitalsApi';
-import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton, Button, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent, Backdrop, Drawer } from '@mui/material';
+import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton,
+  Button, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent,
+  Backdrop, Drawer, Snackbar, Alert, } from '@mui/material';
 import VitalSlider from '../components/vitalSlider';
 
 // Styling
@@ -31,24 +33,25 @@ const valueBoxStyle = {
 };
 
 interface VitalControlProps {
-  title: string; value: number; onChange: (value: number) => void; step: number; min: number; max: number;
+  title: string; value: number; onChange: (value: number) => void; onChangeCommitted?: (value: number) => void; step: number; min: number; max: number;
 }
 
-const VitalControl: React.FC<VitalControlProps> = ({
-  title, value, onChange, step, min, max, }) => (
+const VitalControl: React.FC<VitalControlProps> = memo(({
+  title, value, onChange, onChangeCommitted, step, min, max,
+  }) => (
   <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
     <VitalSlider
-      title={title} step={step} min={min} max={max} currentVal={value} onChange={onChange}
+      title={title} step={step} min={min} max={max} currentVal={value} onChange={onChange} onChangeCommitted={onChangeCommitted}
     />
     <CurrentValueDisplay value={value} />
   </Box>
-);
+));
 
-const CurrentValueDisplay = ({ value }: { value: number }) => (
+const CurrentValueDisplay = memo(({ value }: { value: number }) => (
   <Box sx={valueBoxStyle}>
     <Paper sx={valueStyle}>{value}</Paper>
   </Box>
-);
+));
 
 const ControlVitalsView: React.FC = () => {
   const [vitals, setVitals] = useState<Vitals>({
@@ -60,10 +63,16 @@ const ControlVitalsView: React.FC = () => {
     eTCO2: 0,
   });
 
-  // Mode state 'live' or 'push'
   const [updateMode, setUpdateMode] = useState<'live' | 'push'>('live');
-  // Local pending state for push updates
   const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
+  const [selectedPreset, setSelectedPreset] = useState('');
+  const [displayMenuOpen, setDisplayMenuOpen] = useState(false);
+  const [savedDiff, setSavedDiff] = useState<number | null>(null);
+  const [etco2Unit, setEtco2Unit] = useState<'kPa' | 'mmHg'>('kPa');
+  const etco2Max = etco2Unit === 'kPa' ? 20 : 150;
+  const [uiVitals, setUiVitals] = useState<Vitals>(vitals);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Preset values
   const presetConfigs = [
@@ -73,33 +82,27 @@ const ControlVitalsView: React.FC = () => {
     { name: 'Increased ICP', values: { heartRate: 50, respRate: 10, systolicBP: 190, diastolicBP: 100 } },
     { name: 'Zero', values: { heartRate: 0, respRate: 0, o2Saturation: 0, systolicBP: 0, diastolicBP: 0, eTCO2: 0 } },
   ];
-  const [selectedPreset, setSelectedPreset] = useState('');
-
-  // Display menu
-  const [displayMenuOpen, setDisplayMenuOpen] = useState(false);
-
-  // BP difference
-  const [savedDiff, setSavedDiff] = useState<number>(0);
-
-  // ETCO2 units
-  const [etco2Unit, setEtco2Unit] = useState<'kPa' | 'mmHg'>('kPa');
-  const etco2Max = etco2Unit === 'kPa' ? 20 : 150;
-  const etco2DisplayValue = etco2Unit === 'kPa' ? vitals.eTCO2 : Math.round(vitals.eTCO2 * 7.5);
 
   useEffect(() => {
     document.title = 'Controller';
     fetchVitals();
   }, []);
 
+  useEffect(() => {
+    // Ensure UI vitals mirror whatever set from API on mount
+    setUiVitals(updateMode === 'live' ? vitals : (pendingVitals || vitals));
+  }, [vitals, pendingVitals, updateMode]);
+
   // fetch vitals from API
   const fetchVitals = async () => {
     try {
       const data = await getVitals();
       setVitals(data);
-      // Sync pendingVitals with API values if entering push mode
       setPendingVitals(data);
+      setErrorMessage(null);
     } catch (err) {
       console.error('Error fetching vitals:', err);
+      setErrorMessage('Failed to load vitals. Please try again.');
     }
   };
 
@@ -114,43 +117,66 @@ const ControlVitalsView: React.FC = () => {
   };
 
   // Handler for vitals, adapts for live/push modes
-  const handleVitalChange = (key: keyof Vitals, value: number) => {
+  const handleVitalChange = (key: keyof Vitals, value: number, commit = false) => {
+    let displayVal = value;
     if (key === 'eTCO2') {
-    value = Math.round(value * 10) / 10; // Ensures one decimal digit
+      displayVal = Math.round(value * 10) / 10;
     }
 
     const current = updateMode === 'live' ? vitals : (pendingVitals ?? vitals);
-    let updated = { ...current, [key]: value };
+    let updated = { ...uiVitals, [key]: displayVal };
 
-    const min = 0, max = 250
-    if (key === 'systolicBP'){
+    const min = 0, max = 250;
+    if (key === 'systolicBP') {
       if (current.diastolicBP !== 0) {
         const currentDiff = current.systolicBP - current.diastolicBP;
-        updated.diastolicBP = Math.max(value - currentDiff, min);
+        updated.diastolicBP = Math.max(displayVal - currentDiff, min);
         if (updated.diastolicBP === 0) {
           setSavedDiff(currentDiff);
         }
       } else {
-        if (savedDiff !== null && value > savedDiff) {
-          updated.diastolicBP = Math.max(value - savedDiff, min);
+        if (savedDiff === null) {
+          setSavedDiff(current.systolicBP - current.diastolicBP);
+        }
+        if (savedDiff !== null && displayVal > savedDiff) {
+          updated.diastolicBP = Math.max(displayVal - savedDiff, min);
+        } else {
+          updated.diastolicBP = 0;
         }
       }
     }
 
-    if (key === 'diastolicBP'){
-       if (value >= updated.systolicBP) {
-        updated.systolicBP = Math.min(value + 1, max);
-       }
+    if (key === 'diastolicBP') {
+      if (displayVal >= updated.systolicBP) {
+        updated.systolicBP = Math.min(displayVal + 1, max);
+      }
+      if (displayVal !== 0) {
+        setSavedDiff(null);
+      }
     }
 
-    // Clamp both BP values to [0, 250] after adjustments
+    // Clamp both values between min and max
     updated.systolicBP = Math.min(Math.max(updated.systolicBP, min), max);
     updated.diastolicBP = Math.min(Math.max(updated.diastolicBP, min), max);
 
-    if (updateMode === 'live') {
-      setVitals(updated);
-      updateVitals(updated);
-    } else {
+    setUiVitals(updated);
+
+    if (commit) {
+      if (updateMode === 'live') {
+        setVitals(updated);
+        updateVitals(updated)
+          .then(() => {
+            setSuccessMessage('Vitals updated successfully.');
+            setErrorMessage(null);
+          })
+          .catch((err) => {
+            console.error('Error updating vitals:', err);
+            setErrorMessage('Failed to update vitals.');
+          });
+      } else {
+        setPendingVitals(updated);
+      }
+    } else if (updateMode === 'push') {
       setPendingVitals(updated);
     }
   };
@@ -158,13 +184,18 @@ const ControlVitalsView: React.FC = () => {
   // Save handler for push mode
   const handleSaveClick = async () => {
     if (updateMode === 'push' && pendingVitals) {
-      await updateVitals(pendingVitals);
-      setVitals(pendingVitals);
+      try {
+        await updateVitals(pendingVitals);
+        setVitals(pendingVitals);
+        setSuccessMessage('Vitals saved successfully.');
+        setErrorMessage(null);
+      } catch (err) {
+        console.error('Error saving vitals:', err);
+        setErrorMessage('Failed to save vitals. Please try again.');
+      }
     }
   };
-
-  // values displayed depend on mode
-  const sliderValues = updateMode === 'live' ? vitals : (pendingVitals || vitals);
+  const sliderValues = uiVitals;
 
   return (
     <Box sx={{ px: 4, py: 3, maxWidth: 1200, mx: 'auto' }}>
@@ -196,17 +227,61 @@ const ControlVitalsView: React.FC = () => {
       </Box>
 
       {/* Vital Sliders */}
-      <VitalControl title="Heart Rate" value={sliderValues.heartRate} onChange={(v) => handleVitalChange('heartRate', v)} step={1} min={0} max={250} />
-      <VitalControl title="Respiratory Rate" value={sliderValues.respRate} onChange={(v) => handleVitalChange('respRate', v)} step={1} min={0} max={60} />
-      <VitalControl title="SpO2" value={sliderValues.o2Saturation} onChange={(v) => handleVitalChange('o2Saturation', v)} step={1} min={0} max={100} />
-      <VitalControl title="Systolic BP" value={sliderValues.systolicBP} onChange={(v) => handleVitalChange('systolicBP', v)} step={1} min={0} max={250} />
-      <VitalControl title="Diastolic BP" value={sliderValues.diastolicBP} onChange={(v) => handleVitalChange('diastolicBP', v)} step={1} min={0} max={250} />
+      <VitalControl
+        title="Heart Rate"
+        value={sliderValues.heartRate}
+        onChange={v => handleVitalChange('heartRate', v)}
+        onChangeCommitted={v => handleVitalChange('heartRate', v, true)}
+        step={1}
+        min={0}
+        max={250}
+      />
+      <VitalControl
+        title="Respiratory Rate"
+        value={sliderValues.respRate}
+        onChange={v => handleVitalChange('respRate', v)}
+        onChangeCommitted={v => handleVitalChange('respRate', v, true)}
+        step={1}
+        min={0}
+        max={60}
+      />
+      <VitalControl
+        title="SpO2"
+        value={sliderValues.o2Saturation}
+        onChange={v => handleVitalChange('o2Saturation', v)}
+        onChangeCommitted={v => handleVitalChange('o2Saturation', v, true)}
+        step={1}
+        min={0}
+        max={100}
+      />
+      <VitalControl
+        title="Systolic BP"
+        value={sliderValues.systolicBP}
+        onChange={v => handleVitalChange('systolicBP', v)}
+        onChangeCommitted={v => handleVitalChange('systolicBP', v, true)}
+        step={1}
+        min={0}
+        max={250}
+      />
+      <VitalControl
+        title="Diastolic BP"
+        value={sliderValues.diastolicBP}
+        onChange={v => handleVitalChange('diastolicBP', v)}
+        onChangeCommitted={v => handleVitalChange('diastolicBP', v, true)}
+        step={1}
+        min={0}
+        max={250}
+      />
       <VitalControl
         title={`ETCO2 (${etco2Unit})`}
-        value={etco2DisplayValue}
-        onChange={(value) => {
+        value={etco2Unit === 'kPa' ? sliderValues.eTCO2 : Math.round(sliderValues.eTCO2 * 7.5)}
+        onChange={value => {
           const backendValue = etco2Unit === 'kPa' ? value : value / 7.5;
           handleVitalChange('eTCO2', backendValue);
+        }}
+        onChangeCommitted={value => {
+          const backendValue = etco2Unit === 'kPa' ? value : value / 7.5;
+          handleVitalChange('eTCO2', backendValue, true);
         }}
         step={etco2Unit === 'kPa' ? 0.1 : 1}
         min={0}

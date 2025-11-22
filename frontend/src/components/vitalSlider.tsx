@@ -12,7 +12,7 @@ interface vitalSliderProps {
     max: number;                //max number range for slider
     currentVal: number;         //current value
     onChange: (value: number) => void;
-                                //parent callback when slider changes
+    onChangeCommitted?: (value: number) => void;
 }
 
 const VitalSlider: React.FC<vitalSliderProps> = ({
@@ -22,6 +22,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
     max,
     currentVal,
     onChange,
+    onChangeCommitted
 }) => {
     const [inputVal, setInputVal] = useState(
         currentVal !== undefined && currentVal !== null ? currentVal.toString() : ''
@@ -106,6 +107,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                         aria-label={title}
                         value={currentVal}                               
                         onChange={(_, newValue) => onChange(newValue as number)} 
+                        onChangeCommitted={(_, newValue) => onChangeCommitted && onChangeCommitted(newValue as number)}
                         valueLabelDisplay="auto"
                         step={step}
                         min={min}
