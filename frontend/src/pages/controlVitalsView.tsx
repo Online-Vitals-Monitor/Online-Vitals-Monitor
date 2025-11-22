@@ -2,7 +2,7 @@ import React, { useState, useEffect, memo } from 'react';
 import { getVitals, updateVitals, Vitals } from '../api/vitalsApi';
 import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton,
   Button, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent,
-  Backdrop, Drawer, Snackbar, Alert, } from '@mui/material';
+  Backdrop, Drawer, Snackbar, Alert } from '@mui/material';
 import VitalSlider from '../components/vitalSlider';
 
 // Styling
@@ -377,6 +377,20 @@ const ControlVitalsView: React.FC = () => {
           </Button>
         </Drawer>
       </Box>
+      {errorMessage && (
+        <Snackbar open autoHideDuration={6000} onClose={() => setErrorMessage(null)}>
+          <Alert severity="error" onClose={() => setErrorMessage(null)}>
+            {errorMessage}
+          </Alert>
+        </Snackbar>
+      )}
+      {successMessage && (
+        <Snackbar open autoHideDuration={4000} onClose={() => setSuccessMessage(null)}>
+          <Alert severity="success" onClose={() => setSuccessMessage(null)}>
+            {successMessage}
+          </Alert>
+        </Snackbar>
+      )}
     </Box>
   );
 };
