@@ -4,6 +4,7 @@ import { getVitals, Vitals } from '../api/vitalsApi';
 import WaveformChart from "../components/WaveformChart";
 import { useVitals } from '../contexts/vitalsContext';
 import VitalCard from '../components/VitalCard';
+import { ClassNames } from '@emotion/react';
 
 
 function generateECGData(): number[] {
@@ -57,6 +58,16 @@ const MonitorView: React.FC = () => {
     eTCO2: 0,
   });
 
+  //order which to render the vitals in
+  const vitalCardOrder: (keyof Vitals)[] = [
+    'heartRate',
+    'respRate',
+    'o2Saturation',
+    'systolicBP',
+    'diastolicBP',
+    'eTCO2',
+  ];
+
   const { state } = useVitals();  //from context get array of selected vitals
   const selected: string[] = state?.selected ?? []; 
 
@@ -101,22 +112,20 @@ const MonitorView: React.FC = () => {
   // const etco2Data = generateEtco2Data();
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-2">
       <div className="vitals-grid">
-        {selected.map((key) => {
-          const info = vitalInfo[key];
-          if (!info) return null;
-          const value = vitals[key as keyof Vitals] as number;
-          return (
-            <VitalCard
-              key={key}
-              title={info.title}
-              value={value}
-              unit={info.unit}
-              className={info.className}
-            />
-          )
-        })}
+        {vitalCardOrder.map(
+          (key) =>
+            selected.includes(key) && (
+              <VitalCard
+                key={key}
+                title={vitalInfo[key].title}
+                value={vitals[key as keyof Vitals]}
+                unit={vitalInfo[key].unit}
+                className={vitalInfo[key].className}
+              />
+            )
+        )}
       </div>
 
       <div className="ecg-container">

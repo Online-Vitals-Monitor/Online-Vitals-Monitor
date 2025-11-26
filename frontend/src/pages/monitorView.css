@@ -1,7 +1,7 @@
 .vitals-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 8px;
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 24px;
