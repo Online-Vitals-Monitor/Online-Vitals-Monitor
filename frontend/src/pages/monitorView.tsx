@@ -4,7 +4,6 @@ import { getVitals, Vitals } from '../api/vitalsApi';
 import WaveformChart from "../components/WaveformChart";
 import { useVitals } from '../contexts/vitalsContext';
 import VitalCard from '../components/VitalCard';
-import { ClassNames } from '@emotion/react';
 
 
 function generateECGData(): number[] {
