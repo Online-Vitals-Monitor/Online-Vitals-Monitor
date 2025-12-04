@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useRef, useCallback } from 'react';
 import { getVitals, updateVitals, Vitals } from '../api/vitalsApi';
 import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton,
   Button, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent,
@@ -52,6 +52,30 @@ const CurrentValueDisplay = memo(({ value }: { value: number }) => (
     <Paper sx={valueStyle}>{value}</Paper>
   </Box>
 ));
+
+
+// Helper function to implement debouncing on sliders
+export function useDebouncedCallback(callback: (...args: any[]) => void, delay: number) {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  function debouncedFunction(...args: any[]) {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => callback(...args), delay);
+  }
+
+  // Clear timeout when component unmounts
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return debouncedFunction;
+}
 
 const ControlVitalsView: React.FC = () => {
   const [vitals, setVitals] = useState<Vitals>({
@@ -164,15 +188,7 @@ const ControlVitalsView: React.FC = () => {
     if (commit) {
       if (updateMode === 'live') {
         setVitals(updated);
-        updateVitals(updated)
-          .then(() => {
-            setSuccessMessage('Vitals updated successfully.');
-            setErrorMessage(null);
-          })
-          .catch((err) => {
-            console.error('Error updating vitals:', err);
-            setErrorMessage('Failed to update vitals.');
-          });
+        debouncedUpdateVitals(updated);
       } else {
         setPendingVitals(updated);
       }
@@ -180,6 +196,21 @@ const ControlVitalsView: React.FC = () => {
       setPendingVitals(updated);
     }
   };
+
+  // Debouncing for sliders
+  const debouncedUpdateVitals = useDebouncedCallback(
+    useCallback(async (updated: Vitals) => {
+      try {
+        await updateVitals(updated);
+        setSuccessMessage('Vitals updated successfully.');
+        setErrorMessage(null);
+      } catch (err) {
+        console.error('Error updating vitals:', err);
+        setErrorMessage('Failed to update vitals.');
+      }
+    }, []),
+    500
+  );
 
   // Save handler for push mode
   const handleSaveClick = async () => {
