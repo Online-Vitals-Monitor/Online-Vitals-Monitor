@@ -1,6 +1,10 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo, useRef} from 'react';
+import './monitorView.css';
 import { getVitals, Vitals } from '../api/vitalsApi';
 import WaveformChart from "../components/WaveformChart";
+import { useVitals } from '../contexts/vitalsContext';
+import VitalCard from '../components/VitalCard';
+
 
 function generateECGData(): number[] {
   const N = 200;
@@ -23,13 +27,25 @@ function generateECGData(): number[] {
   const maxV = Math.max(...beat);
   const beat_scaled = beat.map((v) => ((v - minV) / (maxV - minV)) * 100);
 
-
   return [...beat_scaled, ...beat_scaled, ...beat_scaled];  // tile multiple beats so we fill a strip spannign horizontally
 }
 
 // function generatePlethData() {} // disabled for CI to pass
 // function generateBPData() {}
 // function generateEtco2Data() {}
+
+//map of keys for vital cards 
+const vitalInfo: Record <
+  string,
+  {title: string; unit?: string; className?: string}> = {
+    heartRate: { title: 'Heart Rate', unit: 'bpm'},
+    respRate: { title: 'Respiratory Rate', unit: 'rpm'},
+    o2Saturation: { title: 'Oxygen Saturation', unit: '%'},
+    systolicBP: { title: 'Systolic BP', unit: 'mmHg'},
+    diastolicBP: { title: 'Diastolic BP', unit: 'mmHg'},
+    eTCO2: { title: 'ETCO2', unit: 'mmHg'},
+}
+
 
 const MonitorView: React.FC = () => {
   const [vitals, setVitals] = useState<Vitals>({
@@ -40,6 +56,9 @@ const MonitorView: React.FC = () => {
     diastolicBP: 0,
     eTCO2: 0,
   });
+
+  const { state } = useVitals();  //from context get array of selected vitals
+  const selected: string[] = state?.selected ?? []; 
 
   const fetchVitals = async () => {  // from backend
     const data = await getVitals();
@@ -53,41 +72,65 @@ const MonitorView: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const ecgData = generateECGData();
-  // const plethData = generatePlethData(); // for later
+  // measure layout elements (for fitting waveforms)
+  const hrRef = useRef<HTMLDivElement>(null);
+  const waveformContainerRef = useRef<HTMLDivElement>(null);
+  const [waveformWidth, setWaveformWidth] = useState(300); // default
+
+  useEffect(() => {
+    function computeWidth() {
+      const hrBox = hrRef.current;
+      const wrapper = waveformContainerRef.current;
+      if (!hrBox || !wrapper) return;
+
+      const hrWidth = hrBox.offsetWidth;
+      const fullWidth = wrapper.offsetWidth;
+
+      setWaveformWidth(Math.max(100, fullWidth - hrWidth - 16));
+    }
+
+    computeWidth();
+    window.addEventListener("resize", computeWidth);
+    return () => window.removeEventListener("resize", computeWidth);
+  }, []);
+
+  // memoize ecg data so it doesn't regenerate every time
+  const ecgBeat = useMemo(() => generateECGData(), []);
+  // const plethData = generatePlethData(); // add other waveforms
   // const bpData = generateBPData();
   // const etco2Data = generateEtco2Data();
 
   return (
     <div className="container mt-4">
-      <div className="row">
-        <div className="col-md-6 mb-3">
-          <div className="card text-center">
-            <div className="card-body">
-              <h5 className="card-title">Heart Rate bpm</h5>
-              <p className="card-text display-4">{vitals.heartRate}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-6 mb-3">
-          <div className="card text-center">
-            <div className="card-body">
-              <h5 className="card-title">Respiratory Rate</h5>
-              <p className="card-text display-4">{vitals.respRate}</p>
-            </div>
-          </div>
-        </div>
+      <div className="vitals-grid">
+        {selected.map((key) => {
+          const info = vitalInfo[key];
+          if (!info) return null;
+          const value = vitals[key as keyof Vitals] as number;
+          return (
+            <VitalCard
+              key={key}
+              title={info.title}
+              value={value}
+              unit={info.unit}
+              className={info.className}
+            />
+          )
+        })}
       </div>
 
-      <div className="col-12 mb-4">
+      <div className="ecg-container">
         <small className="text-muted">ECG bpm {vitals.heartRate || 72}</small>
-        <div id="ecg_waveform" className="ct-chart" />
+        {/* can be adapted for different types of waveforms (need to add them to WaveformChart.tsx) */}
         <WaveformChart
           elementId="ecg_waveform"
-          data={ecgData}
+          beatData={ecgBeat}
           color="#00ff4f"
           height={120}
+          easing="power1.inOut"
+          waveformType='ecg'
+          width={waveformWidth}
+          mmPerSecond={25}
         />
       </div>
 
