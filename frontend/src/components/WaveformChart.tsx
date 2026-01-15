@@ -66,26 +66,30 @@ export default function WaveformChart({
       data: {
         datasets: [
           {
-            data: bufferRef.current.map((y, x) => ({x, y})), // create linear x positions in the buffer
+            data: bufferRef.current.map((y, x) => ({x, y})),
             borderColor: color,
             borderWidth: 2,
             pointRadius: 0,
-            spanGaps: false, // prevents GSAP from connecting the last point to the first point
+            spanGaps: false,
           },
         ],
       },
       options: {
         animation: false,
-        responsive: true,
+        responsive: false, // control sizing manually
+        maintainAspectRatio: false, // allow stretching to fill the row height
         scales: {
           x: {
             type: "linear",
             display: false,
             min: 0,
-            max: width // change to width of window
+            max: width 
           },
           y: {
-            display: false
+            display: false,
+            // fixing y scale helps keeps the wave size consistent
+            min: 0,
+            max: 100 
           },
         },
         plugins: { legend: { display: false } },

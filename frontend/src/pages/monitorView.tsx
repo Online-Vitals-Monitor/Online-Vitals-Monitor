@@ -40,9 +40,14 @@ const MonitorView: React.FC = () => {
     eTCO2: 0,
   });
 
-  const fetchVitals = async () => {  // from backend
-    const data = await getVitals();
-    setVitals(data);
+  const fetchVitals = async () => {
+    try {
+      const data = await getVitals();
+      setVitals(data);
+    } catch (e) {
+      // default if API fails
+      setVitals(prev => ({ ...prev, heartRate: 65, respRate: 12 })); 
+    }
   };
 
   useEffect(() => {
@@ -53,70 +58,154 @@ const MonitorView: React.FC = () => {
   }, []);
 
   // measure layout elements (for fitting waveforms)
-  const hrRef = useRef<HTMLDivElement>(null);
-  const waveformContainerRef = useRef<HTMLDivElement>(null);
+  const waveformWrapperRef = useRef<HTMLDivElement>(null);
   const [waveformWidth, setWaveformWidth] = useState(300); // default
 
   useEffect(() => {
     function computeWidth() {
-      const hrBox = hrRef.current;
-      const wrapper = waveformContainerRef.current;
-      if (!hrBox || !wrapper) return;
-
-      const hrWidth = hrBox.offsetWidth;
-      const fullWidth = wrapper.offsetWidth;
-
-      setWaveformWidth(Math.max(100, fullWidth - hrWidth - 16));
+      if (!waveformWrapperRef.current) return;
+      // buffer to prevent scrolling
+      setWaveformWidth(waveformWrapperRef.current.clientWidth - 20);
     }
 
-    computeWidth();
+    // initial calculation
+    const timer = setTimeout(computeWidth, 100);
     window.addEventListener("resize", computeWidth);
-    return () => window.removeEventListener("resize", computeWidth);
+    
+    return () => {
+      window.removeEventListener("resize", computeWidth);
+      clearTimeout(timer);
+    };
   }, []);
 
   // memoize ecg data so it doesn't regenerate every time
   const ecgBeat = useMemo(() => generateECGData(), []);
-  // const plethData = generatePlethData(); // add other waveforms
-  // const bpData = generateBPData();
-  // const etco2Data = generateEtco2Data();
+
+  // use inline styles to override potential parent CSS container that could restrict width
+  const pageStyle: React.CSSProperties = {
+    backgroundColor: '#000',
+    width: '100%',
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden'
+  };
+
+  const rowStyle: React.CSSProperties = {
+    flex: 1,
+    minHeight: 150, 
+    borderBottom: '1px solid #333',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center', // vertically center content
+    width: '100%'
+  };
 
   return (
-    <div className="container mt-4">
-      <div className="row">
-        <div className="col-md-6 mb-3">
-          <div className="card text-center">
-            <div className="card-body">
-              <h5 className="card-title">Heart Rate bpm</h5>
-              <p className="card-text display-4">{vitals.heartRate}</p>
-            </div>
+    <div style={pageStyle}>
+      {/* ROW 1: HEART RATE */}
+      <div style={rowStyle}>
+        
+        {/* LEFT: Numerics Panel */}
+        <div 
+          className="d-flex flex-column justify-content-center ps-4" 
+          style={{ 
+            width: '200px', 
+            minWidth: '200px', 
+            borderRight: '1px solid #333', 
+            height: '100%' 
+          }}
+        >
+          {/* Label Group */}
+          <div style={{ color: '#00ff4f', fontSize: '1.2rem', fontWeight: 'bold' }}>
+            HR <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>bpm</span>
+          </div>
+
+          {/* Value */}
+          <div style={{ 
+            color: '#00ff4f', 
+            fontSize: '5rem', 
+            lineHeight: '1', 
+            fontWeight: 'bold',
+            marginTop: '5px' 
+          }}>
+            {vitals.heartRate || 65}
           </div>
         </div>
 
-        <div className="col-md-6 mb-3">
-          <div className="card text-center">
-            <div className="card-body">
-              <h5 className="card-title">Respiratory Rate</h5>
-              <p className="card-text display-4">{vitals.respRate}</p>
-            </div>
-          </div>
+        {/* RIGHT: Waveform Panel */}
+        <div 
+          className="flex-grow-1 h-100 position-relative" 
+          ref={waveformWrapperRef} 
+          style={{ overflow: 'hidden', backgroundColor: '#000' }}
+        >
+          {waveformWidth > 0 && (
+            <WaveformChart
+              elementId="ecg_waveform"
+              beatData={ecgBeat}
+              color="#00ff4f"
+              height={180} // matches the rowStyle height
+              width={waveformWidth}
+              mmPerSecond={25}
+            />
+          )}
         </div>
       </div>
 
-      <div className="col-12 mb-4">
-        <small className="text-muted">ECG bpm {vitals.heartRate || 72}</small>
-        {/* can be adapted for different types of waveforms (need to add them to WaveformChart.tsx) */}
-        <WaveformChart
-          elementId="ecg_waveform"
-          beatData={ecgBeat}
-          color="#00ff4f"
-          height={120}
-          easing="power1.inOut"
-          waveformType='ecg'
-          width={waveformWidth}
-          mmPerSecond={25}
-        />
+      {/* ROW 2: RESPIRATORY RATE */}
+      <div style={rowStyle}>
+        
+        {/* LEFT: Numerics Panel */}
+        <div 
+          className="d-flex flex-column justify-content-center ps-4" 
+          style={{ 
+            width: '200px', 
+            minWidth: '200px', 
+            borderRight: '1px solid #333', 
+            height: '100%' 
+          }}
+        >
+          <div style={{ color: '#ffff00', fontSize: '1.2rem', fontWeight: 'bold' }}>
+            RESP <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>rpm</span>
+          </div>
+          
+          <div style={{ 
+            color: '#ffff00', 
+            fontSize: '5rem', 
+            lineHeight: '1', 
+            fontWeight: 'bold',
+            marginTop: '5px'
+          }}>
+            {vitals.respRate || 12}
+          </div>
+        </div>
+
+        {/* RIGHT: Waveform Placeholder */}
+        <div className="flex-grow-1 h-100 d-flex align-items-center ps-5">
+           <span className="text-secondary small" style={{ letterSpacing: '2px' }}>
+             [ RESPIRATORY WAVEFORM AREA ]
+           </span>
+        </div>
       </div>
 
+      {/* OPTIONAL ROW 3: OTHER VITALS */}
+      <div style={{ ...rowStyle, borderBottom: 'none' }}>
+        <div 
+          className="d-flex flex-column justify-content-center ps-4" 
+          style={{ width: '200px', minWidth: '200px', borderRight: '1px solid #333', height: '100%' }}
+        >
+          <div style={{ color: '#00ffff', fontSize: '1.2rem', fontWeight: 'bold' }}>
+            SpO2 <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>%</span>
+          </div>
+          <div style={{ color: '#00ffff', fontSize: '5rem', lineHeight: '1', fontWeight: 'bold' }}>
+            {vitals.o2Saturation || 98}
+          </div>
+        </div>
+        <div className="flex-grow-1 h-100 d-flex align-items-center ps-5">
+           <span className="text-secondary small">[Waveform Placeholder]-</span>
+        </div>
+      </div>
+      
     </div>
   );
 };
