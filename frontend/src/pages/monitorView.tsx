@@ -103,6 +103,43 @@ const MonitorView: React.FC = () => {
 
   return (
     <div style={pageStyle}>
+      {/* ROW 0: TEST BUFFER */}
+      <div style={rowStyle}>
+        
+        {/* LEFT: Numerics Panel */}
+        <div 
+          className="d-flex flex-column justify-content-center ps-4" 
+          style={{ 
+            width: '200px', 
+            minWidth: '200px', 
+            borderRight: '1px solid #333', 
+            height: '100%' 
+          }}
+        >
+          <div style={{ color: '#ffff00', fontSize: '1.2rem', fontWeight: 'bold' }}>
+            BUFFER <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>xyz</span>
+          </div>
+          
+          <div style={{ 
+            color: '#ffff00', 
+            fontSize: '5rem', 
+            lineHeight: '1', 
+            fontWeight: 'bold',
+            marginTop: '5px'
+          }}>
+            {vitals.respRate || 12}
+          </div>
+        </div>
+
+        {/* RIGHT: Waveform Placeholder */}
+        <div className="flex-grow-1 h-100 d-flex align-items-center ps-5">
+           <span className="text-secondary small" style={{ letterSpacing: '2px' }}>
+             [ RESPIRATORY WAVEFORM AREA ]
+           </span>
+        </div>
+      </div>
+
+
       {/* ROW 1: HEART RATE */}
       <div style={rowStyle}>
         
