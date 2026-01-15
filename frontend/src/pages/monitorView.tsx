@@ -83,7 +83,7 @@ const MonitorView: React.FC = () => {
 
   // use inline styles to override potential parent CSS container that could restrict width
   const pageStyle: React.CSSProperties = {
-    backgroundColor: '#000',
+    backgroundColor: 'white',
     width: '100%',
     flex: 1,
     display: 'flex',
@@ -174,7 +174,7 @@ const MonitorView: React.FC = () => {
         <div 
           className="flex-grow-1 h-100 position-relative" 
           ref={waveformWrapperRef} 
-          style={{ overflow: 'hidden', backgroundColor: '#000' }}
+          style={{ overflow: 'hidden', backgroundColor: 'white' }}
         >
           {waveformWidth > 0 && (
             <WaveformChart
@@ -184,6 +184,7 @@ const MonitorView: React.FC = () => {
               height={180} // matches the rowStyle height
               width={waveformWidth}
               mmPerSecond={25}
+              vitalValue={vitals.heartRate || 65}
             />
           )}
         </div>
