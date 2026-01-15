@@ -20,6 +20,7 @@ type WaveformChartProps = {
   waveformType?: "ecg"; // add | "other options" | in the future 
   width: number;
   mmPerSecond?: number; // waveform speed - 25 mm/sec for standard ECG waveform speed
+  vitalValue: number
 };
 
 export default function WaveformChart({ 
@@ -27,14 +28,12 @@ export default function WaveformChart({
   beatData,
   color,
   height,
-  easing = "Power2.inOut",
-  waveformType = "ecg",
   width,
   mmPerSecond = 25,
+  vitalValue,
 }: WaveformChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null); // drawn in canvas
   const chartRef = useRef<Chart | null>(null); // chart instance
-  // const offsetRef = useRef<number>(0);
 
   // set up rolling buffer
   const bufferRef = useRef<number[]>([]); // set up buffer for waveform
@@ -42,17 +41,44 @@ export default function WaveformChart({
     bufferRef.current = new Array(width).fill(0)
   }, [width]);
 
-  // set up one single beat
-  const beat = useMemo(() => beatData, [beatData]);
+  // track position in the current beat cycle
+  const sampleIndexRef = useRef(0);
 
-  const beatIndexRef = useRef(0);
+  // constants for timing
+  const pxPerMm = 3.78; 
+  const pxPerSec = mmPerSecond * pxPerMm;
+
+  // // set up one single beat
+  // const beat = useMemo(() => beatData, [beatData]);
+
+  // const beatIndexRef = useRef(0);
 
   // generate the next beat
   const nextSample = useCallback(() => {
-    const s = beat[beatIndexRef.current];
-    beatIndexRef.current = (beatIndexRef.current + 1) % beat.length;
-    return s;
-  }, [beat]);
+    // 1. calculate how many total pixels (samples) one full cycle should take
+    // total pixels = (pixels per second) / (beats per second)
+    const samplesPerBeat = pxPerSec / (vitalValue / 60);
+
+    const currentIdx = sampleIndexRef.current;
+    let value = 0;
+
+    if (currentIdx < beatData.length) {
+      // draw beat
+      value = beatData[currentIdx];
+    } else {
+      // space between beats
+      value = beatData[beatData.length - 1]; 
+    }
+
+    // increment index and reset if we've reached the end of the beat
+    sampleIndexRef.current = currentIdx + 1;
+    if (sampleIndexRef.current >= samplesPerBeat) {
+      sampleIndexRef.current = 0;
+    }
+
+    return value;
+
+  }, [beatData, vitalValue, pxPerSec]);
 
   // set up the chart
   useEffect(() => {
@@ -99,16 +125,12 @@ export default function WaveformChart({
     return () => {
       chartRef.current?.destroy();
     };
-  }, [color, waveformType, width]);
+  }, [color, width]);
 
   // set up continuous scrolling animation at mm/sec (25 for ecg)
   useEffect(() => {
     let animationFrame: number;
-
-    const pxPerMm = 3.78; // general monitor pixel desnity
-    const pxPerSec = mmPerSecond * pxPerMm; // generate the correct number of pixels / second based on the waveform speed
     const pxPerFrame = pxPerSec / 60; // 60 fps
-
     let subPixel = 0;
 
     const animate = () => {
@@ -135,15 +157,6 @@ export default function WaveformChart({
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
   }, [width, mmPerSecond, nextSample]);
-
-  // // easing functions
-  // useEffect(() => {
-  //   gsap.to(speedRef, {
-  //     duration: 1.0,
-  //     current: speed,
-  //     ease: easing,
-  //   });
-  // }, [speed, easing])
 
   return <canvas id={elementId} ref={canvasRef} height={height} width={width}/>;
 }
