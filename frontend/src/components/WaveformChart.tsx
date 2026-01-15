@@ -45,7 +45,7 @@ export default function WaveformChart({
   const sampleIndexRef = useRef(0);
 
   // constants for timing
-  const pxPerMm = 3.78; 
+  const pxPerMm = 5; 
   const pxPerSec = mmPerSecond * pxPerMm;
 
   // // set up one single beat
@@ -97,6 +97,7 @@ export default function WaveformChart({
             borderWidth: 2,
             pointRadius: 0,
             spanGaps: false,
+            tension: 0.3, //smoothing
           },
         ],
       },

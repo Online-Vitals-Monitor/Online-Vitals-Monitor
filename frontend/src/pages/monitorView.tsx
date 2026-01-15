@@ -3,7 +3,7 @@ import { getVitals, Vitals } from '../api/vitalsApi';
 import WaveformChart from "../components/WaveformChart";
 
 function generateECGData(): number[] {
-  const N = 400;
+  const N = 35;
   const g = (x: number, center: number, width: number, ampl: number) =>
     ampl * Math.exp(-0.5 * ((x - center) / width) ** 2);
 
