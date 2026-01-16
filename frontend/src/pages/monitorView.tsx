@@ -87,7 +87,7 @@ const MonitorView: React.FC = () => {
   const pageStyle: React.CSSProperties = {
     backgroundColor: 'white',
     width: '100%',
-    flex: 1,
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden'
@@ -95,7 +95,7 @@ const MonitorView: React.FC = () => {
 
   const rowStyle: React.CSSProperties = {
     flex: 1,
-    minHeight: 150, 
+    minHeight: 0, 
     borderBottom: '1px solid #333',
     display: 'flex',
     flexDirection: 'row',
