@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useMemo, useRef} from 'react';
 import { getVitals, Vitals } from '../api/vitalsApi';
+import MonitorVitalRow from '../components/MonitorVitalRow';
 import WaveformChart from "../components/WaveformChart";
 
 function generateECGData(): number[] {
@@ -93,160 +94,93 @@ const MonitorView: React.FC = () => {
     overflow: 'hidden'
   };
 
-  const rowStyle: React.CSSProperties = {
-    flex: 1,
-    minHeight: 0, 
-    borderBottom: '1px solid #333',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center', // vertically center content
-    width: '100%'
-  };
-
   return (
-    <div style={pageStyle}>
-      {/* ROW 0: TEST BUFFER */}
-      <div style={rowStyle}>
-        
-        {/* LEFT: Numerics Panel */}
-        <div 
-          className="d-flex flex-column justify-content-center ps-4" 
-          style={{ 
-            width: '200px', 
-            minWidth: '200px', 
-            borderRight: '1px solid #333', 
-            height: '100%' 
-          }}
-        >
-          <div style={{ color: '#ffff00', fontSize: '1.2rem', fontWeight: 'bold' }}>
-            BUFFER <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>xyz</span>
-          </div>
-          
-          <div style={{ 
-            color: '#ffff00', 
-            fontSize: '5rem', 
-            lineHeight: '1', 
-            fontWeight: 'bold',
-            marginTop: '5px'
-          }}>
-            {vitals.respRate || 12}
-          </div>
-        </div>
-
-        {/* RIGHT: Waveform Placeholder */}
-        <div className="flex-grow-1 h-100 d-flex align-items-center ps-5">
+   <div style={pageStyle} ref={waveformWrapperRef}>
+      
+      {/* IMPORTANT: 
+          When adding rows using MonitorVitalRow, only the very LAST row should have the 'isLast' prop. 
+          If a row above it has 'isLast' the separating black line will disappear.
+      */}
+      
+      {/* ROW 0: BUFFER (Using Component) */}
+      <MonitorVitalRow 
+        label="BUFFER" 
+        unit="xyz" 
+        value={vitals.respRate || 12} 
+        color="yellow"
+      >
+        <div className="ps-5">
            <span className="text-secondary small" style={{ letterSpacing: '2px' }}>
              [ RESPIRATORY WAVEFORM AREA ]
            </span>
         </div>
-      </div>
+      </MonitorVitalRow>
 
-
-      {/* ROW 1: HEART RATE */}
-      <div style={rowStyle}>
-        
-        {/* LEFT: Numerics Panel */}
-        <div 
-          className="d-flex flex-column justify-content-center ps-4" 
-          style={{ 
-            width: '200px', 
-            minWidth: '200px', 
-            borderRight: '1px solid #333', 
-            height: '100%' 
-          }}
-        >
-          {/* Label Group */}
-          <div style={{ color: '#00ff4f', fontSize: '1.2rem', fontWeight: 'bold' }}>
-            HR <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>bpm</span>
-          </div>
-
-          {/* Value */}
-          <div style={{ 
-            color: '#00ff4f', 
-            fontSize: '5rem', 
-            lineHeight: '1', 
-            fontWeight: 'bold',
-            marginTop: '5px' 
-          }}>
-            {vitals.heartRate || 65}
-          </div>
-        </div>
-
-        {/* RIGHT: Waveform Panel */}
-        <div 
-          className="flex-grow-1 h-100 position-relative" 
-          ref={waveformWrapperRef} 
-          style={{ overflow: 'hidden', backgroundColor: 'white' }}
-        >
-          {waveformWidth > 0 && (
-            <WaveformChart
-              elementId="ecg_waveform"
-              beatData={ecgBeat}
-              color="#00ff4f"
-              height={180} // matches the rowStyle height
-              width={waveformWidth}
-              mmPerSecond={25}
-              vitalValue={vitals.heartRate || 65}
-            />
-          )}
-        </div>
-      </div>
+      {/* ROW 1: HEART RATE (With Dynamic Waveform) */}
+      <MonitorVitalRow 
+        label="HR" 
+        unit="bpm" 
+        value={vitals.heartRate || 65} 
+        color="green"
+      >
+        {waveformWidth > 0 && (
+          <WaveformChart
+            elementId="ecg_waveform"
+            beatData={ecgBeat}
+            color="green"
+            height={120} 
+            width={waveformWidth}
+            mmPerSecond={25}
+            vitalValue={vitals.heartRate || 65}
+          />
+        )}
+      </MonitorVitalRow>
 
       {/* ROW 2: RESPIRATORY RATE */}
-      <div style={rowStyle}>
-        
-        {/* LEFT: Numerics Panel */}
-        <div 
-          className="d-flex flex-column justify-content-center ps-4" 
-          style={{ 
-            width: '200px', 
-            minWidth: '200px', 
-            borderRight: '1px solid #333', 
-            height: '100%' 
-          }}
-        >
-          <div style={{ color: '#ffff00', fontSize: '1.2rem', fontWeight: 'bold' }}>
-            RESP <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>rpm</span>
-          </div>
-          
-          <div style={{ 
-            color: '#ffff00', 
-            fontSize: '5rem', 
-            lineHeight: '1', 
-            fontWeight: 'bold',
-            marginTop: '5px'
-          }}>
-            {vitals.respRate || 12}
-          </div>
-        </div>
-
-        {/* RIGHT: Waveform Placeholder */}
-        <div className="flex-grow-1 h-100 d-flex align-items-center ps-5">
+      <MonitorVitalRow 
+        label="RESP" 
+        unit="rpm" 
+        value={vitals.respRate || 12} 
+        color="yellow"
+      >
+        <div className="ps-5">
            <span className="text-secondary small" style={{ letterSpacing: '2px' }}>
              [ RESPIRATORY WAVEFORM AREA ]
            </span>
         </div>
-      </div>
+      </MonitorVitalRow>
 
-      {/* OPTIONAL ROW 3: OTHER VITALS */}
-      <div style={{ ...rowStyle, borderBottom: 'none' }}>
-        <div 
-          className="d-flex flex-column justify-content-center ps-4" 
-          style={{ width: '200px', minWidth: '200px', borderRight: '1px solid #333', height: '100%' }}
-        >
-          <div style={{ color: '#00ffff', fontSize: '1.2rem', fontWeight: 'bold' }}>
-            SpO2 <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>%</span>
-          </div>
-          <div style={{ color: '#00ffff', fontSize: '5rem', lineHeight: '1', fontWeight: 'bold' }}>
-            {vitals.o2Saturation || 98}
-          </div>
+      {/* ROW 3: SpO2 (Optional Waveform Omitted) */}
+      <MonitorVitalRow 
+        label="SpO2" 
+        unit="%" 
+        value={vitals.o2Saturation || 98} 
+        color="cyan" 
+      >
+        <div className="ps-5">
+            <span className="text-secondary small" >
+              [Waveform Placeholder]
+            </span>
         </div>
-        <div className="flex-grow-1 h-100 d-flex align-items-center ps-5">
-           <span className="text-secondary small">[Waveform Placeholder]-</span>
+      </MonitorVitalRow>
+
+      {/* ROW 3: SpO2 (Optional Waveform Omitted) */}
+      <MonitorVitalRow 
+        label="Systolic BP:" 
+        unit="%" 
+        value={vitals.systolicBP || 80} 
+        color="red" 
+        isLast
+      >
+        <div className="ps-5">
+          <span className="text-secondary small">
+            [Waveform Placeholder]
+          </span>
         </div>
-      </div>
+      </MonitorVitalRow>
       
     </div>
+    
   );
 };
 
