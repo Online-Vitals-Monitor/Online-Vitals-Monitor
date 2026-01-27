@@ -4,10 +4,11 @@ import vitalsRouter from './vitalsRouter';
 
 const app = express();
 
-app.use(cors({
-  origin: "https://online-vitals-monitor-frontend-pearl.vercel.app",
-  methods: ["GET", "POST"]
-}));
+// app.use(cors({
+//   origin: "https://online-vitals-monitor-frontend-pearl.vercel.app",
+//   methods: ["GET", "POST"]
+// }));
+app.use(cors());
 
 app.use(express.json());
 
