@@ -7,7 +7,7 @@ export interface Vitals {
   eTCO2: number;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL //|| "http://localhost:4000";
 
 export async function getVitals(): Promise<Vitals> {
   const res = await fetch(`${BASE_URL}/api/vitals`); 
