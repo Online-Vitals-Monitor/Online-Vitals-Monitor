@@ -6,8 +6,9 @@ import { useVitals } from '../contexts/vitalsContext';
 
 //routes object: Add pages/routes here if needed
 const routes = [
-    {page: 'Monitor',        path: '/'      },
-    {page: 'Control Vitals', path:'/values' },
+    {page: 'Monitor',        path: '/'        },
+    {page: 'Control Vitals', path: '/values'  },
+    {page: "Session Select", path: "/session" },
 ];
 
 //array storing possible vital types: Added new vitals here if needed

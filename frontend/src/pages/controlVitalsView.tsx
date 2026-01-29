@@ -4,8 +4,9 @@ import { Box, Typography, Paper, ToggleButtonGroup, ToggleButton,
   Button, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent,
   Backdrop, Drawer, Snackbar, Alert } from '@mui/material';
 import VitalSlider from '../components/vitalSlider';
+import "./controlVitalsView.css"; 
 
-// Styling
+// Stylin
 const valueStyle = {
   width: 70,
   textAlign: 'center',
@@ -229,14 +230,16 @@ const ControlVitalsView: React.FC = () => {
   const sliderValues = uiVitals;
 
   return (
-    <Box sx={{ px: 4, py: 3, maxWidth: 1200, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h5" fontWeight="bold" textAlign="left">
+    <Box className="control-root">
+      <Box className="control-header-row">
+        <Typography variant="h5" className="control-header-title">
           New Values
         </Typography>
 
-        <FormControl sx={{ minWidth: 250, maxWidth: 400, mx: 'auto' }}>
-          <InputLabel id="preset-select-label">Preset (applied immediately)</InputLabel>
+        <FormControl className="control-preset-form">
+          <InputLabel id="preset-select-label">
+            Preset (applied immediately)
+          </InputLabel>
           <Select
             labelId="preset-select-label"
             id="preset-select"
@@ -252,7 +255,7 @@ const ControlVitalsView: React.FC = () => {
           </Select>
         </FormControl>
 
-        <Typography variant="h6" fontWeight="bold" textAlign="right">
+        <Typography variant="h6" className="control-header-current">
           Current Values
         </Typography>
       </Box>
@@ -320,15 +323,14 @@ const ControlVitalsView: React.FC = () => {
       />
 
       {/* Toggle, Save Button, and Display Settings */}
-      <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+      <Box className="control-bottom">
         <ToggleButtonGroup
           color="primary"
           value={updateMode}
           exclusive
           onChange={(_, v) => {
             if (v) {
-              if (v === 'push') {
-                // When switching to push, reset pendingVitals to current live vitals
+              if (v === "push") {
                 setPendingVitals(vitals);
               }
               setUpdateMode(v);
@@ -356,7 +358,7 @@ const ControlVitalsView: React.FC = () => {
         {/* Display Menu button */}
         <Button
           variant="contained"
-          sx={{ bgcolor: 'grey.600', mt: 2, fontWeight: 'bold' }}
+          className="control-display-button"
           onClick={() => setDisplayMenuOpen(true)}
         >
           Open Display Settings
@@ -375,9 +377,7 @@ const ControlVitalsView: React.FC = () => {
           open={displayMenuOpen}
           onClose={() => setDisplayMenuOpen(false)}
           slotProps={{
-            paper: {
-              sx: { width: 300, p: 2, bgcolor: 'background.paper' },
-            },
+            paper: { className: "control-drawer-paper" },
           }}
         >
           <Typography variant="h6" mb={2}>
@@ -408,6 +408,7 @@ const ControlVitalsView: React.FC = () => {
           </Button>
         </Drawer>
       </Box>
+      
       {errorMessage && (
         <Snackbar open autoHideDuration={6000} onClose={() => setErrorMessage(null)}>
           <Alert severity="error" onClose={() => setErrorMessage(null)}>
