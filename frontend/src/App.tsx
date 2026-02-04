@@ -1,26 +1,27 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MonitorView from './pages/monitorView';
-import ValuesView from './pages/controlVitalsView';
-import Navbar from './components/Navbar';
-import { VitalsProvider } from './contexts/vitalsContext';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MonitorView from "./pages/monitorView";
+import ValuesView from "./pages/controlVitalsView";
+import NavbarNew from "./components/navbar/NavbarNew";
+import { VitalsProvider } from "./contexts/vitalsContext";
+import "./App.css";
 
-const App: React.FC = () => {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="app">
+      <div className="app-header">
         <VitalsProvider>
           <Router>
-            <Navbar/>
+            <NavbarNew isSessionActive={false} />
+
             <Routes>
               <Route path="/" element={<MonitorView />} />
               <Route path="/values" element={<ValuesView />} />
             </Routes>
           </Router>
         </VitalsProvider>
-      </header>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
