@@ -1,0 +1,184 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* --- MAIN PAGE BACKGROUND --- */
+.home-background {
+    width: 100%;
+    min-height: 100vh; /* changed from 730px to full viewport height */
+    background-color: black;
+    display: flex;
+    align-items: center; /* Center everything vertically */
+    justify-content: center;
+    overflow: hidden; /* Prevents scrollbars from the glow effect */
+}
+
+/* --- NEW: SPLIT SCREEN CONTAINER --- */
+.home-content-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1400px; /* Limits width on huge screens */
+    padding: 0 50px; /* Adds space on the sides */
+    gap: 40px; /* Space between the text and the monitor */
+}
+
+/* --- LEFT SECTION (Text & Buttons) --- */
+.left-section {
+    flex: 1; /* Takes up available space */
+    max-width: 700px; /* Stops text from getting too wide */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* --- HEADER STYLES --- */
+.header-hook {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700; /* Bolder looks better for headers */
+    font-size: 3rem; /* Scalable size (~48px) */
+    line-height: 1.1;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.h-line1, .h-line2 {
+    text-align: left;
+}
+
+/* GRADIENT TEXT EFFECT */
+.h-line3 {
+    background: linear-gradient(to right, #34d399, #22d3ee); /* Emerald to Cyan */
+    -webkit-background-clip: text; /* Safari/Chrome support */
+    background-clip: text;
+    color: transparent; /* Hides the white color so gradient shows */
+    display: inline-block;
+    width: fit-content; /* Ensures gradient only covers the text */
+}
+
+.hero-description {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 1.1rem; /* ~18px */
+    color: #F5F5F5;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+    max-width: 600px;
+}
+
+.session-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column; 
+    gap: 20px; 
+    width: 100%;
+}
+
+/* Shared styles for both buttons */
+.create-session, .join-session {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    width: 100%; /* Fill the container width */
+    max-width: 500px; /* But don't get wider than this */
+    height: 70px; /* Slightly smaller height for balance */
+    border-radius: 12px;
+    cursor: pointer; 
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: transform 0.2s ease;
+}
+
+.create-session {
+    color: black; /* Better contrast on green */
+    background-color: #00FF88;
+}
+
+.join-session {
+    border: 1px solid #333;
+    color: white;
+    background-color: #181c1a;
+}
+
+.create-session:hover, .join-session:hover {
+    transform: translateY(-2px); /* Subtle hover lift */
+}
+
+/* --- RIGHT SECTION (Monitor Preview) --- */
+.monitor-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    max-width: 600px;
+}
+
+.monitor-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* THE GLOW EFFECT */
+.monitor-glow {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2));
+    border-radius: 24px;
+    filter: blur(40px);
+    transform: scale(1.05);
+    z-index: 0;
+}
+
+/* THE MONITOR BOX */
+.monitor-box {
+    position: relative;
+    z-index: 1;
+    background-color: #0f172a; /* Dark Slate */
+    border-radius: 16px;
+    border: 1px solid #1e293b;
+    min-height: 450px; /* Height placeholder */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+}
+
+/* THE LABEL */
+.preview-label {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #0f172a;
+    border: 1px solid #1e293b;
+    color: #94a3b8;
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* --- RESPONSIVE: Stack on Mobile --- */
+@media (max-width: 1024px) {
+    .home-content-container {
+        flex-direction: column;
+        padding-top: 50px;
+        text-align: center;
+    }
+    
+    .left-section, .session-list, .header-hook {
+        align-items: center; /* Center align text on mobile */
+    }
+
+    .monitor-section {
+        margin-top: 60px;
+        width: 100%;
+    }
+}

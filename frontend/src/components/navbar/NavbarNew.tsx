@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import Link here
+import { Link, useNavigate } from "react-router-dom";
 import { useVitals } from "../../contexts/vitalsContext";
 import "./Navbar.css";
 
 //routes object: Add pages/routes here if needed
 const routes = [
-  { page: "Monitor", path: "/" },
+  { page: "Monitor", path: "/monitor" },
   { page: "Control Vitals", path: "/values" },
 ];
 
 interface NavbarProps {
   isSessionActive: boolean;
+  setIsSessionActive: (active: boolean) => void;
   onSessionClick?: () => void;
 }
 
@@ -24,14 +25,12 @@ const vitalLabels = [
   { value: "eTCO2", label: "End-Tidal Carbon Dioxide" },
 ];
 
-const NavbarNew = ({ isSessionActive, onSessionClick }: NavbarProps) => {
+const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
   const navigate = useNavigate();
 
   const handleMonitorButtonClick = () => {
-    if (onSessionClick) {
-      onSessionClick();
-    }
-    navigate("/");
+    setIsSessionActive(!isSessionActive);
+    navigate("/monitor");
   };
 
   const [isOpen, setIsOpen] = useState(false);

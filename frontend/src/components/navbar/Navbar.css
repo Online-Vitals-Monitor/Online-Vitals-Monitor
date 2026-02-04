@@ -9,8 +9,8 @@
 nav {
     display: flex;
     align-items: center;
+    height: 60px;
     justify-content: space-between;
-    padding: 1rem;
     background-color: #020617; 
     position: relative;
 }
