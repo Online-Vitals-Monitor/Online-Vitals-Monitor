@@ -15,8 +15,15 @@ const BASE_URL = 'http://online-vitals-monitor-bac-git-fa741c-madelyns-projects-
 // }
 
 export async function getVitals(): Promise<Vitals> {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/vitals`;
-  console.log("Fetching from:", url);
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL; 
+  
+  if (!baseUrl) {
+    throw new Error("API URL is not defined. Check NEXT_PUBLIC_API_URL env var.");
+  }
+
+  const url = `${baseUrl}/api/vitals`;
+  console.log("Fetching from:", `${baseUrl}/api/vitals`);
   
   const res = await fetch(url);
   
