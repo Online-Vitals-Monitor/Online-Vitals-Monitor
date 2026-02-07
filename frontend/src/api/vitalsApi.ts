@@ -7,29 +7,24 @@ export interface Vitals {
   eTCO2: number;
 }
 
-const BASE_URL = 'http://online-vitals-monitor-bac-git-fa741c-madelyns-projects-1ef911c2.vercel.app' //process.env.NEXT_PUBLIC_API_URL //|| "http://localhost:4000";
+const API_URL = process.env.REACT_APP_API_URL;
 
-// export async function getVitals(): Promise<Vitals> {
-//   const res = await fetch(`${BASE_URL}/api/vitals`); 
-//   return res.json();
-// }
+const getBaseUrl = () => {
+  if (!API_URL) {
+    throw new Error("API URL is not defined. Check REACT_APP_API_URL env var.");
+  }
+  return API_URL;
+}
 
 export async function getVitals(): Promise<Vitals> {
-
-  const baseUrl = process.env.REACT_APP_API_URL;
-  
-  if (!baseUrl) {
-    throw new Error("API URL is not defined. Check NEXT_PUBLIC_API_URL env var.");
-  }
-
-  const url = `${baseUrl}/api/vitals`;
+  const baseUrl = getBaseUrl();
   console.log("Fetching from:", `${baseUrl}/api/vitals`);
   
-  const res = await fetch(url);
+  const res = await fetch(`${baseUrl}/api/vitals`);
   
   if (!res.ok) {
     const errorText = await res.text();
-    console.error("SERVER ERROR HTML:", errorText); // THIS WILL SHOW THE REAL ERROR
+    console.error("SERVER ERROR:", errorText);
     throw new Error(`Server responded with ${res.status}`);
   }
   
@@ -37,11 +32,19 @@ export async function getVitals(): Promise<Vitals> {
 }
 
 export async function updateVitals(newVitals: Partial<Vitals>): Promise<Vitals> {
-  // Append the path here as well
-  const res = await fetch(`${BASE_URL}/api/vitals`, { 
+  const baseUrl = getBaseUrl();
+
+  const res = await fetch(`${baseUrl}/api/vitals`, { 
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(newVitals),
   });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("UPDATE ERROR:", errorText);
+    throw new Error(`Server responded with ${res.status}`);
+  }
+
   return res.json();
 }
