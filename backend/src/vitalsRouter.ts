@@ -8,26 +8,8 @@ export interface Vitals {
   systolicBP: number;
   diastolicBP: number;
   eTCO2: number;
+  sessionID: string;
 }
-
-// interface Vitals {
-//   heartRate: number;
-//   respRate: number;
-//   o2Saturation: number;
-//   systolicBP: number;
-//   diastolicBP: number;
-//   eTCO2: number;
-// }
-
-// // vitals object to store info (until we get a database up)
-// let vitals: Vitals = {
-//   heartRate: 65,
-//   respRate: 10,
-//   o2Saturation: 100,
-//   systolicBP: 188,
-//   diastolicBP: 177,
-//   eTCO2: 4,
-// };
 
 const router = express.Router();
 // helper: get the single vitals row (if you plan to support multiple monitors, change this later)
