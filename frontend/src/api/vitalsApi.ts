@@ -16,7 +16,7 @@ const BASE_URL = 'http://online-vitals-monitor-bac-git-fa741c-madelyns-projects-
 
 export async function getVitals(): Promise<Vitals> {
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL; 
+  const baseUrl = process.env.REACT_APP_API_URL;
   
   if (!baseUrl) {
     throw new Error("API URL is not defined. Check NEXT_PUBLIC_API_URL env var.");
