@@ -14,7 +14,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+
+    // Tailwind configuring
+    "baseUrl": "src"
+    // Tailwind configuring ends here
   },
   "include": ["src"]
 }
