@@ -24,6 +24,9 @@ jobs:
       - name: Tests
         working-directory: backend
         run: npm test -- --coverage
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
   frontend-tests:
     runs-on: ubuntu-latest
