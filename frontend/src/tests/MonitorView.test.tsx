@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import MonitorView from '../pages/monitorView';
+import { VitalsProvider } from '../contexts/vitalsContext';
 import * as vitalsApi from '../api/vitalsApi';
 
 // mock so we're not polling from the true API
@@ -18,7 +19,11 @@ describe('MonitorView', () => {
     };
 
     (vitalsApi.getVitals as jest.Mock).mockResolvedValue(mockVitals);
-    render(<MonitorView />);
+    render(
+      <VitalsProvider>
+        <MonitorView />
+      </VitalsProvider>
+    );
 
     // verify heart rate card
     expect(screen.getByText(/Heart Rate/i)).toBeInTheDocument();
