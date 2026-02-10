@@ -11,10 +11,6 @@ const App = () => {
   const [sessionActive, setSessionActive] = useState(false);
   return (
     <>
-      <title>
-        Vitals Monitor - Simulate Patient Vitals | For Training and Education
-        Purposes
-      </title>
       <div className="app">
         <div className="app-header">
           <VitalsProvider>

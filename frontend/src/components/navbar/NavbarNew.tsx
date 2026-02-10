@@ -38,7 +38,11 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
     <>
       <nav>
         <div className="logo-container">
-          <img className="logo" src="vm-logo.png" />
+          <img
+            className="logo"
+            src="/images/vm-logo.png"
+            alt="vitals-monitor"
+          />
         </div>
         <div className="main-nav-buttons">
           <ul>

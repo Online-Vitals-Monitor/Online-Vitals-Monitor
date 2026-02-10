@@ -1,4 +1,3 @@
-import React from "react";
 import "./Footer.css";
 
 const Footer = () => {
@@ -7,7 +6,11 @@ const Footer = () => {
       <div className="footer-container-grid">
         <div className="footer-left-section">
           <div className="footer-logo-container">
-            <img className="logo" src="vm-logo.png" />
+            <img
+              className="logo"
+              src="/images/vm-logo.png"
+              alt="vitals-monitor"
+            />
           </div>
           <p className="footer-description">
             Developed as part of the Senior Capstone Project at Oregon State

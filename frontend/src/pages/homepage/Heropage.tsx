@@ -1,5 +1,5 @@
 import "./Heropage.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import MonitorView from "../monitorView";
 
 const Heropage = () => {
