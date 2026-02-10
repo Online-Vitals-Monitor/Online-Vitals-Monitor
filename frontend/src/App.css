@@ -1,40 +1,9 @@
-@font-face {
-    font-family: 'Inter';
-    src: url(./fonts/Inter/Inter-VariableFont_opsz,wght.ttf) format('truetype');
-    font-style: normal;
+html {
+  scroll-behavior: smooth;
 }
 
-@font-face {
-    font-family: 'Poppins';
-    src: url(./fonts/Poppins/Poppins-Regular.ttf) format('truetype');
+.app {
+    background: linear-gradient(#000e09, #010305);
+    min-height: 100vh;
+    width: 100%;
 }
-
-@font-face {
-    font-family: 'Montserrat';
-    src: url(./fonts/Montserrat/Montserrat-VariableFont_wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: 'Manrope';
-  font-weight: 200 800; 
-  font-display: swap;
-  src: url(./fonts/Manrope/Manrope-VariableFont_wght.ttf) format('truetype-variations'),
-       url(./fonts/Manrope/Manrope-VariableFont_wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: 'Monasans';
-  font-weight: 200 800; 
-  font-display: swap;
-  src: url(./fonts/Mona_Sans/MonaSans-VariableFont_wdth\,wght.ttf) format('truetype-variations'),
-       url(./fonts/Mona_Sans/MonaSans-VariableFont_wdth\,wght.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: 'Aspekta Variable';
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: normal;
-  src: url(./fonts/aspekta--aspekta-sources-2.100/aspekta--aspekta-sources-2.100/packages/fonts/variable/AspektaVF.woff2) format('woff2');
-}
-

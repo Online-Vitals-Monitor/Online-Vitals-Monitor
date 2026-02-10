@@ -2,8 +2,7 @@ nav {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    height: 60px;
-    background: black;
+    height: 80px;
     font-family: "Inter", sans-serif;
     font-size: 14px;
 }
@@ -11,11 +10,18 @@ nav {
 /* who wants to design the logo? */
 .logo-container {
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: flex-start;
-    width: 150px;
+    overflow: hidden;
+    width: 300px;
+    height: 75px;
     max-height: 100px;
-    border: solid red;
+}
+
+.logo {
+    object-fit: contain;
+    width: 250px;
+    height: 250px;
 }
 
 .main-nav-buttons {

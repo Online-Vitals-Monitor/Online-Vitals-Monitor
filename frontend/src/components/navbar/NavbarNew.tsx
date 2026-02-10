@@ -38,7 +38,7 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
     <>
       <nav>
         <div className="logo-container">
-          <img className="logo" src="" />
+          <img className="logo" src="vm-logo.png" />
         </div>
         <div className="main-nav-buttons">
           <ul>

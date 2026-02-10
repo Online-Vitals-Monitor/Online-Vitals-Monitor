@@ -4,7 +4,7 @@ import MonitorView from "../monitorView";
 
 const Heropage = () => {
   return (
-    <div className="hero-page-container">
+    <div id="home" className="hero-page-container">
       <div className="hero-content-container">
         <div className="left-section">
           <div className="header-hook">

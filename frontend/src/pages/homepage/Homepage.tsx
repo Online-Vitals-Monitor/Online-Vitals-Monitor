@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./Homepage.css";
 import Heropage from "./Heropage";
-import About from "./HowItWorks";
+import HowItWorks from "./HowItWorks";
+import Footer from "./Footer";
 
 const Homepage = () => {
   return (
     <div className="homepage-container">
       <Heropage />
-      <About />
+      <HowItWorks />
+      <Footer />
     </div>
   );
 };

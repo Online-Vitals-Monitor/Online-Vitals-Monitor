@@ -10,23 +10,29 @@ import "./App.css";
 const App = () => {
   const [sessionActive, setSessionActive] = useState(false);
   return (
-    <div className="app">
-      <div className="app-header">
-        <VitalsProvider>
-          <Router>
-            <NavbarNew
-              isSessionActive={sessionActive}
-              setIsSessionActive={setSessionActive}
-            />
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/monitor" element={<MonitorView />} />
-              <Route path="/values" element={<ValuesView />} />
-            </Routes>
-          </Router>
-        </VitalsProvider>
+    <>
+      <title>
+        Vitals Monitor - Simulate Patient Vitals | For Training and Education
+        Purposes
+      </title>
+      <div className="app">
+        <div className="app-header">
+          <VitalsProvider>
+            <Router>
+              <NavbarNew
+                isSessionActive={sessionActive}
+                setIsSessionActive={setSessionActive}
+              />
+              <Routes>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/monitor" element={<MonitorView />} />
+                <Route path="/values" element={<ValuesView />} />
+              </Routes>
+            </Router>
+          </VitalsProvider>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
