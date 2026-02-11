@@ -22,7 +22,7 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
     navigate("/monitor");
   };
 
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   // const toggleMenu = () => setIsOpen(!isOpen);
   return (
     <>
