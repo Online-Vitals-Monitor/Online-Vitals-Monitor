@@ -56,7 +56,11 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
               <Link to="/about">About</Link>
             </li>
             <li>
-              <Link to="/values">Control Vitals</Link>
+           {routes.map((route) => (
+               <li key={route.path}>
+                   <Link to={route.path}>{route.page}</Link>
+               </li>
+          ))}
             </li>
           </ul>
         </div>
