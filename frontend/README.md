@@ -18,6 +18,14 @@ npm install
 npm install react-scripts@5.0.1 --save
 ```
 
+- css sass
+
+```bash
+npm install -g sass
+```
+
+To use css sass, rename file type from css to scss
+
 ## Available Scripts
 
 In the project directory, you can run:
