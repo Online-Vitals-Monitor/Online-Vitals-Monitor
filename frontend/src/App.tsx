@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { SessionProvider } from "./contexts/sessionContext";
 import MonitorView from "./pages/monitorView";
 import ValuesView from "./pages/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
+import RequireSession from './components/RequireSession';
 import { VitalsProvider } from "./contexts/vitalsContext";
 import "./App.css";
 
@@ -14,17 +16,21 @@ const App = () => {
       <div className="app">
         <div className="app-header">
           <VitalsProvider>
-            <Router>
-              <NavbarNew
-                isSessionActive={sessionActive}
-                setIsSessionActive={setSessionActive}
-              />
-              <Routes>
-                <Route path="/" element={<Homepage />} />
-                <Route path="/monitor" element={<MonitorView />} />
-                <Route path="/values" element={<ValuesView />} />
-              </Routes>
-            </Router>
+            <SessionProvider>
+              <Router>
+                <NavbarNew
+                  isSessionActive={sessionActive}
+                  setIsSessionActive={setSessionActive}
+                />
+                <Routes>
+                  <Route path="/" element={<Homepage />} />
+                  <Route element={<RequireSession />}>
+                    <Route path="/monitor" element={<MonitorView />} />
+                    <Route path="/values" element={<ValuesView />} />
+                  </Route>
+                </Routes>
+              </Router>
+            </SessionProvider>
           </VitalsProvider>
         </div>
       </div>
