@@ -45,13 +45,11 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
             <li>
               <Link to="/about">About</Link>
             </li>
-            <li>
-           {routes.map((route) => (
+            {routes.map((route) => (
                <li key={route.path}>
                    <Link to={route.path}>{route.page}</Link>
                </li>
-          ))}
-            </li>
+            ))}
           </ul>
         </div>
         {/* SESSION STATUS BUTTON */}
