@@ -1,8 +1,48 @@
 import "./Heropage.css";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useSession } from "../../contexts/sessionContext";
 import MonitorView from "../monitorView";
 
 const Heropage = () => {
+  const [newSessionId, setNewSessionId] = useState("");
+  const [existingSessionId, setExistingSessionId] = useState("");
+  const [error, setError] = useState("");
+  const { session, connectNew, connectExisting } = useSession();
+  const navigate = useNavigate();
+  const location = useLocation() as any;
+
+  const target =
+    location.state?.from?.pathname && location.state.from.pathname !== "/session"
+      ? location.state.from.pathname
+      : "/monitor";
+  
+  const handleNewSession = async () => {
+    setError("");
+    try {
+      await connectNew(newSessionId.trim() || undefined);
+      navigate(target, { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create session");
+    }
+  };
+
+  const handleJoinSession = async () => {
+    const id = existingSessionId.trim();
+    if (!id) {
+      setError("Please enter a session ID");
+      return;
+    }
+
+    setError("");
+    try {
+      await connectExisting(id);
+      navigate(target, { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to join session");
+    }
+  };
+
   return (
     <div id="home" className="hero-page-container">
       <div className="hero-content-container">
@@ -22,18 +62,52 @@ const Heropage = () => {
           </p>
 
           <ul className="session-list">
-            <li>
-              <Link className="create-session" to="/values">
+            <li className="session-row">
+              <button
+                type="button"
+                className="create-session"
+                onClick={handleNewSession}
+              >
                 <span className="button-light-effect"></span>
                 Create Monitor Session
-              </Link>
+              </button>
+              <input
+                type="text"
+                className="new-session-input"
+                placeholder="New session ID (optional)"
+                value={newSessionId}
+                onChange={(e) => setNewSessionId(e.target.value)}
+              />
             </li>
-            <li>
-              <Link className="join-session" to="/values">
+
+            <li className="session-row">
+              <button
+                type="button"
+                className="join-session"
+                onClick={handleJoinSession}
+              >
                 Join Existing Session
-              </Link>
+              </button>
+              <input
+                type="text"
+                className="old-session-input"
+                placeholder="Existing session ID"
+                value={existingSessionId}
+                onChange={(e) => setExistingSessionId(e.target.value)}
+              />
             </li>
           </ul>
+
+          {error && <div className="session-error">{error}</div>}
+
+          {session && (
+            <div className="current-session-banner">
+              <p>
+                Current session: <span className="header-hook-dark"><strong>{session.id}</strong></span>
+              </p>
+            </div>
+          )}
+
         </div>
 
         <div className="monitor-section">
