@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useVitals } from "../../contexts/vitalsContext";
+// import { useVitals } from "../../contexts/vitalsContext";
 import "./Navbar.css";
 
 //routes object: Add pages/routes here if needed
@@ -14,16 +14,6 @@ interface NavbarProps {
   setIsSessionActive: (active: boolean) => void;
 }
 
-//array storing possible vital types: Added new vitals here if needed
-const vitalLabels = [
-  { value: "heartRate", label: "Heart Rate" },
-  { value: "respRate", label: "Respiratory Rate" },
-  { value: "o2Saturation", label: "Oxygen Saturation" },
-  { value: "systolicBP", label: "Systolic Blood Pressure" },
-  { value: "diastolicBP", label: "Diastolic Blood Pressure" },
-  { value: "eTCO2", label: "End-Tidal Carbon Dioxide" },
-];
-
 const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
   const navigate = useNavigate();
 
@@ -33,7 +23,7 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
   };
 
   const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => setIsOpen(!isOpen);
+  // const toggleMenu = () => setIsOpen(!isOpen);
   return (
     <>
       <nav>
