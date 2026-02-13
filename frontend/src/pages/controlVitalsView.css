@@ -1,0 +1,96 @@
+.control-vitals-root {
+  padding: 24px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.control-vitals-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.control-vitals-header-title {
+  font-weight: bold;
+  text-align: left;
+}
+
+.control-vitals-header-current {
+  font-weight: bold;
+  text-align: right;
+}
+
+.control-vitals-preset-form {
+  min-width: 250px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.vital-control-row {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.vital-value-box {
+  min-width: 120px;
+  background-color: #e0e0e0;
+  margin-left: 16px;
+  margin-bottom: 8px; 
+  padding: 32px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  pointer-events: auto;
+}
+
+.vital-value {
+  width: 70px;
+  text-align: center;
+  user-select: none;
+  font-weight: bold;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 24px;
+  min-height: 50px;
+}
+
+.control-vitals-bottom {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.control-vitals-save-btn {
+  min-width: 120px;
+  margin-left: 16px;
+}
+
+.control-vitals-display-btn {
+  margin-top: 16px;
+  font-weight: bold;
+  background-color: #757575;
+}
+
+.control-vitals-drawer-paper {
+  width: 300px;
+  padding: 16px;
+}
+
+.control-vitals-drawer-title {
+  margin-bottom: 16px;
+}
+
+.control-vitals-drawer-subtitle {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.control-vitals-close-menu-btn {
+  margin-top: 24px;
+  background-color: #e0e0e0;
+}

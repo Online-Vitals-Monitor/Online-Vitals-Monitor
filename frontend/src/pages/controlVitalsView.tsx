@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo, useRef, useCallback } from "react";
 import { getVitals, updateVitals, Vitals } from "../api/vitalsApi";
+import "./controlVitalsView.css"
 import {
   Box,
   Typography,
@@ -19,33 +20,6 @@ import {
 } from "@mui/material";
 import VitalSlider from "../components/vitalSlider";
 
-// Styling
-const valueStyle = {
-  width: 70,
-  textAlign: "center",
-  userSelect: "none",
-  fontWeight: "bold",
-  fontSize: "1.2rem",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  ml: 3,
-  minHeight: 50,
-};
-
-const valueBoxStyle = {
-  minWidth: 120,
-  bgcolor: "grey.300",
-  ml: 2,
-  mb: 1,
-  px: 1,
-  py: 4,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "stretch",
-  pointerEvents: "auto",
-};
-
 interface VitalControlProps {
   title: string;
   value: number;
@@ -58,7 +32,7 @@ interface VitalControlProps {
 
 const VitalControl: React.FC<VitalControlProps> = memo(
   ({ title, value, onChange, onChangeCommitted, step, min, max }) => (
-    <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+    <Box className="vital-control-row">
       <VitalSlider
         title={title}
         step={step}
@@ -74,8 +48,8 @@ const VitalControl: React.FC<VitalControlProps> = memo(
 );
 
 const CurrentValueDisplay = memo(({ value }: { value: number }) => (
-  <Box sx={valueBoxStyle}>
-    <Paper sx={valueStyle}>{value}</Paper>
+  <Box className="vital-value-box">
+    <Paper className="vital-value">{value}</Paper>
   </Box>
 ));
 
@@ -296,16 +270,21 @@ const ControlVitalsView: React.FC = () => {
       }
     }
   };
+
   const sliderValues = uiVitals;
 
   return (
-    <Box sx={{ px: 4, py: 3, maxWidth: 1200, mx: "auto" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h5" fontWeight="bold" textAlign="left">
+    <Box className="control-vitals-root">
+      {/* Header */}
+      <Box className="control-vitals-header">
+        <Typography
+          variant="h5"
+          className="control-vitals-header-title"
+        >
           New Values
         </Typography>
 
-        <FormControl sx={{ minWidth: 250, maxWidth: 400, mx: "auto" }}>
+        <FormControl className="control-vitals-preset-form">
           <InputLabel id="preset-select-label">
             Preset (applied immediately)
           </InputLabel>
@@ -324,7 +303,10 @@ const ControlVitalsView: React.FC = () => {
           </Select>
         </FormControl>
 
-        <Typography variant="h6" fontWeight="bold" textAlign="right">
+        <Typography
+          variant="h6"
+          className="control-vitals-header-current"
+        >
           Current Values
         </Typography>
       </Box>
@@ -396,15 +378,7 @@ const ControlVitalsView: React.FC = () => {
       />
 
       {/* Toggle, Save Button, and Display Settings */}
-      <Box
-        sx={{
-          mt: 4,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
+      <Box className="control-vitals-bottom">
         <ToggleButtonGroup
           color="primary"
           value={updateMode}
@@ -412,7 +386,6 @@ const ControlVitalsView: React.FC = () => {
           onChange={(_, v) => {
             if (v) {
               if (v === "push") {
-                // When switching to push, reset pendingVitals to current live vitals
                 setPendingVitals(vitals);
               }
               setUpdateMode(v);
@@ -431,9 +404,8 @@ const ControlVitalsView: React.FC = () => {
             color="primary"
             disabled={updateMode === "live"}
             onClick={handleSaveClick}
+            className="control-vitals-save-btn"
             sx={{
-              minWidth: 120,
-              ml: 2,
               bgcolor: updateMode === "live" ? "grey.400" : "primary.main",
             }}
           >
@@ -441,39 +413,44 @@ const ControlVitalsView: React.FC = () => {
           </Button>
         </ToggleButtonGroup>
 
-        {/* Display Menu button */}
         <Button
           variant="contained"
-          sx={{ bgcolor: "grey.600", mt: 2, fontWeight: "bold" }}
+          className="control-vitals-display-btn"
           onClick={() => setDisplayMenuOpen(true)}
         >
           Open Display Settings
         </Button>
 
-        {/* Backdrop (dimming layer) */}
         <Backdrop
           open={displayMenuOpen}
           sx={{ zIndex: (theme) => theme.zIndex.drawer - 1, color: "#fff" }}
           onClick={() => setDisplayMenuOpen(false)}
         />
 
-        {/* Slide-in menu on the right */}
         <Drawer
           anchor="right"
           open={displayMenuOpen}
           onClose={() => setDisplayMenuOpen(false)}
           slotProps={{
             paper: {
-              sx: { width: 300, p: 2, bgcolor: "background.paper" },
+              className: "control-vitals-drawer-paper",
             },
           }}
         >
-          <Typography variant="h6" mb={2}>
+          <Typography
+            variant="h6"
+            className="control-vitals-drawer-title"
+          >
             Display Settings
           </Typography>
-          <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+
+          <Typography
+            variant="subtitle1"
+            className="control-vitals-drawer-subtitle"
+          >
             ETCO₂ Units
           </Typography>
+
           <ToggleButtonGroup
             value={etco2Unit}
             exclusive
@@ -491,14 +468,16 @@ const ControlVitalsView: React.FC = () => {
               mmHg
             </ToggleButton>
           </ToggleButtonGroup>
+
           <Button
-            sx={{ mt: 3, bgcolor: "grey.300" }}
+            className="control-vitals-close-menu-btn"
             onClick={() => setDisplayMenuOpen(false)}
           >
             Close Menu
           </Button>
         </Drawer>
       </Box>
+
       {errorMessage && (
         <Snackbar
           open
