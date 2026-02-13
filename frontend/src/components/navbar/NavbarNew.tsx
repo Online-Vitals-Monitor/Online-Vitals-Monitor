@@ -1,18 +1,23 @@
 // import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 // import { useVitals } from "../../contexts/vitalsContext";
 import "./Navbar.css";
-
-//routes object: Add pages/routes here if needed
-const routes = [
-  { page: "Monitor", path: "/monitor" },
-  { page: "Control Vitals", path: "/values" },
-];
-
 interface NavbarProps {
   isSessionActive: boolean;
   setIsSessionActive: (active: boolean) => void;
 }
+
+//routes object: Add pages/routes here if needed
+// const routes = [
+//   { page: "Monitor", path: "/" },
+//   { page: "Control Vitals", path: "/values" },
+// ];
+
+const routes = [
+  { page: "Home", path: "/" },
+  { page: "Control Vitals", path: "/values" },
+  { page: "Monitor", path: "/monitor" },
+];
 
 const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
   const navigate = useNavigate();
@@ -21,9 +26,6 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
     setIsSessionActive(!isSessionActive);
     navigate("/monitor");
   };
-
-  // const [isOpen, setIsOpen] = useState(false);
-  // const toggleMenu = () => setIsOpen(!isOpen);
   return (
     <>
       <nav>
@@ -36,34 +38,26 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
         </div>
         <div className="main-nav-buttons">
           <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/">How It Works</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-           {routes.map((route) => (
-               <li key={route.path}>
-                   <Link to={route.path}>{route.page}</Link>
-               </li>
-          ))}
-            </li>
+            {routes.map((route) => (
+              <li key={route.path}>
+                <Link to={route.path}>{route.page}</Link>
+              </li>
+            ))}
           </ul>
         </div>
+
+        {/* Disabling the session status button for now (didnt really have a concrete idea for this concept, 
+        so dont want to commit to anything yet) */}
         {/* SESSION STATUS BUTTON */}
         <div className="nav-right">
-          <button
+          {/*<button
             onClick={handleMonitorButtonClick}
             className={`status-btn ${isSessionActive ? "active" : "inactive"}`}
-          >
-            {/* Dynamic Text based on state */}
-            <span className="status-dot"></span>
+          > */}
+          {/* Dynamic Text based on state */}
+          {/* <span className="status-dot"></span>
             {isSessionActive ? "Monitor: Active" : "Start Session"}
-          </button>
+          </button>*/}
         </div>
         {/* END OF SESSION STATUS BUTTON */}
       </nav>
