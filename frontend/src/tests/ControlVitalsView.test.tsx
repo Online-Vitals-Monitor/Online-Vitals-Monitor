@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import ControlVitalsView from "../pages/controlVitalsView";
+import ControlVitalsView from "../pages/controlVitalsView/controlVitalsView";
 import * as vitalsApi from "../api/vitalsApi";
 
 jest.mock("../api/vitalsApi");
