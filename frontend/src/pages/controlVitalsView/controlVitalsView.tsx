@@ -261,39 +261,35 @@ const ControlVitalsView: React.FC = () => {
 
       {/* Toggle, Save Button, and Display Settings */}
       <Box className="control-vitals-bottom">
-        <ToggleButtonGroup
-          color="primary"
-          value={updateMode}
-          exclusive
-          onChange={(_, v) => {
-            if (v) {
-              if (v === "push") {
-                setPendingVitals(vitals);
+        <div className="toggle-save-row">
+          <ToggleButtonGroup
+            color="primary"
+            value={updateMode}
+            exclusive
+            onChange={(_, v) => {
+              if (v) {
+                if (v === "push") {
+                  setPendingVitals(vitals);
+                }
+                setUpdateMode(v);
               }
-              setUpdateMode(v);
-            }
-          }}
-          aria-label="Update Mode"
-        >
-          <ToggleButton value="live" aria-label="Live updates">
-            Live Updates
-          </ToggleButton>
-          <ToggleButton value="push" aria-label="Push updates">
-            Push Updates
-          </ToggleButton>
+            }}
+            aria-label="Update Mode"
+          >
+            <ToggleButton value="live">Live Updates</ToggleButton>
+            <ToggleButton value="push">Push Updates</ToggleButton>
+          </ToggleButtonGroup>
+
           <Button
             variant="contained"
             color="primary"
             disabled={updateMode === "live"}
             onClick={handleSaveClick}
             className="control-vitals-save-btn"
-            sx={{
-              bgcolor: updateMode === "live" ? "grey.400" : "primary.main",
-            }}
           >
             Save New Vitals
           </Button>
-        </ToggleButtonGroup>
+        </div>
 
         <Button
           variant="contained"

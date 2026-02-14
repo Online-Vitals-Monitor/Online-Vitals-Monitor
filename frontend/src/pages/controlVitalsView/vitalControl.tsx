@@ -17,14 +17,6 @@ interface CurrentValueDisplayProps {
   value: number;
 }
 
-const CurrentValueDisplay: React.FC<CurrentValueDisplayProps> = memo(
-  ({ value }) => (
-    <Box className="vital-value-box">
-      <Paper className="vital-value">{value}</Paper>
-    </Box>
-  )
-);
-
 const VitalControl: React.FC<VitalControlProps> = memo(
   ({ title, value, onChange, onChangeCommitted, step, min, max }) => (
     <Box className="vital-control-row">
@@ -37,7 +29,6 @@ const VitalControl: React.FC<VitalControlProps> = memo(
         onChange={onChange}
         onChangeCommitted={onChangeCommitted}
       />
-      <CurrentValueDisplay value={value} />
     </Box>
   )
 );
