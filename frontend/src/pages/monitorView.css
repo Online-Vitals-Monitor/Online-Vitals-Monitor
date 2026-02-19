@@ -15,12 +15,35 @@
   padding: 0.75rem;
 }
 
-.ecg-container {
-    grid-column: 1 / -1;
-}
-
 .vitals-grid-wrapper {
   width: 100%;
   overflow-x: auto;
+}
+
+.waveforms-panel {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.waveform-row {
+  background: #070d14;
+  border: 1px solid #1a2838;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.waveform-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #9bb4c8;
+  letter-spacing: 0.03em;
+  font-size: 0.8rem;
+}
+
+.waveform-row canvas {
+  width: 100%;
+  display: block;
 }
 
