@@ -1,34 +1,35 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MonitorView from './pages/monitorView';
-import ValuesView from './pages/controlVitalsView';
-import SessionSelect from './pages/sessionSelect';
-import Navbar from './components/Navbar';
-import RequireSession from './components/RequireSession';
-import { VitalsProvider } from './contexts/vitalsContext';
-import { SessionProvider } from './contexts/sessionContext';
-import './App.css';
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MonitorView from "./pages/monitorView";
+import ValuesView from "./pages/controlVitalsView";
+import NavbarNew from "./components/navbar/NavbarNew";
+import Homepage from "./pages/homepage/Homepage";
+import { VitalsProvider } from "./contexts/vitalsContext";
+import "./App.css";
 
-const App: React.FC = () => {
+const App = () => {
+  const [sessionActive, setSessionActive] = useState(false);
   return (
-    <div className="App">
-      <header className="App-header">
-        <SessionProvider>
+    <>
+      <div className="app">
+        <div className="app-header">
           <VitalsProvider>
             <Router>
-              <Navbar/>
+              <NavbarNew
+                isSessionActive={sessionActive}
+                setIsSessionActive={setSessionActive}
+              />
               <Routes>
-                <Route path="/session" element={<SessionSelect />} />
-                <Route element={<RequireSession />}>
-                  <Route path="/" element={<MonitorView />} />
-                  <Route path="/values" element={<ValuesView />} />
-                </Route>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/monitor" element={<MonitorView />} />
+                <Route path="/values" element={<ValuesView />} />
               </Routes>
             </Router>
           </VitalsProvider>
-        </SessionProvider>
-      </header>
-    </div>
+        </div>
+      </div>
+    </>
   );
-}
+};
 
 export default App;
