@@ -38,6 +38,15 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
         </div>
         <div className="main-nav-buttons">
           <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/">How It Works</Link>
+            </li>
+            <li>
+              <Link to="/about">About</Link>
+            </li>
             {routes.map((route) => (
               <li key={route.path}>
                 <Link to={route.path}>{route.page}</Link>
