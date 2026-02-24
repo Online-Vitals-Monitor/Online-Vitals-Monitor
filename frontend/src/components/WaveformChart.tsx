@@ -100,18 +100,24 @@ export default function WaveformChart({
   // set up continuous scrolling animation at mm/sec (25 for ecg)
   useEffect(() => {
     let animationFrame: number;
+    let lastTime = performance.now(); // use time rather than fps
 
     const pxPerMm = 3.78; // general monitor pixel desnity
     const pxPerSec = mmPerSecond * pxPerMm; // generate the correct number of pixels / second based on the waveform speed
-    const pxPerFrame = pxPerSec / 60; // 60 fps
+    // const pxPerFrame = pxPerSec / 60; // 60 fps
 
     let subPixel = 0;
 
-    const animate = () => {
+    const animate = (currentTime: number) => {
       const chart = chartRef.current;
       if (!chart) return;
 
-      subPixel += pxPerFrame;
+      // calculate the fraction of a second since the last frame
+      const deltaTime = (currentTime - lastTime) / 1000;
+      lastTime = currentTime;
+
+      // subPixel += pxPerFrame;
+      subPixel += pxPerSec * deltaTime
 
       // shift by 1 px when we need to
       while (subPixel >= 1) {
