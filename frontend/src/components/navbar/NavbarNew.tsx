@@ -22,10 +22,11 @@ const routes = [
 const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
   const navigate = useNavigate();
 
-  const handleMonitorButtonClick = () => {
+  {/* const handleMonitorButtonClick = () => {
     setIsSessionActive(!isSessionActive);
     navigate("/monitor");
-  };
+  }; */}
+  
   return (
     <>
       <nav>
