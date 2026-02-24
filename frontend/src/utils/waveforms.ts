@@ -40,7 +40,79 @@ export function generateEcgWaveform(heartRate: number): number[] {
 
 // placeholder implementations
 export function generateRespWaveform(respRate: number): number[] {
-  return generateEcgWaveform(respRate || 14);
+  // flatline
+  if (respRate <= 0) return Array(100).fill(0);
+
+  // points for a breath
+  const mmPerSecond = 6.25; // match monitorView.tsx
+  const pxPerMm = 3.78;     // match WaveformChart.tsx
+  const pxPerSec = mmPerSecond * pxPerMm; 
+  
+  const secondsPerBreath = 60 / respRate;
+  const totalPoints = Math.floor(pxPerSec * secondsPerBreath);
+
+  // a breath consists of active inspiration (inhalation) and passive expiration (exhalation)
+  // inspiration-expiration (I:E) resting ratio is typically 1:2 or 1:3 - set to 1:2
+  // divide total breath/wave points to inspiration and expiration
+  const inspPoints = Math.floor(totalPoints * 0.33); // 1/3 to breathe in
+  const expPoints = Math.floor(totalPoints * 0.50); // 1/2 to breathe out
+  const pausePoints = totalPoints - inspPoints - expPoints; // rest (1/6) of resting after ehalation 
+
+  const waveform: number[] = [];
+  const amplitude = 50; // height
+  const baseline = 10;  // resting baseline
+
+  // using sin to create smooth inhalation
+  for (let i = 0; i < inspPoints; i++) {
+    const progress = i / inspPoints;
+    // get the sin wave from [0, 1] * how far we are in the inhalation
+    const val = baseline + amplitude * Math.sin(progress * (Math.PI / 2));
+    waveform.push(val);
+  }
+
+  // cos for smooth exhalation
+  for (let i = 0; i < expPoints; i++) {
+    const progress = i / expPoints;
+    // get the cos wave from [1, 0] * how far we are in the exhalation
+    const val = baseline + amplitude * Math.cos(progress * (Math.PI / 2));
+    waveform.push(val);
+  }
+
+  // rest after exhilation
+  for (let i = 0; i < pausePoints; i++) {
+    // with some noise so it's not just flatline
+    const noise = (Math.random() - 0.5) * 1.5;
+    waveform.push(baseline + noise);
+  }
+
+  // // Keep the 1:2 I:E ratio, but group the active breathing points together
+  // const activePoints = Math.floor(totalPoints * 0.83); // roughly 33% insp + 50% exp
+  // const pausePoints = totalPoints - activePoints;
+
+  // const waveform: number[] = [];
+  // const amplitude = 50; 
+  // const baseline = 10;  
+
+  // // Phase 1 & 2: Active Breath (Smooth curve from 0 to PI)
+  // for (let i = 0; i < activePoints; i++) {
+  //   const progress = i / activePoints;
+  //   // Math.sin from 0 to PI creates a smooth, bell-like curve
+  //   const waveCurve = Math.sin(progress * Math.PI);
+    
+  //   // Add a tiny bit of noise across the whole breath for realism
+  //   const noise = (Math.random() - 0.5) * 1.5;
+    
+  //   const val = baseline + (amplitude * waveCurve) + noise;
+  //   waveform.push(val);
+  // }
+
+  // // Phase 3: Expiratory Pause
+  // for (let i = 0; i < pausePoints; i++) {
+  //   const noise = (Math.random() - 0.5) * 1.5;
+  //   waveform.push(baseline + noise);
+  // }
+  
+  return waveform
 }
 
 export function generatePlethWaveform(
