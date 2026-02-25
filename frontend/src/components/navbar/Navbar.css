@@ -39,7 +39,7 @@ display: flex; /* This makes the LI items sit horizontally */
 }
 
 nav ul li {
-    margin: 15px 80px;
+    margin: 15px 60px;
 }
 
 nav ul a {
