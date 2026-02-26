@@ -1,5 +1,5 @@
 // import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 // import { useVitals } from "../../contexts/vitalsContext";
 import "./Navbar.css";
 interface NavbarProps {
@@ -20,12 +20,13 @@ const routes = [
 ];
 
 const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
-  const handleMonitorButtonClick = () => {
-    setIsSessionActive(!isSessionActive);
-    navigate("/monitor");
-  };
+  // const handleMonitorButtonClick = () => {
+  //   setIsSessionActive(!isSessionActive);
+  //   navigate("/monitor");
+  // };
+
   return (
     <>
       <nav>
@@ -38,15 +39,6 @@ const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
         </div>
         <div className="main-nav-buttons">
           <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/">How It Works</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
             {routes.map((route) => (
               <li key={route.path}>
                 <Link to={route.path}>{route.page}</Link>
