@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { getVitals, updateVitals, Vitals } from "../../api/vitalsApi";
 import { useDebouncedCallback, useApiErrorHandler } from "./cvvHooks";
 import { presetConfigs, vitalsConfig } from "./vitalsConfigs";
@@ -7,7 +7,6 @@ import "./controlVitalsView.css"
 import {
   Box,
   Typography,
-  Paper,
   ToggleButtonGroup,
   ToggleButton,
   Button,
@@ -59,18 +58,8 @@ const ControlVitalsView: React.FC = () => {
     updateModeRef.current = updateMode;
   }, [updateMode]);
 
-  useEffect(() => {
-    document.title = "Controller";
-    fetchVitals();
-  }, []);
-
-  useEffect(() => {
-    // Ensure UI vitals mirror whatever set from API on mount
-    setUiVitals(updateMode === "live" ? vitals : pendingVitals || vitals);
-  }, [vitals, pendingVitals, updateMode]);
-
   // fetch vitals from API
-  const fetchVitals = async () => {
+  const fetchVitals = useCallback(async () => {
     try {
       const data = await getVitals();
       setVitals(data);
@@ -79,7 +68,17 @@ const ControlVitalsView: React.FC = () => {
     } catch (err) {
       handleError(err, "Failed to load vitals. Please try again.");
     }
-  };
+  }, [handleError]);
+
+  useEffect(() => {
+    document.title = "Controller";
+    fetchVitals();
+  }, [fetchVitals]);
+
+  useEffect(() => {
+    // Ensure UI vitals mirror whatever set from API on mount
+    setUiVitals(updateMode === "live" ? vitals : pendingVitals || vitals);
+  }, [vitals, pendingVitals, updateMode]);
 
   // Preset handler
   const handlePresetChange = (event: SelectChangeEvent) => {
@@ -116,6 +115,16 @@ const ControlVitalsView: React.FC = () => {
     // During dragging, only update the single value being changed
     setUiVitals((prev) => ({ ...prev, [key]: displayVal }));
   }, []);
+
+  // Debouncing for API calls
+  const debouncedUpdateVitals = useDebouncedCallback(async (updated: Vitals) => {
+    try {
+      await updateVitals(updated);
+      setErrorMessage(null);
+    } catch (err) {
+      handleError(err, "Failed to update vitals.");
+    }
+  }, 500);
 
   // Handler for committed values (onChangeCommitted) - runs complex logic
   const handleVitalChangeCommitted = useCallback(
@@ -166,18 +175,8 @@ const ControlVitalsView: React.FC = () => {
         setPendingVitals(updated);
       }
     },
-    []
+    [debouncedUpdateVitals]
   );
-
-  // Debouncing for API calls
-  const debouncedUpdateVitals = useDebouncedCallback(async (updated: Vitals) => {
-    try {
-      await updateVitals(updated);
-      setErrorMessage(null);
-    } catch (err) {
-      handleError(err, "Failed to update vitals.");
-    }
-  }, 500);
 
   // Save handler for push mode
   const handleSaveClick = async () => {

@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Box, Paper } from "@mui/material";
+import { Box } from "@mui/material";
 import VitalSlider from "../../components/vitalSlider";
 import "./controlVitalsView.css";
 
@@ -11,10 +11,6 @@ interface VitalControlProps {
   step: number;
   min: number;
   max: number;
-}
-
-interface CurrentValueDisplayProps {
-  value: number;
 }
 
 const VitalControl: React.FC<VitalControlProps> = memo(

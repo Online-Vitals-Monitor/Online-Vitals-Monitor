@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from "react";
-import { Vitals } from "../../api/vitalsApi";
 
 // Debounce hook
 export function useDebouncedCallback<T extends (...args: any[]) => void>(
