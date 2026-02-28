@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SessionProvider } from "./contexts/sessionContext";
 import MonitorView from "./pages/monitorView";
-import ValuesView from "./pages/controlVitalsView";
+import ValuesView from "./pages/controlVitalsView/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
 import RequireSession from './components/RequireSession';

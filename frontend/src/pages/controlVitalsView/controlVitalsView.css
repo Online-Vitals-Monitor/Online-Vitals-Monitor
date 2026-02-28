@@ -1,0 +1,145 @@
+.control-vitals-root {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 40px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0a0a0f 0%, #12121a 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.2),
+    0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: #f5f5f5;
+  box-sizing: border-box;
+}
+
+.control-vitals-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.control-vitals-header-title {
+  font-weight: 600;
+  text-align: left;
+  font-size: 20px;
+  letter-spacing: -0.3px;
+  background: linear-gradient(#ced8cd, #a9cec0 100%, #66c9a8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.control-vitals-header-current {
+  font-weight: 500;
+  text-align: right;
+  font-size: 16px;
+  color: #ced8cd;
+}
+
+.control-vitals-preset-form .MuiSelect-root,
+.control-vitals-preset-form .MuiInputBase-root {
+  color: #f5f5f5 !important;
+  background-color: #1f2937 !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+  min-width: 260px;
+}
+
+.control-vitals-preset-form .MuiInputLabel-root {
+  color: #9ca3af !important;
+}
+
+.control-vitals-preset-form .MuiSelect-icon {
+  color: #e5e7eb !important;
+}
+
+.control-vitals-preset-form .MuiMenuItem-root {
+  color: #020617;
+  background-color: #f9fafb;
+}
+
+.control-vitals-preset-form .MuiMenuItem-root:hover {
+  background-color: #e5e7eb;
+}
+
+.vital-control-row {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.vital-control-row .MuiTextField-root .MuiOutlinedInput-root,
+.vital-control-row .MuiInputBase-root {
+  background-color: #2d3748;
+  color: #e5e7eb;
+}
+
+.control-vitals-bottom {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.toggle-save-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.control-vitals-save-btn {
+  min-width: 120px;
+}
+
+.control-vitals-display-btn {
+  margin-top: 16px;
+  font-weight: bold;
+  background-color: #757575;
+}
+
+.control-vitals-drawer-paper {
+  width: 300px;
+  padding: 16px;
+}
+
+.control-vitals-drawer-title {
+  margin-bottom: 16px;
+}
+
+.control-vitals-drawer-subtitle {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.control-vitals-close-menu-btn {
+  margin-top: 24px;
+  background-color: #e0e0e0;
+}
+
+.control-vitals-bottom .MuiToggleButton-root {
+  color: #e5e7eb;
+  background-color: #1f2937;
+  border-color: rgba(148, 163, 184, 0.7);
+  text-transform: none;
+  font-weight: 500;
+}
+
+.control-vitals-bottom .MuiToggleButton-root:hover {
+  background-color: #374151;
+  border-color: rgba(156, 163, 175, 0.9);
+}
+
+/* Selected state – subtle, not big gradient */
+.control-vitals-bottom .MuiToggleButton-root.Mui-selected {
+  color: #020617;
+  background-color: rgb(167, 197, 224);
+  border-color: rgb(167, 197, 224);
+}
+
+/* Selected + hover */
+.control-vitals-bottom .MuiToggleButton-root.Mui-selected:hover {
+  background-color: rgb(167, 197, 224);
+}

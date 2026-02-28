@@ -4,7 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 
 /*Interface to pass in props for react-slider from @mui material ui 
- https://mui.com/material-ui/react-slider/*/
+https://mui.com/material-ui/react-slider/*/
 interface vitalSliderProps {
     title: string;
     step: number;               //value to decrease/increase slider by each step
@@ -70,7 +70,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
 
     /* return */
     return(
-        <Box sx={{ width: 850, mb: 4}}>
+        <Box sx={{ width: '100%', mb: 4}}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <TextField
                     type="number"
@@ -114,7 +114,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                         max={max}
                     />
                 </Box>
-           
+        
                 <Button 
                     variant="contained"
                     color="error"          
@@ -123,6 +123,25 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                 >
                     <AddIcon />
                 </Button>
+
+                <TextField
+                    type="number"
+                    value={currentVal.toString()}  // ensure string like inputVal
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                        width: 150,
+                        ml: 2,                       // your spacing
+                        'input': { 
+                        textAlign: 'center',
+                        color: '#e5e7eb'           // light grey to match your CSS override
+                        },
+                        'input::-webkit-outer-spin-button': { display: 'none' },
+                        'input::-webkit-inner-spin-button': { display: 'none' },
+                        'input[type=number]': { MozAppearance: 'textfield' },
+                    }}
+                    slotProps={{ htmlInput: { readOnly: true, min, max } }}
+                />
             </Box>
         </Box>
     );
