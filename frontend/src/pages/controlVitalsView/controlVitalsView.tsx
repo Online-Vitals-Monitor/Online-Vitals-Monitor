@@ -87,7 +87,7 @@ const ControlVitalsView: React.FC = () => {
     );
     if (!newPreset) return;
 
-    setSelectedPreset("");
+    setSelectedPreset(newPreset.name);
 
     setVitals((prev) => {
       const merged = { ...prev, ...newPreset.values };
@@ -260,7 +260,11 @@ const ControlVitalsView: React.FC = () => {
 
       {/* Toggle, Save Button, and Display Settings */}
       <Box className="control-vitals-bottom">
-        <div className="toggle-save-row">
+        <div
+          className={`toggle-save-row ${
+            updateMode === "push" ? "with-save" : "no-save"
+          }`}
+        >
           <ToggleButtonGroup
             color="primary"
             value={updateMode}
@@ -278,16 +282,16 @@ const ControlVitalsView: React.FC = () => {
             <ToggleButton value="live">Live Updates</ToggleButton>
             <ToggleButton value="push">Push Updates</ToggleButton>
           </ToggleButtonGroup>
-
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={updateMode === "live"}
-            onClick={handleSaveClick}
-            className="control-vitals-save-btn"
-          >
-            Save New Vitals
-          </Button>
+          {updateMode === "push" && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSaveClick}
+              className="control-vitals-save-btn"
+            >
+              Save New Vitals
+            </Button>
+          )}
         </div>
 
         <Button

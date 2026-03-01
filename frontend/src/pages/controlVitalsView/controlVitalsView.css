@@ -87,7 +87,16 @@
 .toggle-save-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+}
+
+.toggle-save-row.with-save {
+  justify-content: space-between;
+}
+
+.toggle-save-row.no-save {
+  justify-content: center;
 }
 
 .control-vitals-save-btn {

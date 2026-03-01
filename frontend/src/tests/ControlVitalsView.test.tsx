@@ -7,130 +7,129 @@ jest.mock("../api/vitalsApi");
 const getVitalsMock = vitalsApi.getVitals as jest.Mock;
 const updateVitalsMock = vitalsApi.updateVitals as jest.Mock;
 
+const defaultVitals = {
+  heartRate: 60,
+  respRate: 16,
+  o2Saturation: 98,
+  systolicBP: 120,
+  diastolicBP: 80,
+  eTCO2: 5,
+};
+
 const renderView = () => render(<ControlVitalsView />);
+
+const setupWithVitals = async () => {
+  const utils = renderView();
+  await waitFor(() => expect(getVitalsMock).toHaveBeenCalled());
+  return utils;
+};
+
+const switchToPushMode = () => {
+  const pushButton = screen.getByRole("button", { name: /Push Updates/i });
+  fireEvent.click(pushButton);
+};
 
 describe("ControlVitalsView", () => {
   beforeEach(() => {
     jest.resetAllMocks();
-
-    getVitalsMock.mockResolvedValue({
-      heartRate: 60,
-      respRate: 16,
-      o2Saturation: 98,
-      systolicBP: 120,
-      diastolicBP: 80,
-      eTCO2: 5,
-    });
-
+    getVitalsMock.mockResolvedValue(defaultVitals);
     updateVitalsMock.mockResolvedValue({});
   });
 
   it("renders received vitals correctly", async () => {
-    render(<ControlVitalsView />);
+    await setupWithVitals();
 
-    const heartRateSlider = await screen.findByRole("slider", { name: /Heart Rate/i });
-    await waitFor(() => expect(heartRateSlider).toHaveValue("60"));
+    const expectations: Array<{ label: RegExp; value: string }> = [
+      { label: /Heart Rate/i, value: String(defaultVitals.heartRate) },
+      { label: /Respiratory Rate/i, value: String(defaultVitals.respRate) },
+      { label: /SpO2/i, value: String(defaultVitals.o2Saturation) },
+      { label: /Systolic BP/i, value: String(defaultVitals.systolicBP) },
+      { label: /Diastolic BP/i, value: String(defaultVitals.diastolicBP) },
+      { label: /ETCO2/i, value: String(defaultVitals.eTCO2) },
+    ];
 
-    const respRateSlider = await screen.findByRole("slider", { name: /Respiratory Rate/i });
-    await waitFor(() => expect(respRateSlider).toHaveValue("16"));
-
-    const spo2Slider = await screen.findByRole("slider", { name: /SpO2/i });
-    await waitFor(() => expect(spo2Slider).toHaveValue("98"));
-
-    const systolicBPslider = await screen.findByRole("slider", { name: /Systolic BP/i });
-    await waitFor(() => expect(systolicBPslider).toHaveValue("120"));
-
-    const diastolicBPslider = await screen.findByRole("slider", { name: /Diastolic BP/i });
-    await waitFor(() => expect(diastolicBPslider).toHaveValue("80"));
-
-    const etco2Slider = await screen.findByRole("slider", { name: /ETCO2/i });
-    await waitFor(() => expect(etco2Slider).toHaveValue("5"));
+    for (const { label, value } of expectations) {
+      const slider = await screen.findByRole("slider", { name: label });
+      await waitFor(() => expect(slider).toHaveValue(value));
+    }
   });
 
   it("calls updateVitals with correct value when slider changes", async () => {
-    render(<ControlVitalsView />);
+    await setupWithVitals();
 
-    // Wait for initial getVitals API call to complete
-    await waitFor(() => expect(getVitalsMock).toHaveBeenCalled());
-
-    // Find the Heart Rate slider (role="slider" with accessible label)
     const heartRateSlider = screen.getByRole("slider", { name: /Heart Rate/i });
 
-    // Use act to handle state updates with debounce delay in your component
     await act(async () => {
       fireEvent.change(heartRateSlider, { target: { value: "70" } });
     });
 
-    // Wait for updateVitals to be called with the correct argument
     await waitFor(() =>
-      expect(updateVitalsMock).toHaveBeenCalledWith(expect.objectContaining({ heartRate: 70 }))
+      expect(updateVitalsMock).toHaveBeenCalledWith(
+        expect.objectContaining({ heartRate: 70 })
+      )
     );
   });
 
-  it("enables and disables Save button as mode is toggled", async () => {
-    render(<ControlVitalsView />);
+  it("renders Save button only in push mode", async () => {
+    await setupWithVitals();
 
-    await waitFor(() => expect(getVitalsMock).toHaveBeenCalled());
+    expect(
+      screen.queryByRole("button", { name: /Save New Vitals/i })
+    ).not.toBeInTheDocument();
 
-    const saveButton = screen.getByRole("button", { name: /Save New Vitals/i });
-    // Save should be disabled by default (live mode)
-    expect(saveButton).toBeDisabled();
+    switchToPushMode();
 
-    // Switch to Push mode: Save should become enabled
-    const pushButton = screen.getByRole("button", { name: /Push Updates/i });
-    fireEvent.click(pushButton);
-    expect(saveButton).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: /Save New Vitals/i })
+    ).toBeInTheDocument();
 
-    // Toggle back to Live mode: Save should become disabled again
     const liveButton = screen.getByRole("button", { name: /Live Updates/i });
     fireEvent.click(liveButton);
-    expect(saveButton).toBeDisabled();
+
+    expect(
+      screen.queryByRole("button", { name: /Save New Vitals/i })
+    ).not.toBeInTheDocument();
   });
 
-  // Parameterized test: HR spike in both modes (live/push)
   describe.each([
     { mode: "live", expectImmediateSave: true },
-    { mode: "push", expectImmediateSave: false }
+    { mode: "push", expectImmediateSave: false },
   ])("Heart Rate spike in %s mode", ({ mode, expectImmediateSave }) => {
     it(`spikes HR and updates ${expectImmediateSave ? "immediately" : "on save"}`, async () => {
-      render(<ControlVitalsView />);
+      await setupWithVitals();
 
-      await waitFor(() => expect(getVitalsMock).toHaveBeenCalled());
-
-      // Switch to push
       if (mode === "push") {
-        const pushButton = screen.getByRole("button", { name: /Push Updates/i });
-        fireEvent.click(pushButton);
+        switchToPushMode();
       }
 
-      // Simulate spike: move Heart Rate slider to 140
       const heartRateSlider = screen.getByRole("slider", { name: /Heart Rate/i });
+
       await act(async () => {
         fireEvent.change(heartRateSlider, { target: { value: "140" } });
       });
 
-      // New UI value should be present
       await waitFor(() => expect(heartRateSlider).toHaveValue("140"));
 
       if (expectImmediateSave) {
-        // In live mode, API should be called immediately with HR 140
         await waitFor(() =>
-          expect(updateVitalsMock).toHaveBeenCalledWith(expect.objectContaining({ heartRate: 140 }))
+          expect(updateVitalsMock).toHaveBeenCalledWith(
+            expect.objectContaining({ heartRate: 140 })
+          )
         );
       } else {
-        // In push mode, not called yet
-        expect(updateVitalsMock).not.toHaveBeenCalledWith(expect.objectContaining({ heartRate: 140 }));
+        expect(updateVitalsMock).not.toHaveBeenCalledWith(
+          expect.objectContaining({ heartRate: 140 })
+        );
 
-        // Now save
         const saveButton = screen.getByRole("button", { name: /Save New Vitals/i });
         fireEvent.click(saveButton);
 
-        // API now called with HR 140
         await waitFor(() =>
-          expect(updateVitalsMock).toHaveBeenCalledWith(expect.objectContaining({ heartRate: 140 }))
+          expect(updateVitalsMock).toHaveBeenCalledWith(
+            expect.objectContaining({ heartRate: 140 })
+          )
         );
       }
     });
   });
-
 });
