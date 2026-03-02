@@ -8,15 +8,16 @@ const Heropage = () => {
   const [newSessionId, setNewSessionId] = useState("");
   const [existingSessionId, setExistingSessionId] = useState("");
   const [error, setError] = useState("");
-  const { session, connectNew, connectExisting } = useSession();
+  //const { session, connectNew, connectExisting } = useSession();
   const navigate = useNavigate();
   const location = useLocation() as any;
 
   const target =
-    location.state?.from?.pathname && location.state.from.pathname !== "/session"
+    location.state?.from?.pathname &&
+    location.state.from.pathname !== "/session"
       ? location.state.from.pathname
       : "/monitor";
-  
+
   const handleNewSession = async () => {
     setError("");
     try {
@@ -103,11 +104,13 @@ const Heropage = () => {
           {session && (
             <div className="current-session-banner">
               <p>
-                Current session: <span className="header-hook-dark"><strong>{session.id}</strong></span>
+                Current session:{" "}
+                <span className="header-hook-dark">
+                  <strong>{session.id}</strong>
+                </span>
               </p>
             </div>
           )}
-
         </div>
 
         <div className="monitor-section">

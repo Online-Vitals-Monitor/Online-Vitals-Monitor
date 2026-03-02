@@ -113,6 +113,7 @@ const ControlVitalsView: React.FC = () => {
     systolicBP: 0,
     diastolicBP: 0,
     eTCO2: 0,
+    sessionID: "",
   });
 
   const [updateMode, setUpdateMode] = useState<"live" | "push">("live");

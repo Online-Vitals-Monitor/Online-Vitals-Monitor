@@ -1,47 +1,85 @@
-export interface SessionInfo {
-  id: string;
-  // May want additional fields such as:
-  // createdAt?: string;
-  // owner?: string
-  // status?: "active" | "ended";
+const API_URL = "http://localhost:4000/api/sessions";
+
+// export interface SessionInfo {
+//   id: string;
+//   publicID: string;
+//   createdAt: string;
+//   lastSeen: string;
+// }
+
+// export interface SessionApi {
+//   createSession: (requestedId?: string) => Promise<SessionInfo>;
+//   joinSession: (id: string) => Promise<SessionInfo>;
+//   getCurrentSession: () => Promise<SessionInfo | null>;
+// }
+
+// // const API_BASE = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+
+// const SESSION_URL = `${API_URL}/api/sessions`;
+
+// export const sessionApi: SessionApi = {
+//   async createSession(requestedId?: string): Promise<SessionInfo> {
+//     const res = await fetch(SESSION_URL, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ requestedId }),
+//     });
+
+//     if (!res.ok) {
+//       throw new Error("Failed to create session");
+//     }
+
+//     const data = await res.json();
+
+//     // Persist session in browser
+//     localStorage.setItem("sessionId", data.publicID);
+
+//     return {
+//       id: data.publicID,
+//       createdAt: data.createdAt,
+//     };
+//   },
+
+//   async joinSession(id: string): Promise<SessionInfo> {
+//     const trimmed = id.trim();
+//     if (!trimmed) {
+//       throw new Error("Session ID is required to join a session.");
+//     }
+
+//     const res = await fetch(`${SESSION_URL}/join`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ publicID: trimmed }),
+//     });
+
+//     if (!res.ok) {
+//       throw new Error("Session not found");
+//     }
+
+//     const data = await res.json();
+
+//     localStorage.setItem("sessionId", data.publicID);
+
+//     return {
+//       id: data.publicID,
+//       createdAt: data.createdAt,
+//     };
+//   },
+
+//   async getCurrentSession(): Promise<SessionInfo | null> {
+//     const stored = localStorage.getItem("sessionId");
+//     if (!stored) return null;
+
+//     return { id: stored };
+//   },
+// };
+
+export async function createSession() {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!res.ok) throw new Error("Failed to create session");
+  return res.json();
 }
-
-export interface SessionApi {
-  // Create a new session.
-  createSession: (requestedId?: string) => Promise<SessionInfo>;
-  
-  // Join an existing session with the given ID.
-  joinSession: (id: string) => Promise<SessionInfo>;
-
-  // Get the current session for this user/tab, if any.
-  getCurrentSession: () => Promise<SessionInfo | null>;
-}
-
-//Temporary stub implementation to work on frontend
-const fakeSessionStore: { current: SessionInfo | null } = { current: null };
-
-export const sessionApi: SessionApi = {
-  async createSession(requestedId?: string): Promise<SessionInfo> {
-    // TODO: replace with backend POST /api/session
-    const id = (requestedId && requestedId.trim()) || 
-        Math.random().toString(36).substring(2, 8).toUpperCase();
-    const session: SessionInfo = { id };
-    fakeSessionStore.current = session;
-    return session;
-  },
-
-  async joinSession(id: string): Promise<SessionInfo> {
-    const trimmed = id.trim();
-    if (!trimmed) {
-        throw new Error("Session ID is required to join a session.");
-    }
-    
-    // Simulate "not connected to backend" for join
-    throw new Error("Join session not hooked up to database yet");
-    },
-
-  async getCurrentSession(): Promise<SessionInfo | null> {
-    // TODO: replace with backend GET /api/session
-    return fakeSessionStore.current;
-  },
-};

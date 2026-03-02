@@ -1,17 +1,17 @@
-import React, {useState, useEffect, useMemo, useRef} from 'react';
-import './monitorView.css';
-import { getVitals, Vitals } from '../api/vitalsApi';
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import "./monitorView.css";
+import { getVitals, Vitals } from "../api/vitalsApi";
 import WaveformChart from "../components/WaveformChart";
-import { useVitals } from '../contexts/vitalsContext';
-import VitalCard from '../components/VitalCard';
-
+import { useVitals } from "../contexts/vitalsContext";
+import VitalCard from "../components/VitalCard";
 
 function generateECGData(): number[] {
   const N = 200;
   const g = (x: number, center: number, width: number, ampl: number) =>
     ampl * Math.exp(-0.5 * ((x - center) / width) ** 2);
 
-  const beat: number[] = Array.from({length: N}, (_, i) => {  // one heartbeat
+  const beat: number[] = Array.from({ length: N }, (_, i) => {
+    // one heartbeat
     const x = i / N;
     // P wave -> Q dip -> R spike -> S dip -> T wave
     const p = g(x, 0.15, 0.035, 0.1);
@@ -27,40 +27,42 @@ function generateECGData(): number[] {
   const maxV = Math.max(...beat);
   const beat_scaled = beat.map((v) => ((v - minV) / (maxV - minV)) * 100);
 
-  return [...beat_scaled, ...beat_scaled, ...beat_scaled];  // tile multiple beats so we fill a strip spannign horizontally
+  return [...beat_scaled, ...beat_scaled, ...beat_scaled]; // tile multiple beats so we fill a strip spannign horizontally
 }
 
 // function generatePlethData() {} // disabled for CI to pass
 // function generateBPData() {}
 // function generateEtco2Data() {}
 
-//map of keys for vital cards 
-const vitalInfo: Record <
+//map of keys for vital cards
+const vitalInfo: Record<
   string,
-  {title: string; unit?: string; className?: string}> = {
-    heartRate: { title: 'Heart Rate', unit: 'bpm'},
-    respRate: { title: 'Respiratory Rate', unit: 'rpm'},
-    o2Saturation: { title: 'Oxygen Saturation', unit: '%'},
-    systolicBP: { title: 'Systolic BP', unit: 'mmHg'},
-    diastolicBP: { title: 'Diastolic BP', unit: 'mmHg'},
-    eTCO2: { title: 'ETCO2', unit: 'mmHg'},
-}
-
+  { title: string; unit?: string; className?: string }
+> = {
+  heartRate: { title: "Heart Rate", unit: "bpm" },
+  respRate: { title: "Respiratory Rate", unit: "rpm" },
+  o2Saturation: { title: "Oxygen Saturation", unit: "%" },
+  systolicBP: { title: "Systolic BP", unit: "mmHg" },
+  diastolicBP: { title: "Diastolic BP", unit: "mmHg" },
+  eTCO2: { title: "ETCO2", unit: "mmHg" },
+};
 
 const MonitorView: React.FC = () => {
   const [vitals, setVitals] = useState<Vitals>({
-    heartRate: 0, 
-    respRate: 0, 
+    heartRate: 0,
+    respRate: 0,
     o2Saturation: 0,
     systolicBP: 0,
     diastolicBP: 0,
     eTCO2: 0,
+    sessionID: "",
   });
 
-  const { state } = useVitals();  //from context get array of selected vitals
-  const selected: string[] = state?.selected ?? []; 
+  const { state } = useVitals(); //from context get array of selected vitals
+  const selected: string[] = state?.selected ?? [];
 
-  const fetchVitals = async () => {  // from backend
+  const fetchVitals = async () => {
+    // from backend
     const data = await getVitals();
     setVitals(data);
   };
@@ -115,7 +117,7 @@ const MonitorView: React.FC = () => {
               unit={info.unit}
               className={info.className}
             />
-          )
+          );
         })}
       </div>
 
@@ -128,12 +130,11 @@ const MonitorView: React.FC = () => {
           color="#00ff4f"
           height={120}
           easing="power1.inOut"
-          waveformType='ecg'
+          waveformType="ecg"
           width={waveformWidth}
           mmPerSecond={25}
         />
       </div>
-
     </div>
   );
 };
