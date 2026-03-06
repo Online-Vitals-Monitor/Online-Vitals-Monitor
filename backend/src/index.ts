@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import vitalsRouter from "../src/vitalsRouter";
-import sessionsRouter from "../src/sessionsRouter";
+import vitalsRouter from "./vitalsRouter";
+import sessionsRouter from "./sessionsRouter";
 
 const app = express();
 
