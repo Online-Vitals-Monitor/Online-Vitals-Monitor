@@ -1,28 +1,31 @@
 import { useEffect, useState } from "react";
-import { createSession } from "../api/sessionApi";
+import { sessionApi } from "../api/sessionApi";
 
 export function useInitializeSession() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const existing = localStorage.getItem("sessionId");
+    const initialize = async () => {
+      try {
+        const existing = localStorage.getItem("sessionId");
 
-    // Already have a session
-    if (existing) {
-      setReady(true);
-      return;
-    }
+        // If session already exists, just continue
+        if (existing) {
+          setReady(true);
+          return;
+        }
 
-    // No session → create one
-    createSession()
-      .then((data) => {
-        localStorage.setItem("sessionId", data.publicID);
+        // Otherwise create a new session
+        await sessionApi.createSession();
+
         setReady(true);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Could not create session:", err);
         setReady(true);
-      });
+      }
+    };
+
+    initialize();
   }, []);
 
   return ready;

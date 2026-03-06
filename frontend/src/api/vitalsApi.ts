@@ -10,14 +10,9 @@ export interface Vitals {
   sessionID: string;
 }
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = "http://localhost:4000";
 
-const getBaseUrl = () => {
-  if (!API_URL) {
-    throw new Error("API URL is not defined. Check REACT_APP_API_URL env var.");
-  }
-  return API_URL;
-};
+const getBaseUrl = () => API_URL;
 
 export async function getVitals(): Promise<Vitals> {
   const baseUrl = getBaseUrl();

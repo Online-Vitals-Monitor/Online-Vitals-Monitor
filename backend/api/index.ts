@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import vitalsRouter from "./vitalsRouter";
-import sessionsRouter from "./sessionsRouter";
+import vitalsRouter from "../src/vitalsRouter";
+import sessionsRouter from "../src/sessionsRouter";
 
 const app = express();
 
@@ -9,6 +9,7 @@ const app = express();
 //   origin: "https://online-vitals-monitor-frontend-pearl.vercel.app",
 //   methods: ["GET", "POST"]
 // }));
+
 app.use(cors());
 
 app.use(express.json());

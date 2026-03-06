@@ -8,7 +8,7 @@ const Heropage = () => {
   const [newSessionId, setNewSessionId] = useState("");
   const [existingSessionId, setExistingSessionId] = useState("");
   const [error, setError] = useState("");
-  //const { session, connectNew, connectExisting } = useSession();
+  const { session, connectNew, connectExisting } = useSession();
   const navigate = useNavigate();
   const location = useLocation() as any;
 
@@ -106,7 +106,7 @@ const Heropage = () => {
               <p>
                 Current session:{" "}
                 <span className="header-hook-dark">
-                  <strong>{session.id}</strong>
+                  <strong>{session.publicID}</strong>
                 </span>
               </p>
             </div>
