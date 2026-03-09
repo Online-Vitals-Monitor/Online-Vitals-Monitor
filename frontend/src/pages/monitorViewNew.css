@@ -1,0 +1,39 @@
+.monitor-grid {
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
+  gap: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: yellow;
+}
+
+/* 2. The Individual Row (Flexbox for Wave + Numerics) */
+.monitor-track {
+  display: flex;
+  justify-content: space-between; /* Pushes wave left, numerics right */
+  align-items: stretch;
+  border: 1px solid #333;
+}
+
+/* 3. The Inner Pieces */
+.waveform {
+  flex-grow: 1;
+  border: solid red;
+  /* Your canvas/chart goes here */
+}
+
+.numerics {
+  width: 150px; /* Fixed width for the numbers section */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end; /* Aligns text to the right */
+  padding: 10px;
+}
+
+/* 
+      <div className="ecg">1</div>
+      <div className="resp">2</div>
+      <div className="spo2">3</div>
+      <div className="bpmmhg">4</div>
+      <div className="etco2kpa">5</div> */

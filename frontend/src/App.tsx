@@ -5,6 +5,9 @@ import ValuesView from "./pages/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
 import { VitalsProvider } from "./contexts/vitalsContext";
+
+import MonitorViewNew from "./pages/monitorViewNew";
+
 import "./App.css";
 
 const App = () => {
@@ -23,6 +26,8 @@ const App = () => {
                 <Route path="/" element={<Homepage />} />
                 <Route path="/monitor" element={<MonitorView />} />
                 <Route path="/values" element={<ValuesView />} />
+
+                <Route path="/monitortest" element={<MonitorViewNew />} />
               </Routes>
             </Router>
           </VitalsProvider>
