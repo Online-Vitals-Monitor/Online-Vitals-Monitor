@@ -1,0 +1,163 @@
+.monitor-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  /* grid-template-rows: repeat(5, 1fr); */
+  grid-template-rows: 1fr;
+
+  grid-template-areas:
+    "wave-ecg   num-ecg"
+    "wave-resp  num-resp"
+    "wave-pleth num-pleth"
+    "wave-etco2 num-etco2"
+    "wave-bp    num-bp";
+
+  height: 100%;
+  width: 100%;
+  background-color: black;
+}
+
+.waveform-container {
+  overflow: hidden;
+  border-bottom: 1px solid red;
+  margin: 5px;
+}
+
+.numerics-container {
+  border-bottom: 1px solid blue;
+  margin: 5px;
+}
+
+/*-------------------------------------------------*/
+/* ecg */
+.numerics-ecg {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 0.2fr 0.2fr 1fr;
+  grid-template-areas:
+    "title val"
+    "unit  val"
+    ". val";
+  gap: 0 15px;
+}
+
+.numerics-ecg .numerics-title {
+  font-size: 2rem;
+}
+
+.numerics-ecg .numerics-unit {
+  font-size: 2rem;
+  font-weight: 200;
+}
+
+.numerics-ecg .numerics-value {
+  align-self: center;
+
+  font-size: 10vw;
+  font-weight: bold;
+  line-height: 1;
+}
+/*-------------------------------------------------*/
+/* resp */
+.numerics-resp {
+  display: grid;
+
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 0.2fr 1fr;
+
+  grid-template-areas:
+    "title title"
+    "val  unit";
+  /* "val unit"; */
+  gap: 0 15px;
+}
+
+.numerics-resp .numerics-title {
+  font-size: 2rem;
+}
+
+.numerics-resp .numerics-unit {
+  font-size: 2rem;
+  text-align: center;
+}
+
+.numerics-resp .numerics-value {
+  font-size: 10vw;
+  text-align: center;
+}
+/*-------------------------------------------------*/
+/* spO2 */
+.numerics-pleth {
+  display: grid;
+
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 0.2fr 1fr;
+
+  grid-template-areas:
+    "title title"
+    "val  unit";
+}
+
+.numerics-pleth .numerics-title {
+  font-size: 2rem;
+}
+
+.numerics-pleth .numerics-unit {
+  font-size: 2rem;
+  place-self: center;
+}
+
+.numerics-pleth .numerics-value {
+  font-size: 8vw;
+  text-align: center;
+}
+/*-------------------------------------------------*/
+/* etco2 */
+.numerics-etco2 {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 0.2fr 0.5fr 0.5fr;
+
+  grid-template-areas:
+    "title title"
+    "val  ."
+    "val unit";
+}
+
+.numerics-etco2 .numerics-title {
+  font-size: 2rem;
+}
+
+.numerics-etco2 .numerics-unit {
+  font-size: 2rem;
+}
+
+.numerics-etco2 .numerics-value {
+  font-size: 8vw;
+  text-align: center;
+}
+/*-------------------------------------------------*/
+/* bp */
+.numerics-bp {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 0.2fr 1fr;
+
+  grid-template-areas:
+    "title title"
+    "val  unit";
+}
+
+.numerics-bp .numerics-title {
+  font-size: 2rem;
+}
+
+.numerics-bp .numerics-unit {
+  font-size: 2rem;
+}
+
+.numerics-bp .numerics-value {
+  font-size: 4vw;
+  text-align: center;
+}
