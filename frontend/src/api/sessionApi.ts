@@ -79,7 +79,9 @@ export const sessionApi: SessionApi = {
   async getCurrentSession(): Promise<SessionInfo | null> {
     const stored = localStorage.getItem("sessionId");
 
-    if (!stored) return null;
+    if (!stored) {
+      return null; // STOP HERE
+    }
 
     const res = await fetch(`${SESSION_URL}/${stored}`);
 

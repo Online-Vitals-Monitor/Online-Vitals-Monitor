@@ -5,7 +5,7 @@ import MonitorView from "./pages/monitorView";
 import ValuesView from "./pages/controlVitalsView/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
-import RequireSession from './components/RequireSession';
+import RequireSession from "./components/RequireSession";
 import { VitalsProvider } from "./contexts/vitalsContext";
 import "./App.css";
 
@@ -15,8 +15,8 @@ const App = () => {
     <>
       <div className="app">
         <div className="app-header">
-          <VitalsProvider>
-            <SessionProvider>
+          <SessionProvider>
+            <VitalsProvider>
               <Router>
                 <NavbarNew
                   isSessionActive={sessionActive}
@@ -30,8 +30,8 @@ const App = () => {
                   </Route>
                 </Routes>
               </Router>
-            </SessionProvider>
-          </VitalsProvider>
+            </VitalsProvider>
+          </SessionProvider>
         </div>
       </div>
     </>

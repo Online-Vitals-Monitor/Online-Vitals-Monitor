@@ -106,7 +106,7 @@ const Heropage = () => {
               <p>
                 Current session:{" "}
                 <span className="header-hook-dark">
-                  <strong>{session.publicID}</strong>
+                  <strong>{session?.publicID ?? "N/A"}</strong>
                 </span>
               </p>
             </div>

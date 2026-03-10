@@ -230,7 +230,10 @@ const ControlVitalsView: React.FC = () => {
             title={`${title}${key === "eTCO2" ? ` (${etco2Unit})` : ""}`}
             value={
               unitConverter
-                ? unitConverter(sliderValues[key as keyof Vitals], etco2Unit)
+                ? unitConverter(
+                    sliderValues[key as keyof Vitals] as number,
+                    etco2Unit,
+                  )
                 : (sliderValues[key as keyof Vitals] as number)
             }
             onChange={(value) =>

@@ -17,7 +17,6 @@ router.post("/", async (req, res) => {
     let publicID = generatePublicID();
     let sessionRow = null;
 
-    // Insert until the publicID is unique
     while (!sessionRow) {
       const { data, error } = await supabase
         .from("sessions")
@@ -26,26 +25,22 @@ router.post("/", async (req, res) => {
         .single();
 
       if (error?.code === "23505") {
-        publicID = generatePublicID(); // regenerate on collision
+        publicID = generatePublicID();
       } else if (error) {
-        console.error("Error creating session:", error);
         return res.status(500).json({ error });
       } else {
         sessionRow = data;
       }
     }
 
-    // Return minimal session info
     return res.json({
-      id: sessionRow.id,
       publicID: sessionRow.publicID,
       createdAt: sessionRow.createdAt,
       lastSeen: sessionRow.lastSeen,
     });
   } catch (err) {
-    console.error("Unexpected /api/sessions error:", err);
-    return res.status(500).json({ error: "internal error" });
+    console.error(err);
+    res.status(500).json({ error: "internal error" });
   }
 });
-
 export default router;
