@@ -23,6 +23,9 @@ const normalizeToRange = (values: number[], minOut = 0, maxOut = 100) => {
 };
 
 export function generateEcgWaveform(heartRate: number): number[] {
+  // flatline
+  if (heartRate <= 0) return Array(100).fill(0);
+
   const n = cycleSamplesForRate(heartRate || 72, 20, 220);
   const beat = Array.from({ length: n }, (_, i) => {
     const x = i / n;
@@ -38,7 +41,6 @@ export function generateEcgWaveform(heartRate: number): number[] {
   return repeatCycle(normalizeToRange(beat, 8, 94), 4);
 }
 
-// placeholder implementations
 export function generateRespWaveform(respRate: number): number[] {
   // flatline
   if (respRate <= 0) return Array(100).fill(0);
@@ -84,48 +86,67 @@ export function generateRespWaveform(respRate: number): number[] {
     const noise = (Math.random() - 0.5) * 1.5;
     waveform.push(baseline + noise);
   }
-
-  // // Keep the 1:2 I:E ratio, but group the active breathing points together
-  // const activePoints = Math.floor(totalPoints * 0.83); // roughly 33% insp + 50% exp
-  // const pausePoints = totalPoints - activePoints;
-
-  // const waveform: number[] = [];
-  // const amplitude = 50; 
-  // const baseline = 10;  
-
-  // // Phase 1 & 2: Active Breath (Smooth curve from 0 to PI)
-  // for (let i = 0; i < activePoints; i++) {
-  //   const progress = i / activePoints;
-  //   // Math.sin from 0 to PI creates a smooth, bell-like curve
-  //   const waveCurve = Math.sin(progress * Math.PI);
-    
-  //   // Add a tiny bit of noise across the whole breath for realism
-  //   const noise = (Math.random() - 0.5) * 1.5;
-    
-  //   const val = baseline + (amplitude * waveCurve) + noise;
-  //   waveform.push(val);
-  // }
-
-  // // Phase 3: Expiratory Pause
-  // for (let i = 0; i < pausePoints; i++) {
-  //   const noise = (Math.random() - 0.5) * 1.5;
-  //   waveform.push(baseline + noise);
-  // }
   
   return waveform
 }
 
-export function generatePlethWaveform(
-  heartRate: number,
-  _o2Saturation: number,
-): number[] {
-  return generateEcgWaveform(heartRate || 72);
+export function generatePlethWaveform(heartRate: number, spo2: number): number[] {
+  // flatline
+  if (heartRate <= 0) return Array(100).fill(0);
+
+  const mmPerSecond = 25; // from monitorView.tsx
+  const pxPerMm = 3.78;     // from WaveformChart.tsx
+  const pxPerSec = mmPerSecond * pxPerMm;
+  
+  const secondsPerBeat = 60 / heartRate;
+  const totalPoints = Math.floor(pxPerSec * secondsPerBeat);
+
+  // split the beat into phrases
+  const risePoints = Math.floor(totalPoints * 0.20); // fast rise for 20% of wave
+  const fallPoints = totalPoints - risePoints; // slower fall for rest of wave
+
+  const waveform: number[] = [];
+  // scale amplitude slightly by SpO2 value
+  const amplitude = 50 * (spo2 / 100); 
+  const baseline = 10;
+
+  // fast systolic rise
+  for (let i = 0; i < risePoints; i++) {
+    const progress = i / risePoints;
+    // steep sin for initial rise
+    const val = baseline + amplitude * Math.sin(progress * (Math.PI / 2));
+    waveform.push(val);
+  }
+
+  // diastolic fall 
+  for (let i = 0; i < fallPoints; i++) {
+    const progress = i / fallPoints;
+
+    // main decay as an exponential
+    let decay = Math.cos(progress * (Math.PI / 2));
+
+    // add dicrotic notch
+    const notchLocation = 0.35;
+    const notchWidth = 0.08;
+    const notchHeight = 0.15;
+
+    const bump = notchHeight * Math.exp(
+      -Math.pow(progress - notchLocation, 2) / (2 * Math.pow(notchWidth, 2))
+    );
+    decay += bump;
+    waveform.push(baseline + (amplitude * decay));  
+  }
+  
+  return waveform;
 }
 
-export function generateEtco2Waveform(
-  respRate: number,
-  _etco2Kpa: number,
-): number[] {
+export function generateEtco2Waveform(respRate: number, etco2Value: number): number[] {
+  // flatline
+  if (respRate <= 0) return Array(100).fill(0);
+
+  const mmPerSecond = 6.25; // from monitorView.tsx
+  const pxPerMm = 3.78;     // from WaveformChart.tsx
+  const pxPerSec = mmPerSecond * pxPerMm;
   return generateEcgWaveform(respRate || 14);
 }
 
