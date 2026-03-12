@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { getVitals, updateVitals, Vitals } from "../../api/vitalsApi";
 import { useDebouncedCallback, useApiErrorHandler } from "./cvvHooks";
 import { presetConfigs, vitalsConfig } from "./vitalsConfigs";
+import { useSession } from "../../contexts/sessionContext";
 import VitalControl from "./vitalControl";
 import "./controlVitalsView.css"
 import {
@@ -31,6 +32,8 @@ const ControlVitalsView: React.FC = () => {
     eTCO2: 0,
   });
 
+  const { session } = useSession();
+  const [showSessionId, setShowSessionId] = useState(true);
   const [updateMode, setUpdateMode] = useState<"live" | "push">("live");
   const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
   const [selectedPreset, setSelectedPreset] = useState("");
@@ -369,6 +372,32 @@ const ControlVitalsView: React.FC = () => {
             </ToggleButton>
           </ToggleButtonGroup>
 
+          <Typography
+            variant="subtitle1"
+            className="control-vitals-drawer-subtitle"
+            sx={{ mt: 3 }}
+          >
+            Session ID Display
+          </Typography>
+
+          <ToggleButtonGroup
+            value={showSessionId}
+            exclusive
+            onChange={(_, newVal) => {
+              if (newVal !== null) setShowSessionId(newVal);
+            }}
+            aria-label="show-session-id"
+            color="primary"
+            size="small"
+          >
+            <ToggleButton value={true} aria-label="Show session ID">
+              Show
+            </ToggleButton>
+            <ToggleButton value={false} aria-label="Hide session ID">
+              Hide
+            </ToggleButton>
+          </ToggleButtonGroup>
+
           <Button
             className="control-vitals-close-menu-btn"
             onClick={() => setDisplayMenuOpen(false)}
@@ -376,6 +405,17 @@ const ControlVitalsView: React.FC = () => {
             Close Menu
           </Button>
         </Drawer>
+
+        {showSessionId && session && (
+          <Typography 
+            variant="body2" 
+            className="control-vitals-session-display"
+            sx={{ mt: 1, textAlign: 'center', color: '#ced8cd' }}
+          >
+            Current session: <strong>{session.id}</strong>
+          </Typography>
+        )}
+        
       </Box>
 
       {errorMessage && (
