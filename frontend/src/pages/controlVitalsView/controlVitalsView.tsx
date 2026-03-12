@@ -214,7 +214,9 @@ const ControlVitalsView: React.FC = () => {
             label="Preset (applied immediately)"
             onChange={handlePresetChange}
           >
-            {presetConfigs.map((preset) => (
+            {presetConfigs
+            .filter(preset => preset.name !== "Reset Defaults")
+            .map((preset) => (
               <MenuItem key={preset.name} value={preset.name}>
                 {preset.name}
               </MenuItem>
@@ -265,6 +267,33 @@ const ControlVitalsView: React.FC = () => {
             updateMode === "push" ? "with-save" : "no-save"
           }`}
         >
+          <Button
+            variant="contained"
+            color="primary"
+            className="control-vitals-reset-btn"
+            onClick={() => {
+              const syntheticEvent = {
+                target: { value: "Reset Defaults" }
+              } as SelectChangeEvent;
+              handlePresetChange(syntheticEvent);
+            }}
+          >
+            Reset Default Values
+          </Button>
+
+          <div className="toggle-save-spacer" />
+
+          {updateMode === "push" && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSaveClick}
+              className="control-vitals-save-btn"
+            >
+              Save New Vitals
+            </Button>
+          )}
+
           <ToggleButtonGroup
             color="primary"
             value={updateMode}
@@ -282,16 +311,6 @@ const ControlVitalsView: React.FC = () => {
             <ToggleButton value="live">Live Updates</ToggleButton>
             <ToggleButton value="push">Push Updates</ToggleButton>
           </ToggleButtonGroup>
-          {updateMode === "push" && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSaveClick}
-              className="control-vitals-save-btn"
-            >
-              Save New Vitals
-            </Button>
-          )}
         </div>
 
         <Button

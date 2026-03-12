@@ -87,26 +87,45 @@
 .toggle-save-row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  width: 100%;
   gap: 12px;
 }
 
-.toggle-save-row.with-save {
-  justify-content: space-between;
+.control-vitals-reset-btn {
+  flex: 0 0 auto;
+  text-transform: none;
+  font-weight: 500;
+  border-radius: 4px;
+  color: #020617;
+  background-color: rgb(167, 197, 224);
+  border-color: rgb(167, 197, 224);
+  min-height: 36px;
+  padding: 6px 16px;
 }
 
-.toggle-save-row.no-save {
-  justify-content: center;
+.toggle-save-spacer {
+  flex: 1;
+}
+
+.toggle-save-center-group {
+  flex: 0 0 auto;
 }
 
 .control-vitals-save-btn {
+  flex: 0 0 auto;
   min-width: 120px;
 }
 
 .control-vitals-display-btn {
   margin-top: 16px;
   font-weight: bold;
-  background-color: #757575;
+  background-color: #656565 !important;
+  color: #ffffff !important;
+}
+
+.control-vitals-display-btn:hover {
+  background-color: #616161 !important;
+  color: #ffffff !important;
 }
 
 .control-vitals-drawer-paper {
@@ -141,14 +160,12 @@
   border-color: rgba(156, 163, 175, 0.9);
 }
 
-/* Selected state – subtle, not big gradient */
 .control-vitals-bottom .MuiToggleButton-root.Mui-selected {
   color: #020617;
   background-color: rgb(167, 197, 224);
   border-color: rgb(167, 197, 224);
 }
 
-/* Selected + hover */
 .control-vitals-bottom .MuiToggleButton-root.Mui-selected:hover {
   background-color: rgb(167, 197, 224);
 }
