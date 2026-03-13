@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import ControlVitalsView from "../pages/controlVitalsView/controlVitalsView";
 import * as vitalsApi from "../api/vitalsApi";
+import { SessionProvider } from "../contexts/sessionContext";
 
 jest.mock("../api/vitalsApi");
 
@@ -16,7 +17,12 @@ const defaultVitals = {
   eTCO2: 5,
 };
 
-const renderView = () => render(<ControlVitalsView />);
+const renderView = () =>
+  render(
+    <SessionProvider>
+      <ControlVitalsView />
+    </SessionProvider>
+  );
 
 const setupWithVitals = async () => {
   const utils = renderView();
