@@ -33,7 +33,6 @@ const ControlVitalsView: React.FC = () => {
   });
 
   const { session } = useSession();
-  const [showSessionId, setShowSessionId] = useState(true);
   const [updateMode, setUpdateMode] = useState<"live" | "push">("live");
   const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
   const [selectedPreset, setSelectedPreset] = useState("");
@@ -42,6 +41,12 @@ const ControlVitalsView: React.FC = () => {
   const etco2Max = etco2Unit === "kPa" ? 20 : 150;
   const [uiVitals, setUiVitals] = useState<Vitals>(vitals);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [showSessionId, setShowSessionId] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true; // SSR safety if needed
+    const stored = window.localStorage.getItem("cvv-show-session-id");
+    return stored !== null ? stored === "true" : true;
+  });
 
   const vitalsRef = useRef(vitals);
   const pendingVitalsRef = useRef(pendingVitals);
@@ -60,6 +65,11 @@ const ControlVitalsView: React.FC = () => {
   useEffect(() => {
     updateModeRef.current = updateMode;
   }, [updateMode]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem("cvv-show-session-id", String(showSessionId));
+  }, [showSessionId]);
 
   // fetch vitals from API
   const fetchVitals = useCallback(async () => {
