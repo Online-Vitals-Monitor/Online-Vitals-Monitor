@@ -1,6 +1,8 @@
 import "./Heropage.css";
-import { Link } from "react-router-dom";
-import MonitorView from "../monitorView";
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useSession } from "../../contexts/sessionContext";
+// import MonitorView from "../monitorView";
 
 const Heropage = () => {
   const [newSessionId, setNewSessionId] = useState("");
