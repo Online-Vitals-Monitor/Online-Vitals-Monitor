@@ -5,7 +5,7 @@ import MonitorView from "./pages/monitorView";
 import ValuesView from "./pages/controlVitalsView/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
-import RequireSession from './components/RequireSession';
+import RequireSession from "./components/RequireSession";
 import { VitalsProvider } from "./contexts/vitalsContext";
 
 import MonitorViewNew from "./pages/monitor/monitorViewNew";
@@ -19,19 +19,6 @@ const App = () => {
       <div className="app">
         <div className="app-header">
           <VitalsProvider>
-            <Router>
-              <NavbarNew
-                isSessionActive={sessionActive}
-                setIsSessionActive={setSessionActive}
-              />
-              <Routes>
-                <Route path="/" element={<Homepage />} />
-                <Route path="/monitor" element={<MonitorView />} />
-                <Route path="/values" element={<ValuesView />} />
-
-                <Route path="/monitortest" element={<MonitorViewNew />} />
-              </Routes>
-            </Router>
             <SessionProvider>
               <Router>
                 <NavbarNew
