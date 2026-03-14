@@ -2,7 +2,7 @@ import "./Heropage.css";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSession } from "../../contexts/sessionContext";
-import MonitorView from "../monitorView";
+// import MonitorView from "../monitorView";
 
 const Heropage = () => {
   const [newSessionId, setNewSessionId] = useState("");
@@ -13,10 +13,11 @@ const Heropage = () => {
   const location = useLocation() as any;
 
   const target =
-    location.state?.from?.pathname && location.state.from.pathname !== "/session"
+    location.state?.from?.pathname &&
+    location.state.from.pathname !== "/session"
       ? location.state.from.pathname
       : "/monitor";
-  
+
   const handleNewSession = async () => {
     setError("");
     try {
@@ -103,11 +104,13 @@ const Heropage = () => {
           {session && (
             <div className="current-session-banner">
               <p>
-                Current session: <span className="header-hook-dark"><strong>{session.id}</strong></span>
+                Current session:{" "}
+                <span className="header-hook-dark">
+                  <strong>{session.id}</strong>
+                </span>
               </p>
             </div>
           )}
-
         </div>
 
         <div className="monitor-section">
@@ -115,7 +118,7 @@ const Heropage = () => {
             <div className="monitor-glow" />
 
             <div className="monitor-box">
-              <MonitorView />
+              {/* <MonitorView /> */}
               <div className="preview-label">Live Preview</div>
             </div>
           </div>

@@ -5,8 +5,11 @@ import MonitorView from "./pages/monitorView";
 import ValuesView from "./pages/controlVitalsView/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
-import RequireSession from './components/RequireSession';
+import RequireSession from "./components/RequireSession";
 import { VitalsProvider } from "./contexts/vitalsContext";
+
+import MonitorViewNew from "./pages/monitor/monitorViewNew";
+
 import "./App.css";
 
 const App = () => {
