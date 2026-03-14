@@ -147,7 +147,55 @@ export function generateEtco2Waveform(respRate: number, etco2Value: number): num
   const mmPerSecond = 6.25; // from monitorView.tsx
   const pxPerMm = 3.78;     // from WaveformChart.tsx
   const pxPerSec = mmPerSecond * pxPerMm;
-  return generateEcgWaveform(respRate || 14);
+  const secondsPerBreath = 60 / respRate;
+  const totalPoints = Math.floor(pxPerSec * secondsPerBreath);
+
+  // divide into phases
+  const baselinePoints = Math.floor(totalPoints * 0.10); // phase I
+  const risePoints = Math.floor(totalPoints * 0.10);     // phase II (sharp rise)
+  const plateauPoints = Math.floor(totalPoints * 0.35);  // phase III
+  const fallPoints = Math.floor(totalPoints * 0.10);     // phase IV (sharp decline)
+  const restPoints = totalPoints - (baselinePoints + risePoints + plateauPoints + fallPoints);  
+
+  const waveform: number[] = [];
+  const amplitude = etco2Value;
+  const baseline = 2; // offset from bottom for visibility
+
+  // baseline
+  for (let i = 0; i < baselinePoints; i++) {
+    waveform.push(baseline);
+  }
+
+  // linear rise
+  for (let i = 0; i < risePoints; i++) {
+    const progress = i / risePoints;
+    // round corners
+    const curve = (Math.sin((progress * Math.PI) - (Math.PI / 2)) + 1) / 2;
+    waveform.push(baseline + (amplitude * curve));
+  }
+
+  // plateau
+  for (let i = 0; i < plateauPoints; i++) {
+    const progress = i / plateauPoints;
+    // slightly upward tilt
+    const tilt = 5 * progress; 
+    const noise = (Math.random() - 0.2) * 1.5;
+    waveform.push(baseline + amplitude + tilt);
+  }
+
+  // linear fall
+  for (let i = 0; i < fallPoints; i++) {
+    const progress = i / fallPoints;
+    const curve = (Math.sin((progress * Math.PI) + (Math.PI / 2)) + 1) / 2;
+    waveform.push(baseline + (amplitude * (1 - progress)));
+  }
+
+  // remainder of cycle at baseline
+  for (let i = 0; i < restPoints; i++) {
+    waveform.push(baseline);
+  }
+
+  return waveform;
 }
 
 export function generateBpWaveform(

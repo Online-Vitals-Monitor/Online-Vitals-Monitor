@@ -40,12 +40,22 @@ const MonitorView: React.FC = () => {
 
   const fetchVitals = async () => {
     // from backend
-    try {
-      const data = await getVitals();
-      setVitals(data);
-    } catch (err) {
-      console.error("Failed to fetch vitals:", err);
-    }
+    // try {
+    //   const data = await getVitals();
+    //   setVitals(data);
+    // } catch (err) {
+    //   console.error("Failed to fetch vitals:", err);
+    // }
+
+    // mock data for testing / when database is down
+    setVitals({
+      heartRate: 80,
+      respRate: 14, 
+      o2Saturation: 99,
+      systolicBP: 38,
+      diastolicBP: 80,
+      eTCO2: 35,
+    });
   };
 
   useEffect(() => {
@@ -117,7 +127,7 @@ const MonitorView: React.FC = () => {
       label: `SpO2 Pleth  ${vitals.o2Saturation || 0}%`,
       beatData: plethBeat,
       color: "#f3d66e",
-      mmPerSecond: 12.5,
+      mmPerSecond: 25,
     },
     {
       id: "etco2",
