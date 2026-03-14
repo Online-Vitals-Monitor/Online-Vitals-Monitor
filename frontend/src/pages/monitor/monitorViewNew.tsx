@@ -35,7 +35,7 @@ const MonitorViewNew = () => {
     eTCO2: 0,
   });
 
-  const { state } = useVitals(); //from context get array of selected vitals
+  // const { state } = useVitals(); //from context get array of selected vitals
   // const selected: string[] = state?.selected ?? [];
 
   const fetchVitals = async () => {

@@ -1,6 +1,6 @@
 import "./Heropage.css";
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSession } from "../../contexts/sessionContext";
 // import MonitorView from "../monitorView";
 
