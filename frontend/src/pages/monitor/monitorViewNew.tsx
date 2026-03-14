@@ -3,7 +3,7 @@ import "./monitorViewNew.css";
 import { getVitals, Vitals } from "../../api/vitalsApi";
 import WaveformChart from "../../components/WaveformChart";
 import { useVitals } from "../../contexts/vitalsContext";
-import VitalCard from "../../components/VitalCard";
+// import VitalCard from "../../components/VitalCard";
 import {
   generateBpWaveform,
   generateEcgWaveform,
@@ -13,17 +13,17 @@ import {
 } from "../../utils/waveforms";
 
 //map of keys for vital cards
-const vitalInfo: Record<
-  string,
-  { title: string; unit?: string; className?: string }
-> = {
-  heartRate: { title: "Heart Rate", unit: "bpm" },
-  respRate: { title: "Respiratory Rate", unit: "rpm" },
-  o2Saturation: { title: "Oxygen Saturation", unit: "%" },
-  systolicBP: { title: "Systolic BP", unit: "mmHg" },
-  diastolicBP: { title: "Diastolic BP", unit: "mmHg" },
-  eTCO2: { title: "ETCO2", unit: "mmHg" },
-};
+// const vitalInfo: Record<
+//   string,
+//   { title: string; unit?: string; className?: string }
+// > = {
+//   heartRate: { title: "Heart Rate", unit: "bpm" },
+//   respRate: { title: "Respiratory Rate", unit: "rpm" },
+//   o2Saturation: { title: "Oxygen Saturation", unit: "%" },
+//   systolicBP: { title: "Systolic BP", unit: "mmHg" },
+//   diastolicBP: { title: "Diastolic BP", unit: "mmHg" },
+//   eTCO2: { title: "ETCO2", unit: "mmHg" },
+// };
 
 const MonitorViewNew = () => {
   const [vitals, setVitals] = useState<Vitals>({
@@ -36,7 +36,7 @@ const MonitorViewNew = () => {
   });
 
   const { state } = useVitals(); //from context get array of selected vitals
-  const selected: string[] = state?.selected ?? [];
+  // const selected: string[] = state?.selected ?? [];
 
   const fetchVitals = async () => {
     // from backend
@@ -65,7 +65,6 @@ const MonitorViewNew = () => {
       if (!wrapper) return;
 
       const containerHeight = wrapper.offsetHeight;
-      const containerWidth = wrapper.offsetWidth;
       const calculatedRowHeight = containerHeight / 5 - 10;
 
       setDimensions({
