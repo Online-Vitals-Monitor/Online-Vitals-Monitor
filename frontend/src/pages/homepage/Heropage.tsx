@@ -41,7 +41,7 @@ const Heropage = () => {
             <div className="monitor-glow" />
 
             <div className="monitor-box">
-              <MonitorView />
+              {/* <MonitorView /> */}
               <div className="preview-label">Live Preview</div>
             </div>
           </div>

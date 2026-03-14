@@ -76,7 +76,6 @@ export default function WaveformChart({
       },
       options: {
         animation: false,
-        maintainAspectRatio: false, // NOTE: This is here for testing things because the waveforms keep clipping
         responsive: true,
         scales: {
           x: {
