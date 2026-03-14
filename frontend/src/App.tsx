@@ -29,6 +29,7 @@ const App = () => {
                   <Route path="/" element={<Homepage />} />
                   <Route element={<RequireSession />}>
                     <Route path="/monitor" element={<MonitorView />} />
+                    <Route path="/monitortest" element={<MonitorViewNew />} />
                     <Route path="/values" element={<ValuesView />} />
                   </Route>
                 </Routes>
