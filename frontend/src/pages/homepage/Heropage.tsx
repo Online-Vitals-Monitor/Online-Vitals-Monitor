@@ -1,6 +1,6 @@
 import "./Heropage.css";
 import { Link } from "react-router-dom";
-import MonitorView from "../monitorView";
+// import MonitorView from "../monitorView";
 
 const Heropage = () => {
   return (
