@@ -57,18 +57,26 @@ const MonitorViewNew = () => {
 
   // measure layout elements (for fitting waveforms)
   const waveformContainerRef = useRef<HTMLDivElement>(null);
-  const [waveformWidth, setWaveformWidth] = useState(300); // default
+  const [dimensions, setDimensions] = useState({ width: 300, height: 100 }); // default
 
   useEffect(() => {
-    function computeWidth() {
+    const computeDimensions = () => {
       const wrapper = waveformContainerRef.current;
       if (!wrapper) return;
-      setWaveformWidth(Math.max(240, wrapper.offsetWidth - 12));
-    }
 
-    computeWidth();
-    window.addEventListener("resize", computeWidth);
-    return () => window.removeEventListener("resize", computeWidth);
+      const containerHeight = wrapper.offsetHeight;
+      const containerWidth = wrapper.offsetWidth;
+      const calculatedRowHeight = containerHeight / 5 - 10;
+
+      setDimensions({
+        width: Math.max(240, wrapper.offsetWidth - 500), // 450 px for right column rn
+        height: Math.max(50, calculatedRowHeight),
+      });
+    };
+
+    computeDimensions();
+    window.addEventListener("resize", computeDimensions);
+    return () => window.removeEventListener("resize", computeDimensions);
   }, []);
 
   const ecgBeat = useMemo(
@@ -152,16 +160,21 @@ const MonitorViewNew = () => {
           {/* LEFT COLUMN */}
           <div
             className="waveform-container"
-            style={{ gridArea: `wave-${wave.id}` }}
+            style={{
+              gridArea: `wave-${wave.id}`,
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+            }}
           >
             <WaveformChart
               elementId={`${wave.id}_waveform`}
               beatData={wave.beatData}
               color={wave.color}
-              height={95}
               easing="Power2.inOut"
               waveformType="ecg"
-              width={waveformWidth}
+              width={dimensions.width}
+              height={dimensions.height}
               mmPerSecond={wave.mmPerSecond}
             />
           </div>

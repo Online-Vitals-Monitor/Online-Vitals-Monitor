@@ -7,7 +7,6 @@ import Homepage from "./pages/homepage/Homepage";
 import { VitalsProvider } from "./contexts/vitalsContext";
 
 import MonitorViewNew from "./pages/monitor/monitorViewNew";
-import Montest from "./pages/monitor/montest";
 
 import "./App.css";
 
@@ -29,7 +28,6 @@ const App = () => {
                 <Route path="/values" element={<ValuesView />} />
 
                 <Route path="/monitortest" element={<MonitorViewNew />} />
-                <Route path="/gridtesting" element={<Montest />} />
               </Routes>
             </Router>
           </VitalsProvider>

@@ -18,7 +18,6 @@ const routes = [
   { page: "Control Vitals", path: "/values" },
   { page: "Monitor", path: "/monitor" },
   { page: "MonitorTest", path: "/monitortest" },
-  { page: "Montest", path: "/gridtesting" },
 ];
 
 const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
