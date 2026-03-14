@@ -72,40 +72,70 @@
   display: inline-block;
 }
 
-.hero-description {
-  font-family: "Inter", sans-serif;
-  font-size: 18px;
-  font-weight: 400;
-  letter-spacing: -0.2px;
-  color: #f5f5f5;
-  margin-bottom: 3rem;
-  line-height: 24px;
-  max-width: 600px;
+.hero-description, .current-session-banner, .session-error {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: -0.2px;
+    color: #F5F5F5;
+    margin-bottom: 3rem;
+    line-height: 24px;
+    max-width: 600px;
+}
+
+.current-session-banner {
+    margin-top: 3rem;
+}
+
+.session-error {
+    color: #F50000;
 }
 
 .session-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 100%;
+    list-style: none;
+    display: flex;
+    flex-direction: column; 
+    gap: 20px; 
+    width: 100%;
 }
 
-.create-session,
-.join-session {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 500px;
-  height: 70px;
-  border-radius: 12px;
-  cursor: pointer;
-  text-decoration: none;
-  font-family: "Poppins", sans-serif;
-  font-size: 1.2rem;
-  font-weight: 600;
-  transition: transform 0.2s ease;
+.session-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.new-session-input,
+.old-session-input {
+    flex: 1;
+    max-width: 260px;
+    height: 50px;
+    margin-left: 20px;
+    padding: 0 16px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    background-color: #181c1a; 
+    color: #f5f5f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    outline: none;
+}
+
+.create-session, .join-session {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    width: 100%; 
+    max-width: 500px; 
+    height: 70px; 
+    border-radius: 12px;
+    cursor: pointer; 
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: transform 0.2s ease;
 }
 
 .create-session {
