@@ -77,6 +77,13 @@ export default function WaveformChart({
       options: {
         animation: false,
         responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 10,
+            bottom: 10
+          }
+        },
         scales: {
           x: {
             type: "linear",
