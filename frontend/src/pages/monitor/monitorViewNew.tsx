@@ -183,7 +183,7 @@ const MonitorViewNew = () => {
               easing="Power2.inOut"
               waveformType="ecg"
               width={dimensions.width}
-              height={dimensions.height}
+              height={dimensions.height} // CHANGED THIS LINE
               mmPerSecond={wave.mmPerSecond}
             />
           </div>

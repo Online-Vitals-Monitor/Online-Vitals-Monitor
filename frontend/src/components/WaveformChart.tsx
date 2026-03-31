@@ -77,6 +77,7 @@ export default function WaveformChart({
       options: {
         animation: false,
         responsive: true,
+        // ADDED THIS BLOCK
         maintainAspectRatio: false,
         layout: {
           padding: {
