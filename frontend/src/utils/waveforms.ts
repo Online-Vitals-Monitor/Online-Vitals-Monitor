@@ -22,6 +22,26 @@ const normalizeToRange = (values: number[], minOut = 0, maxOut = 100) => {
   return values.map((v) => minOut + ((v - inMin) / span) * (maxOut - minOut));
 };
 
+// averages nearby points to smooth out an entire array given raw points
+// windowSize controls how much to smooth
+function smoothArray(data: number[], windowSize: number = 5): number[] {
+  const result: number[] = [];
+  const half = Math.floor(windowSize / 2);
+
+  for (let i = 0; i < data.length; i++) {
+    let sum = 0;
+    let count = 0;
+    for (let j = i - half; j <= i + half; j++) {
+      if (j >= 0 && j < data.length) {
+        sum += data[j];
+        count++;
+      }
+    }
+    result.push(sum / count);
+  }
+  return result;
+}
+
 export function generateEcgWaveform(heartRate: number): number[] {
   // flatline
   if (heartRate <= 0) return Array(100).fill(0);
@@ -73,7 +93,6 @@ export function generateRespWaveform(respRate: number): number[] {
 }
 
 // you can play with the desmos graph of this waveform here: https://www.desmos.com/calculator/jayrvvlft0
-
 export function generatePlethWaveform(heartRate: number, spo2: number): number[] {
   // flatline
   if (heartRate <= 0) return Array(100).fill(0);
@@ -136,15 +155,17 @@ export function generateEtco2Waveform(respRate: number, etco2Value: number): num
   const totalPoints = Math.floor(pxPerSec * secondsPerBreath);
 
   // divide into phases
-  const baselinePoints = Math.floor(totalPoints * 0.10); // phase I
+  // increase rise/fallPoints to round corners more
   const risePoints = Math.floor(totalPoints * 0.10);     // phase II (sharp rise)
   const plateauPoints = Math.floor(totalPoints * 0.35);  // phase III
   const fallPoints = Math.floor(totalPoints * 0.10);     // phase IV (sharp decline)
+  const baselinePoints = Math.floor(totalPoints * 0.10); // phase I
   const restPoints = totalPoints - (baselinePoints + risePoints + plateauPoints + fallPoints);  
 
   const waveform: number[] = [];
   const amplitude = etco2Value;
   const baseline = 2; // offset from bottom for visibility
+  const maxTilt = 4 // how the top slopes up
 
   // baseline
   for (let i = 0; i < baselinePoints; i++) {
@@ -162,17 +183,16 @@ export function generateEtco2Waveform(respRate: number, etco2Value: number): num
   // plateau
   for (let i = 0; i < plateauPoints; i++) {
     const progress = i / plateauPoints;
-    // slightly upward tilt
-    const tilt = 5 * progress; 
-    const noise = (Math.random() - 0.2) * 1.5;
-    waveform.push(baseline + amplitude + tilt);
+    waveform.push(baseline + amplitude + (maxTilt * progress));
   }
 
-  // linear fall
+  // smooth fall
+  const peakHeight = amplitude + maxTilt; // Fall from the height the tilt reached
   for (let i = 0; i < fallPoints; i++) {
     const progress = i / fallPoints;
+    // This curve goes from 1 to 0 smoothly
     const curve = (Math.sin((progress * Math.PI) + (Math.PI / 2)) + 1) / 2;
-    waveform.push(baseline + (amplitude * (1 - progress)));
+    waveform.push(baseline + (peakHeight * curve));
   }
 
   // remainder of cycle at baseline
@@ -180,9 +200,10 @@ export function generateEtco2Waveform(respRate: number, etco2Value: number): num
     waveform.push(baseline);
   }
 
-  return waveform;
+  return smoothArray(waveform, 10);
 }
 
+// you can play with the desmos graph of this waveform here: https://www.desmos.com/calculator/5erbuskwty
 export function generateBpWaveform(
   heartRate: number,
   _systolicBp: number,
