@@ -206,8 +206,52 @@ export function generateEtco2Waveform(respRate: number, etco2Value: number): num
 // you can play with the desmos graph of this waveform here: https://www.desmos.com/calculator/5erbuskwty
 export function generateBpWaveform(
   heartRate: number,
-  _systolicBp: number,
-  _diastolicBp: number,
+  systolicBp: number,
+  diastolicBp: number,
 ): number[] {
-  return generateEcgWaveform(heartRate || 72);
+  // flatline if no heart rate
+  if (heartRate <= 0) return Array(100).fill(diastolicBp);
+
+  const mmPerSecond = 25; 
+  const pxPerMm = 3.78;     
+  const pxPerSec = mmPerSecond * pxPerMm;
+  const secondsPerBeat = 60 / heartRate;
+  const totalPoints = Math.floor(pxPerSec * secondsPerBeat);
+
+  // divide into systolic and diastolic
+  const systolicPoints = Math.floor(totalPoints * 0.25);
+  const diastolicPoints = totalPoints - systolicPoints;
+
+  const waveform: number[] = [];
+  const pulsePressure = systolicBp - diastolicBp;
+
+  // systolic rise
+  for (let i = 0; i < systolicPoints; i++) {
+    const progress = i / systolicPoints;
+    // sine curve
+    const val = diastolicBp + pulsePressure * Math.sin(progress * (Math.PI / 2));
+    waveform.push(val);
+  }
+
+  // diastolic fall with notch
+  for (let i = 0; i < diastolicPoints; i++) {
+    const progress = i / diastolicPoints;
+
+    // exponential decay
+    let decay = Math.pow(1 - progress, 1.5);
+
+    // notch occurs earlier than pleth
+    const notchLocation = 0.35; 
+    const notchWidth = 0.05; 
+    const notchHeight = 0.12; // height relative to pulse pressure
+
+    const dicroticBump = notchHeight * Math.exp(
+      -Math.pow(progress - notchLocation, 2) / (2 * Math.pow(notchWidth, 2))
+    );
+    
+    decay += dicroticBump;
+    waveform.push(diastolicBp + (pulsePressure * decay));
+  }
+
+  return waveform;
 }
