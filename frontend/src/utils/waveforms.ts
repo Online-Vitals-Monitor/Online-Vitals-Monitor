@@ -86,8 +86,9 @@ export function generatePlethWaveform(heartRate: number, spo2: number): number[]
   const totalPoints = Math.floor(pxPerSec * secondsPerBeat);
 
   // split the beat into phrases
-  const risePoints = Math.floor(totalPoints * 0.20); // fast rise for 20% of wave
+  const risePoints = Math.floor(totalPoints * 0.30); // fast rise for 20% of wave
   const fallPoints = totalPoints - risePoints; // slower fall for rest of wave
+  // const restPoints = totalPoints - risePoints; // rest for a short period so it's not spikey
 
   const waveform: number[] = [];
   // scale amplitude slightly by SpO2 value
@@ -106,11 +107,11 @@ export function generatePlethWaveform(heartRate: number, spo2: number): number[]
   for (let i = 0; i < fallPoints; i++) {
     const progress = i / fallPoints;
 
-    // main decay as an exponential
-    let decay = Math.cos(progress * (Math.PI / 2));
+    // main decay as an exponential and slow rounding at bottom
+    let decay = Math.pow(1 - progress, 2);
 
     // add dicrotic notch
-    const notchLocation = 0.65; // l in desmos
+    const notchLocation = 0.35; // l in desmos
     const notchWidth = 0.08; // w in desmos
     const notchHeight = 0.15; // h in desmos
 
