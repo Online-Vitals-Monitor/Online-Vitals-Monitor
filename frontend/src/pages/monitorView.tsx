@@ -52,7 +52,7 @@ const MonitorView: React.FC = () => {
       heartRate: 80,
       respRate: 14, 
       o2Saturation: 99,
-      systolicBP: 38,
+      systolicBP: 120,
       diastolicBP: 80,
       eTCO2: 35,
     });
