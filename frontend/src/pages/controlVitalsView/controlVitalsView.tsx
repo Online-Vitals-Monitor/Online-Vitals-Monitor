@@ -18,8 +18,8 @@ import {
   SelectChangeEvent,
   Backdrop,
   Drawer,
-  Snackbar,
-  Alert,
+  // Snackbar,
+  // Alert,
 } from "@mui/material";
 
 const ControlVitalsView: React.FC = () => {
@@ -428,6 +428,8 @@ const ControlVitalsView: React.FC = () => {
         
       </Box>
 
+      {/* Notification disabled for now, might edit and re-enable later */}
+      {/*
       {errorMessage && (
         <Snackbar
           open
@@ -439,6 +441,7 @@ const ControlVitalsView: React.FC = () => {
           </Alert>
         </Snackbar>
       )}
+      */}
     </Box>
   );
 };
