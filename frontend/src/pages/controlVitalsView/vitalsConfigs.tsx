@@ -29,9 +29,25 @@ export const presetConfigs: PresetConfig[] = [
   },
   {
     name: "Shock",
-    values: { heartRate: 140, respRate: 25, systolicBP: 80, diastolicBP: 60 },
+    values: {
+      heartRate: 140,
+      respRate: 25,
+      o2Saturation: 100,
+      systolicBP: 80,
+      diastolicBP: 60,
+      eTCO2: 4.0,
+    },
   },
-  { name: "Hypoxia", values: { respRate: 25, o2Saturation: 86 } },
+  { name: "Hypoxia", 
+    values: {
+      heartRate: 60,
+      respRate: 25,
+      o2Saturation: 86,
+      systolicBP: 120,
+      diastolicBP: 80,
+      eTCO2: 4.0,
+    },
+  },
   {
     name: "Increased ICP",
     values: {

@@ -2,7 +2,7 @@ import "./Heropage.css";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSession } from "../../contexts/sessionContext";
-import MonitorView from "../monitorView";
+// import MonitorView from "../monitorView";
 
 const Heropage = () => {
   const [newSessionId, setNewSessionId] = useState("");
@@ -118,7 +118,7 @@ const Heropage = () => {
             <div className="monitor-glow" />
 
             <div className="monitor-box">
-              <MonitorView />
+              {/* <MonitorView /> */}
               <div className="preview-label">Live Preview</div>
             </div>
           </div>
