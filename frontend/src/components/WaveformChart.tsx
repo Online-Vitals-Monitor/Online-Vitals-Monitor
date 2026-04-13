@@ -17,12 +17,12 @@ type WaveformChartProps = {
   color: string;
   height: number;
   easing?: string; // GSAP easing name
-  waveformType?: "ecg"; // add | "other options" | in the future 
+  waveformType?: "ecg"; // add | "other options" | in the future
   width: number;
   mmPerSecond?: number; // waveform speed - 25 mm/sec for standard ECG waveform speed
 };
 
-export default function WaveformChart({ 
+export default function WaveformChart({
   elementId,
   beatData,
   color,
@@ -39,7 +39,7 @@ export default function WaveformChart({
   // set up rolling buffer
   const bufferRef = useRef<number[]>([]); // set up buffer for waveform
   useEffect(() => {
-    bufferRef.current = new Array(width).fill(0)
+    bufferRef.current = new Array(width).fill(0);
   }, [width]);
 
   // set up one single beat
@@ -66,7 +66,7 @@ export default function WaveformChart({
       data: {
         datasets: [
           {
-            data: bufferRef.current.map((y, x) => ({x, y})), // create linear x positions in the buffer
+            data: bufferRef.current.map((y, x) => ({ x, y })), // create linear x positions in the buffer
             borderColor: color,
             borderWidth: 2,
             pointRadius: 0,
@@ -77,19 +77,29 @@ export default function WaveformChart({
       options: {
         animation: false,
         responsive: true,
+        // ADDED THIS BLOCK
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 10,
+            bottom: 10
+          }
+        },
         scales: {
           x: {
             type: "linear",
             display: false,
             min: 0,
-            max: width // change to width of window
+            max: width, // change to width of window
           },
           y: {
-            display: false
+            display: false,
+            // NOTE: added grace for buffer since waveforms were clipping
+            grace: "15%",
           },
         },
         plugins: { legend: { display: false } },
-      }
+      },
     });
 
     return () => {
@@ -117,7 +127,7 @@ export default function WaveformChart({
       lastTime = currentTime;
 
       // subPixel += pxPerFrame;
-      subPixel += pxPerSec * deltaTime
+      subPixel += pxPerSec * deltaTime;
 
       // shift by 1 px when we need to
       while (subPixel >= 1) {
@@ -128,7 +138,7 @@ export default function WaveformChart({
       }
 
       // update waveform dataset
-      chart.data.datasets[0].data = bufferRef.current.map((y, x) => ({x, y}));
+      chart.data.datasets[0].data = bufferRef.current.map((y, x) => ({ x, y }));
       chart.update("none");
 
       animationFrame = requestAnimationFrame(animate);
@@ -147,5 +157,7 @@ export default function WaveformChart({
   //   });
   // }, [speed, easing])
 
-  return <canvas id={elementId} ref={canvasRef} height={height} width={width}/>;
+  return (
+    <canvas id={elementId} ref={canvasRef} height={height} width={width} />
+  );
 }

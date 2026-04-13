@@ -22,7 +22,30 @@ const normalizeToRange = (values: number[], minOut = 0, maxOut = 100) => {
   return values.map((v) => minOut + ((v - inMin) / span) * (maxOut - minOut));
 };
 
+// averages nearby points to smooth out an entire array given raw points
+// windowSize controls how much to smooth
+function smoothArray(data: number[], windowSize: number = 5): number[] {
+  const result: number[] = [];
+  const half = Math.floor(windowSize / 2);
+
+  for (let i = 0; i < data.length; i++) {
+    let sum = 0;
+    let count = 0;
+    for (let j = i - half; j <= i + half; j++) {
+      if (j >= 0 && j < data.length) {
+        sum += data[j];
+        count++;
+      }
+    }
+    result.push(sum / count);
+  }
+  return result;
+}
+
 export function generateEcgWaveform(heartRate: number): number[] {
+  // flatline
+  if (heartRate <= 0) return Array(100).fill(0);
+
   const n = cycleSamplesForRate(heartRate || 72, 20, 220);
   const beat = Array.from({ length: n }, (_, i) => {
     const x = i / n;
@@ -38,7 +61,6 @@ export function generateEcgWaveform(heartRate: number): number[] {
   return repeatCycle(normalizeToRange(beat, 8, 94), 4);
 }
 
-// placeholder implementations
 export function generateRespWaveform(respRate: number): number[] {
   // flatline
   if (respRate <= 0) return Array(100).fill(0);
@@ -51,88 +73,185 @@ export function generateRespWaveform(respRate: number): number[] {
   const secondsPerBreath = 60 / respRate;
   const totalPoints = Math.floor(pxPerSec * secondsPerBreath);
 
-  // a breath consists of active inspiration (inhalation) and passive expiration (exhalation)
-  // inspiration-expiration (I:E) resting ratio is typically 1:2 or 1:3 - set to 1:2
-  // divide total breath/wave points to inspiration and expiration
-  const inspPoints = Math.floor(totalPoints * 0.33); // 1/3 to breathe in
-  const expPoints = Math.floor(totalPoints * 0.50); // 1/2 to breathe out
-  const pausePoints = totalPoints - inspPoints - expPoints; // rest (1/6) of resting after ehalation 
-
   const waveform: number[] = [];
   const amplitude = 50; // height
   const baseline = 10;  // resting baseline
 
-  // using sin to create smooth inhalation
-  for (let i = 0; i < inspPoints; i++) {
-    const progress = i / inspPoints;
-    // get the sin wave from [0, 1] * how far we are in the inhalation
-    const val = baseline + amplitude * Math.sin(progress * (Math.PI / 2));
-    waveform.push(val);
-  }
-
-  // cos for smooth exhalation
-  for (let i = 0; i < expPoints; i++) {
-    const progress = i / expPoints;
-    // get the cos wave from [1, 0] * how far we are in the exhalation
-    const val = baseline + amplitude * Math.cos(progress * (Math.PI / 2));
-    waveform.push(val);
-  }
-
-  // rest after exhilation
-  for (let i = 0; i < pausePoints; i++) {
-    // with some noise so it's not just flatline
+  // cos wave with noise
+  for (let i = 0; i < totalPoints; i++) {
+    const progress = i / totalPoints;
+    
+    // raised cos
+    const wave = 0.5 - 0.5 * Math.cos(2 * Math.PI * progress);
+    
+    // lil bit of noise
     const noise = (Math.random() - 0.5) * 1.5;
-    waveform.push(baseline + noise);
+    waveform.push(baseline + (amplitude * wave) + noise);
   }
-
-  // // Keep the 1:2 I:E ratio, but group the active breathing points together
-  // const activePoints = Math.floor(totalPoints * 0.83); // roughly 33% insp + 50% exp
-  // const pausePoints = totalPoints - activePoints;
-
-  // const waveform: number[] = [];
-  // const amplitude = 50; 
-  // const baseline = 10;  
-
-  // // Phase 1 & 2: Active Breath (Smooth curve from 0 to PI)
-  // for (let i = 0; i < activePoints; i++) {
-  //   const progress = i / activePoints;
-  //   // Math.sin from 0 to PI creates a smooth, bell-like curve
-  //   const waveCurve = Math.sin(progress * Math.PI);
-    
-  //   // Add a tiny bit of noise across the whole breath for realism
-  //   const noise = (Math.random() - 0.5) * 1.5;
-    
-  //   const val = baseline + (amplitude * waveCurve) + noise;
-  //   waveform.push(val);
-  // }
-
-  // // Phase 3: Expiratory Pause
-  // for (let i = 0; i < pausePoints; i++) {
-  //   const noise = (Math.random() - 0.5) * 1.5;
-  //   waveform.push(baseline + noise);
-  // }
   
   return waveform
 }
 
-export function generatePlethWaveform(
-  heartRate: number,
-  _o2Saturation: number,
-): number[] {
-  return generateEcgWaveform(heartRate || 72);
+// you can play with the desmos graph of this waveform here: https://www.desmos.com/calculator/jayrvvlft0
+export function generatePlethWaveform(heartRate: number, spo2: number): number[] {
+  // flatline
+  if (heartRate <= 0) return Array(100).fill(0);
+
+  const mmPerSecond = 25; // from monitorView.tsx
+  const pxPerMm = 3.78;     // from WaveformChart.tsx
+  const pxPerSec = mmPerSecond * pxPerMm;
+  
+  const secondsPerBeat = 60 / heartRate;
+  const totalPoints = Math.floor(pxPerSec * secondsPerBeat);
+
+  // split the beat into phrases
+  const risePoints = Math.floor(totalPoints * 0.30); // fast rise for 20% of wave
+  const fallPoints = totalPoints - risePoints; // slower fall for rest of wave
+  // const restPoints = totalPoints - risePoints; // rest for a short period so it's not spikey
+
+  const waveform: number[] = [];
+  // scale amplitude slightly by SpO2 value
+  const amplitude = 50 * (spo2 / 100); 
+  const baseline = 10;
+
+  // fast systolic rise
+  for (let i = 0; i < risePoints; i++) {
+    const progress = i / risePoints;
+    // steep sin for initial rise
+    const val = baseline + amplitude * Math.sin(progress * (Math.PI / 2));
+    waveform.push(val);
+  }
+
+  // diastolic fall 
+  for (let i = 0; i < fallPoints; i++) {
+    const progress = i / fallPoints;
+
+    // main decay as an exponential and slow rounding at bottom
+    let decay = Math.pow(1 - progress, 2);
+
+    // add dicrotic notch
+    const notchLocation = 0.35; // l in desmos
+    const notchWidth = 0.08; // w in desmos
+    const notchHeight = 0.15; // h in desmos
+
+    const bump = notchHeight * Math.exp(
+      -Math.pow(progress - notchLocation, 2) / (2 * Math.pow(notchWidth, 2))
+    );
+    decay += bump;
+    waveform.push(baseline + (amplitude * decay));  
+  }
+  
+  return waveform;
 }
 
-export function generateEtco2Waveform(
-  respRate: number,
-  _etco2Kpa: number,
-): number[] {
-  return generateEcgWaveform(respRate || 14);
+export function generateEtco2Waveform(respRate: number, etco2Value: number): number[] {
+  // flatline
+  if (respRate <= 0) return Array(100).fill(0);
+
+  const mmPerSecond = 6.25; // from monitorView.tsx
+  const pxPerMm = 3.78;     // from WaveformChart.tsx
+  const pxPerSec = mmPerSecond * pxPerMm;
+  const secondsPerBreath = 60 / respRate;
+  const totalPoints = Math.floor(pxPerSec * secondsPerBreath);
+
+  // divide into phases
+  // increase rise/fallPoints to round corners more
+  const risePoints = Math.floor(totalPoints * 0.10);     // phase II (sharp rise)
+  const plateauPoints = Math.floor(totalPoints * 0.35);  // phase III
+  const fallPoints = Math.floor(totalPoints * 0.10);     // phase IV (sharp decline)
+  const baselinePoints = Math.floor(totalPoints * 0.10); // phase I
+  const restPoints = totalPoints - (baselinePoints + risePoints + plateauPoints + fallPoints);  
+
+  const waveform: number[] = [];
+  const amplitude = etco2Value;
+  const baseline = 2; // offset from bottom for visibility
+  const maxTilt = 4 // how the top slopes up
+
+  // baseline
+  for (let i = 0; i < baselinePoints; i++) {
+    waveform.push(baseline);
+  }
+
+  // linear rise
+  for (let i = 0; i < risePoints; i++) {
+    const progress = i / risePoints;
+    // round corners
+    const curve = (Math.sin((progress * Math.PI) - (Math.PI / 2)) + 1) / 2;
+    waveform.push(baseline + (amplitude * curve));
+  }
+
+  // plateau
+  for (let i = 0; i < plateauPoints; i++) {
+    const progress = i / plateauPoints;
+    waveform.push(baseline + amplitude + (maxTilt * progress));
+  }
+
+  // smooth fall
+  const peakHeight = amplitude + maxTilt; // Fall from the height the tilt reached
+  for (let i = 0; i < fallPoints; i++) {
+    const progress = i / fallPoints;
+    // This curve goes from 1 to 0 smoothly
+    const curve = (Math.sin((progress * Math.PI) + (Math.PI / 2)) + 1) / 2;
+    waveform.push(baseline + (peakHeight * curve));
+  }
+
+  // remainder of cycle at baseline
+  for (let i = 0; i < restPoints; i++) {
+    waveform.push(baseline);
+  }
+
+  return smoothArray(waveform, 10);
 }
 
+// you can play with the desmos graph of this waveform here: https://www.desmos.com/calculator/5erbuskwty
 export function generateBpWaveform(
   heartRate: number,
-  _systolicBp: number,
-  _diastolicBp: number,
+  systolicBp: number,
+  diastolicBp: number,
 ): number[] {
-  return generateEcgWaveform(heartRate || 72);
+  // flatline if no heart rate
+  if (heartRate <= 0) return Array(100).fill(diastolicBp);
+
+  const mmPerSecond = 25; 
+  const pxPerMm = 3.78;     
+  const pxPerSec = mmPerSecond * pxPerMm;
+  const secondsPerBeat = 60 / heartRate;
+  const totalPoints = Math.floor(pxPerSec * secondsPerBeat);
+
+  // divide into systolic and diastolic
+  const systolicPoints = Math.floor(totalPoints * 0.25);
+  const diastolicPoints = totalPoints - systolicPoints;
+
+  const waveform: number[] = [];
+  const pulsePressure = systolicBp - diastolicBp;
+
+  // systolic rise
+  for (let i = 0; i < systolicPoints; i++) {
+    const progress = i / systolicPoints;
+    // sine curve
+    const val = diastolicBp + pulsePressure * Math.sin(progress * (Math.PI / 2));
+    waveform.push(val);
+  }
+
+  // diastolic fall with notch
+  for (let i = 0; i < diastolicPoints; i++) {
+    const progress = i / diastolicPoints;
+
+    // exponential decay
+    let decay = Math.pow(1 - progress, 1.5);
+
+    // notch occurs earlier than pleth
+    const notchLocation = 0.35; 
+    const notchWidth = 0.05; 
+    const notchHeight = 0.12; // height relative to pulse pressure
+
+    const dicroticBump = notchHeight * Math.exp(
+      -Math.pow(progress - notchLocation, 2) / (2 * Math.pow(notchWidth, 2))
+    );
+    
+    decay += dicroticBump;
+    waveform.push(diastolicBp + (pulsePressure * decay));
+  }
+
+  return waveform;
 }

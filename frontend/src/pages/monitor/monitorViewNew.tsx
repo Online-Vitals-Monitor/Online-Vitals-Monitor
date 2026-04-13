@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import "./monitorViewNew.css";
 import { getVitals, Vitals } from "../../api/vitalsApi";
 import WaveformChart from "../../components/WaveformChart";
-import { useVitals } from "../../contexts/vitalsContext";
-import VitalCard from "../../components/VitalCard";
+// import { useVitals } from "../../contexts/vitalsContext";
+// import VitalCard from "../../components/VitalCard";
 import {
   generateBpWaveform,
   generateEcgWaveform,
@@ -13,17 +13,17 @@ import {
 } from "../../utils/waveforms";
 
 //map of keys for vital cards
-const vitalInfo: Record<
-  string,
-  { title: string; unit?: string; className?: string }
-> = {
-  heartRate: { title: "Heart Rate", unit: "bpm" },
-  respRate: { title: "Respiratory Rate", unit: "rpm" },
-  o2Saturation: { title: "Oxygen Saturation", unit: "%" },
-  systolicBP: { title: "Systolic BP", unit: "mmHg" },
-  diastolicBP: { title: "Diastolic BP", unit: "mmHg" },
-  eTCO2: { title: "ETCO2", unit: "mmHg" },
-};
+// const vitalInfo: Record<
+//   string,
+//   { title: string; unit?: string; className?: string }
+// > = {
+//   heartRate: { title: "Heart Rate", unit: "bpm" },
+//   respRate: { title: "Respiratory Rate", unit: "rpm" },
+//   o2Saturation: { title: "Oxygen Saturation", unit: "%" },
+//   systolicBP: { title: "Systolic BP", unit: "mmHg" },
+//   diastolicBP: { title: "Diastolic BP", unit: "mmHg" },
+//   eTCO2: { title: "ETCO2", unit: "mmHg" },
+// };
 
 const MonitorViewNew = () => {
   const [vitals, setVitals] = useState<Vitals>({
@@ -35,17 +35,27 @@ const MonitorViewNew = () => {
     eTCO2: 0,
   });
 
-  const { state } = useVitals(); //from context get array of selected vitals
-  const selected: string[] = state?.selected ?? [];
+  // const { state } = useVitals(); //from context get array of selected vitals
+  // const selected: string[] = state?.selected ?? [];
 
   const fetchVitals = async () => {
     // from backend
-    try {
-      const data = await getVitals();
-      setVitals(data);
-    } catch (err) {
-      console.error("Failed to fetch vitals:", err);
-    }
+    // try {
+    //   const data = await getVitals();
+    //   setVitals(data);
+    // } catch (err) {
+    //   console.error("Failed to fetch vitals:", err);
+    // }
+
+    // mock data for testing / when database is down
+    setVitals({
+      heartRate: 80,
+      respRate: 14, 
+      o2Saturation: 99,
+      systolicBP: 120,
+      diastolicBP: 80,
+      eTCO2: 35,
+    });
   };
 
   useEffect(() => {
@@ -57,18 +67,25 @@ const MonitorViewNew = () => {
 
   // measure layout elements (for fitting waveforms)
   const waveformContainerRef = useRef<HTMLDivElement>(null);
-  const [waveformWidth, setWaveformWidth] = useState(300); // default
+  const [dimensions, setDimensions] = useState({ width: 300, height: 100 }); // default
 
   useEffect(() => {
-    function computeWidth() {
+    const computeDimensions = () => {
       const wrapper = waveformContainerRef.current;
       if (!wrapper) return;
-      setWaveformWidth(Math.max(240, wrapper.offsetWidth - 12));
-    }
 
-    computeWidth();
-    window.addEventListener("resize", computeWidth);
-    return () => window.removeEventListener("resize", computeWidth);
+      const containerHeight = wrapper.offsetHeight;
+      const calculatedRowHeight = containerHeight / 5 - 10;
+
+      setDimensions({
+        width: Math.max(240, wrapper.offsetWidth - 500), // 450 px for right column rn
+        height: Math.max(50, calculatedRowHeight),
+      });
+    };
+
+    computeDimensions();
+    window.addEventListener("resize", computeDimensions);
+    return () => window.removeEventListener("resize", computeDimensions);
   }, []);
 
   const ecgBeat = useMemo(
@@ -152,16 +169,21 @@ const MonitorViewNew = () => {
           {/* LEFT COLUMN */}
           <div
             className="waveform-container"
-            style={{ gridArea: `wave-${wave.id}` }}
+            style={{
+              gridArea: `wave-${wave.id}`,
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+            }}
           >
             <WaveformChart
               elementId={`${wave.id}_waveform`}
               beatData={wave.beatData}
               color={wave.color}
-              height={95}
               easing="Power2.inOut"
               waveformType="ecg"
-              width={waveformWidth}
+              width={dimensions.width}
+              height={dimensions.height} // CHANGED THIS LINE
               mmPerSecond={wave.mmPerSecond}
             />
           </div>

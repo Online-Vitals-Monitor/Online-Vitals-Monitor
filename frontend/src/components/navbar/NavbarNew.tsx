@@ -1,5 +1,5 @@
 // import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 // import { useVitals } from "../../contexts/vitalsContext";
 import "./Navbar.css";
 interface NavbarProps {
@@ -18,16 +18,16 @@ const routes = [
   { page: "Control Vitals", path: "/values" },
   { page: "Monitor", path: "/monitor" },
   { page: "MonitorTest", path: "/monitortest" },
-  { page: "Montest", path: "/gridtesting" },
 ];
 
 const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
-  const handleMonitorButtonClick = () => {
-    setIsSessionActive(!isSessionActive);
-    navigate("/monitor");
-  };
+  // const handleMonitorButtonClick = () => {
+  //   setIsSessionActive(!isSessionActive);
+  //   navigate("/monitor");
+  // };
+  
   return (
     <>
       <nav>
