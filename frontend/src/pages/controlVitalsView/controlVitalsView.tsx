@@ -223,12 +223,12 @@ const ControlVitalsView: React.FC = () => {
             onChange={handlePresetChange}
           >
             {presetConfigs
-            .filter(preset => preset.name !== "Reset Defaults")
-            .map((preset) => (
-              <MenuItem key={preset.name} value={preset.name}>
-                {preset.name}
-              </MenuItem>
-            ))}
+              .filter((preset) => preset.name !== "Reset Defaults")
+              .map((preset) => (
+                <MenuItem key={preset.name} value={preset.name}>
+                  {preset.name}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
 
@@ -283,7 +283,7 @@ const ControlVitalsView: React.FC = () => {
             className="control-vitals-reset-btn"
             onClick={() => {
               const syntheticEvent = {
-                target: { value: "Reset Defaults" }
+                target: { value: "Reset Defaults" },
               } as SelectChangeEvent;
               handlePresetChange(syntheticEvent);
             }}
@@ -411,15 +411,14 @@ const ControlVitalsView: React.FC = () => {
         </Drawer>
 
         {showSessionId && session && (
-          <Typography 
-            variant="body2" 
+          <Typography
+            variant="body2"
             className="control-vitals-session-display"
-            sx={{ mt: 1, textAlign: 'center', color: '#ced8cd' }}
+            sx={{ mt: 1, textAlign: "center", color: "#ced8cd" }}
           >
-            Current session: <strong>{session.id}</strong>
+            Current session: <strong>{session.publicID}</strong>
           </Typography>
         )}
-        
       </Box>
 
       {errorMessage && (

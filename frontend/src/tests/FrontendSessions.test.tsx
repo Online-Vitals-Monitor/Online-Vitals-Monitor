@@ -4,7 +4,9 @@ import { SessionProvider } from "../contexts/sessionContext";
 import * as sessionApiModule from "../api/sessionApi";
 import Heropage from "../pages/homepage/Heropage";
 
-jest.mock("../pages/monitorView", () => () => <div data-testid="mock-monitor">Mock Monitor</div>);
+jest.mock("../pages/monitorView", () => () => (
+  <div data-testid="mock-monitor">Mock Monitor</div>
+));
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => {
@@ -27,13 +29,17 @@ describe("Frontend Sessions", () => {
         <SessionProvider>
           <Heropage />
         </SessionProvider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
   it("creates a new session and shows session banner", async () => {
     const mockCreate = jest
       .spyOn(sessionApiModule.sessionApi, "createSession")
-      .mockResolvedValue({ id: "TEST_SESSION_001" });
+      .mockResolvedValue({
+        publicID: "TEST_SESSION_001",
+        createdAt: new Date().toISOString(),
+        lastSeen: new Date().toISOString(),
+      });
 
     renderHero();
 
@@ -55,11 +61,11 @@ describe("Frontend Sessions", () => {
     renderHero();
 
     fireEvent.click(
-      screen.getByRole("button", { name: /join existing session/i })
+      screen.getByRole("button", { name: /join existing session/i }),
     );
 
     expect(
-      await screen.findByText(/Please enter a session ID/i)
+      await screen.findByText(/Please enter a session ID/i),
     ).toBeInTheDocument();
   });
 
@@ -74,12 +80,10 @@ describe("Frontend Sessions", () => {
       target: { value: "ABC123" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: /join existing session/i })
+      screen.getByRole("button", { name: /join existing session/i }),
     );
 
-    expect(
-      await screen.findByText(/Backend unavailable/i)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/Backend unavailable/i)).toBeInTheDocument();
     expect(mockJoin).toHaveBeenCalledWith("ABC123");
   });
 

@@ -33,6 +33,7 @@ const MonitorViewNew = () => {
     systolicBP: 0,
     diastolicBP: 0,
     eTCO2: 0,
+    sessionID: "",
   });
 
   // const { state } = useVitals(); //from context get array of selected vitals
