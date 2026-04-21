@@ -12,22 +12,8 @@ export interface Vitals {
 }
 
 const router = express.Router();
-// helper: get the single vitals row (if you plan to support multiple monitors, change this later)
-async function getSingleVitalsRowId(): Promise<string | null> {
-  const { data, error } = await supabase
-    .from("vitals")
-    .select("id")
-    .limit(1)
-    .single();
 
-  if (error) {
-    console.error("getSingleVitalsRowId error:", error);
-    return null;
-  }
-  return (data as any)?.id ?? null;
-}
-
-// GET - return current vitals
+// GET - return current vitals by publicID
 router.get("/:publicID", async (req, res) => {
   try {
     const { publicID } = req.params;
@@ -59,21 +45,26 @@ router.get("/:publicID", async (req, res) => {
   }
 });
 
-// PUT - partial update of the single vitals row
-router.put("/", async (req, res) => {
+// PUT - partial update vitals by publicID
+router.put("/:publicID", async (req, res) => {
   try {
+    const { publicID } = req.params;
     const updates = req.body as Partial<Vitals>;
 
-    // find the row id (first row) dynamically
-    const id = await getSingleVitalsRowId();
-    if (!id) {
-      return res.status(500).json({ error: "no vitals row found" });
+    const { data: session, error: sessionError } = await supabase
+      .from("sessions")
+      .select("id")
+      .eq("publicID", publicID)
+      .single();
+
+    if (sessionError || !session) {
+      return res.status(404).json({ error: "Session not found" });
     }
 
     const { data, error } = await supabase
       .from("vitals")
       .update(updates)
-      .eq("id", id)
+      .eq("sessionID", session.id)
       .select()
       .single();
 

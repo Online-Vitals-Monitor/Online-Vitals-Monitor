@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useParams } from "react-router-dom";
 import "./monitorView.css";
 import { getVitals, Vitals } from "../api/vitalsApi";
 import WaveformChart from "../components/WaveformChart";
@@ -39,10 +40,13 @@ const MonitorView: React.FC = () => {
   const { state } = useVitals(); //from context get array of selected vitals
   const selected: string[] = state?.selected ?? [];
 
+  const { publicID } = useParams<{ publicID: string }>();
+
   const fetchVitals = async () => {
     // from backend
+    if (!publicID) return;
     try {
-      const data = await getVitals();
+      const data = await getVitals(publicID);
       setVitals(data);
     } catch (err) {
       console.error("Failed to fetch vitals:", err);
@@ -50,11 +54,12 @@ const MonitorView: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!publicID) return;
     document.title = "Monitor";
     fetchVitals();
     const interval = setInterval(fetchVitals, 5000); // 5 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [publicID]);
 
   // measure layout elements (for fitting waveforms)
   const waveformContainerRef = useRef<HTMLDivElement>(null);

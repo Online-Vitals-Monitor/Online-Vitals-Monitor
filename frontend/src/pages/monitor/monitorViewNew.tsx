@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import "./monitorViewNew.css";
 import { getVitals, Vitals } from "../../api/vitalsApi";
+import { useParams } from "react-router-dom";
 import WaveformChart from "../../components/WaveformChart";
 // import { useVitals } from "../../contexts/vitalsContext";
 // import VitalCard from "../../components/VitalCard";
@@ -36,13 +37,15 @@ const MonitorViewNew = () => {
     sessionID: "",
   });
 
+  const { publicID } = useParams<{ publicID: string }>();
+
   // const { state } = useVitals(); //from context get array of selected vitals
   // const selected: string[] = state?.selected ?? [];
 
   const fetchVitals = async () => {
     // from backend
     try {
-      const data = await getVitals();
+      const data = await getVitals(publicID!);
       setVitals(data);
     } catch (err) {
       console.error("Failed to fetch vitals:", err);

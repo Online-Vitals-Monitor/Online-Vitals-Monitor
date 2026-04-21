@@ -1,5 +1,7 @@
 import React, { useState, useEffect, memo, useRef, useCallback } from "react";
 import { getVitals, updateVitals, Vitals } from "../api/vitalsApi";
+import { useParams } from "react-router-dom";
+
 import {
   Box,
   Typography,
@@ -106,6 +108,7 @@ export function useDebouncedCallback(
 }
 
 const ControlVitalsView: React.FC = () => {
+  const { publicID } = useParams<{ publicID: string }>();
   const [vitals, setVitals] = useState<Vitals>({
     heartRate: 0,
     respRate: 0,
@@ -180,7 +183,7 @@ const ControlVitalsView: React.FC = () => {
   // fetch vitals from API
   const fetchVitals = async () => {
     try {
-      const data = await getVitals();
+      const data = await getVitals(publicID!);
       setVitals(data);
       setPendingVitals(data);
       setErrorMessage(null);
@@ -259,7 +262,7 @@ const ControlVitalsView: React.FC = () => {
     if (commit) {
       if (updateMode === "live") {
         setVitals(updated);
-        debouncedUpdateVitals(updated);
+        debouncedUpdateVitals(publicID!, updated);
       } else {
         setPendingVitals(updated);
       }
@@ -272,7 +275,7 @@ const ControlVitalsView: React.FC = () => {
   const debouncedUpdateVitals = useDebouncedCallback(
     useCallback(async (updated: Vitals) => {
       try {
-        await updateVitals(updated);
+        await updateVitals(publicID!, updated);
         setSuccessMessage("Vitals updated successfully.");
         setErrorMessage(null);
       } catch (err) {
@@ -287,7 +290,7 @@ const ControlVitalsView: React.FC = () => {
   const handleSaveClick = async () => {
     if (updateMode === "push" && pendingVitals) {
       try {
-        await updateVitals(pendingVitals);
+        await updateVitals(publicID!, pendingVitals);
         setVitals(pendingVitals);
         setSuccessMessage("Vitals saved successfully.");
         setErrorMessage(null);

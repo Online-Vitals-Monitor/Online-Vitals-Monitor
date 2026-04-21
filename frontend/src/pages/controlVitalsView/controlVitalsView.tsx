@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import { getVitals, updateVitals, Vitals } from "../../api/vitalsApi";
 import { useDebouncedCallback, useApiErrorHandler } from "./cvvHooks";
 import { presetConfigs, vitalsConfig } from "./vitalsConfigs";
@@ -34,6 +35,7 @@ const ControlVitalsView: React.FC = () => {
   });
 
   const { session } = useSession();
+  const publicID = session?.publicID ?? "";
   const [updateMode, setUpdateMode] = useState<"live" | "push">("live");
   const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
   const [selectedPreset, setSelectedPreset] = useState("");
@@ -75,7 +77,8 @@ const ControlVitalsView: React.FC = () => {
   // fetch vitals from API
   const fetchVitals = useCallback(async () => {
     try {
-      const data = await getVitals();
+      const { publicID } = session!;
+      const data = await getVitals(publicID);
       setVitals(data);
       setPendingVitals(data);
       setErrorMessage(null);
@@ -134,7 +137,7 @@ const ControlVitalsView: React.FC = () => {
   const debouncedUpdateVitals = useDebouncedCallback(
     async (updated: Vitals) => {
       try {
-        await updateVitals(updated);
+        await updateVitals(publicID, updated);
         setErrorMessage(null);
       } catch (err) {
         handleError(err, "Failed to update vitals.");
@@ -193,7 +196,7 @@ const ControlVitalsView: React.FC = () => {
   const handleSaveClick = async () => {
     if (updateMode !== "push" || !pendingVitals) return;
     try {
-      await updateVitals(pendingVitals);
+      await updateVitals(publicID, pendingVitals);
       setVitals(pendingVitals);
       setErrorMessage(null);
     } catch (err) {
