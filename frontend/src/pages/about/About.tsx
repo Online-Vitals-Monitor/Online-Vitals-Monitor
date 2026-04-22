@@ -99,6 +99,16 @@ const About = () => {
                 </figure>
               </div>
             </div>
+            {/* Try-it utton for the call to action requirement */}
+            <div className="after-howto-cta">
+              <a
+                href="/"
+                className="inline-button"
+                aria-label="Go to the homepage to manage or join a simulation session"
+              >
+                Open the homepage to get started!
+              </a>
+            </div>
           </div>
         </section>
       
@@ -173,7 +183,6 @@ const About = () => {
                     <span className="team-name">Dean Akin</span>
                     <span className="team-role">Simulation Operations Technician<br/>Western Oregon University of Health Sciences</span>
                     <div className="team-links">
-                      <a href="mailto:dakin@westernu.edu">Email</a>
                     </div>
                   </div>
                 </div>
@@ -198,7 +207,6 @@ const About = () => {
       <footer className="contact-footer">
         <div className="content-max-width">
           <p>Questions? <a href="mailto:mccaffrl@oregonstate.edu" className="footer-link">Email Lyle</a></p> 
-          <p>Or Open an Issue:<a href="https://github.com/LyleMcCaffrey/simulated-vitals/issues" className="footer-link">GitHub Issues</a></p>
         </div>
       </footer>
     </div>
