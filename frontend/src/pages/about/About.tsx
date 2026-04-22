@@ -14,7 +14,7 @@ const About = () => {
       </section>
 
       <main className="about-main">
-        {/* Problem + Solution - SIDE-BY-SIDE desktop */}
+        {/* Problem + Solution */}
         <section className="problem-solution-section">
           <div className="content-max-width">
             <div className="hero-grid">
@@ -38,7 +38,7 @@ const About = () => {
           </div>
         </section>
 
-        {/* Features - 2x2 grid */}
+        {/* Features */}
         <section className="features-section">
           <div className="content-max-width">
             <h2 className="section-title centered-title">Key Features</h2>
@@ -67,24 +67,129 @@ const About = () => {
         <section className="usage-section">
           <div className="content-max-width">
             <h2 className="section-title centered-title">How to Use</h2>
-          </div>
-        </section>
-      
-        {/* Tech Stack - Inline badges */}
-        <section className="tech-section">
-          <div className="content-max-width">
-            <h2 className="section-title">Tech Stack</h2>
-            <div className="tech-grid">
+            
+            <div className="usage-flow-grid">
+              {/* Step 1 */}
+              <div className="usage-step">
+                <h3 className="step-title">1. Create/Join Session</h3>
+                <p className="step-description">
+                  Create a new session or join an existing one.
+                </p>
+                <figure className="screenshot-figure">
+                  <img 
+                    src="" 
+                    alt="homepage screenshot with session creation and joining options highlighted"
+                    className="screenshot-image"
+                  />
+                </figure>
+              </div>
 
+              {/* Step 2 */}
+              <div className="usage-step">
+                <h3 className="step-title">2. Edit and View Vitals</h3>
+                <p className="step-description">
+                  Use the monitor page to view vitals and the controller page to edit them. Changes will sync in near real-time across all users in the session.
+                </p>
+                <figure className="screenshot-figure">
+                  <img 
+                    src="" 
+                    alt="side by side of controller and monitor pages somehow showing vitals being edited and updated in real time?"
+                    className="screenshot-image"
+                  />
+                </figure>
+              </div>
             </div>
           </div>
         </section>
-
-        {/* Team */}
-        <section className="team-section">
+      
+        {/* Tech Stack + Team Side-by-Side */}
+        <section className="tech-team-section">
           <div className="content-max-width">
-            <h2 className="section-title centered-title">Team</h2>
+            <div className="tech-team-grid">
 
+              {/* Team */}
+              <div className="team-column">
+                <h2 className="section-title">Team</h2>
+                <div className="team-list">
+                  <div className="team-item">
+                    <span className="team-name">Chi Chan</span>
+                    <span className="team-role">Frontend Development</span>
+                    <div className="team-links">
+                      <a href="mailto:chanc4@oregonstate.edu">Email</a>
+                      <a href="https://github.com/ChiChan17">GitHub</a>
+                    </div>
+                  </div>
+                  
+                  <div className="team-item">
+                    <span className="team-name">Bryce Khut</span>
+                    <span className="team-role">Frontend Development</span>
+                    <div className="team-links">
+                      <a href="mailto:khutb@oregonstate.edu">Email</a>
+                      <a href="https://github.com/khut-bryce">GitHub</a>
+                    </div>
+                  </div>
+                  
+                  <div className="team-item">
+                    <span className="team-name">Khoi Le</span>
+                    <span className="team-role">Frontend & Waveform Development</span>
+                    <div className="team-links">
+                      <a href="mailto:lekhoi@oregonstate.edu">Email</a>
+                      <a href="https://github.com/khozii">GitHub</a>
+                    </div>
+                  </div>
+                  
+                  <div className="team-item">
+                    <span className="team-name">Jamie Liu</span>
+                    <span className="team-role">Backend Development</span>
+                    <div className="team-links">
+                      <a href="mailto:ljliu01417@gmail.com">Email</a>
+                      <a href="https://github.com/jmliu1417">GitHub</a>
+                    </div>
+                  </div>
+                  
+                  <div className="team-item">
+                    <span className="team-name">Lyle McCaffrey</span>
+                    <span className="team-role">Frontend Development</span>
+                    <div className="team-links">
+                      <a href="mailto:mccaffrl@oregonstate.edu">Email</a>
+                      <a href="https://github.com/LyleMcCaffrey">GitHub</a>
+                    </div>
+                  </div>
+                  
+                  <div className="team-item">
+                    <span className="team-name">Madelyn Sadler</span>
+                    <span className="team-role">Backend Development, Waveforms</span>
+                    <div className="team-links">
+                      <a href="mailto:sadlerm@oregonstate.edu">Email</a>
+                      <a href="https://github.com/MadelynSadler">GitHub</a>
+                    </div>
+                  </div>
+                  
+                  <div className="partner-header">
+                    <h4 className="partner-title">Project Partner</h4>
+                  </div>
+                  
+                  <div className="team-item">
+                    <span className="team-name">Dean Akin</span>
+                    <span className="team-role">Simulation Operations Technician<br/>Western Oregon University of Health Sciences</span>
+                    <div className="team-links">
+                      <a href="mailto:dakin@westernu.edu">Email</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tech Stack */}
+              <div className="tech-column">
+                <h2 className="section-title right-alligned-title">Tech Stack</h2>
+                <ul className="tech-list">
+                  <li>React Frontend</li>
+                  <li>Express + Node.js Backend</li>
+                  <li>Supabase Database</li>
+                  <li>Vercel Deployment</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
       </main>
@@ -92,7 +197,8 @@ const About = () => {
       {/* Contact footer */}
       <footer className="contact-footer">
         <div className="content-max-width">
-          <p>Questions? <a href="mailto:mccaffrl@oregonstate.edu">Email Lyle</a></p>
+          <p>Questions? <a href="mailto:mccaffrl@oregonstate.edu" className="footer-link">Email Lyle</a></p> 
+          <p>Or Open an Issue:<a href="https://github.com/LyleMcCaffrey/simulated-vitals/issues" className="footer-link">GitHub Issues</a></p>
         </div>
       </footer>
     </div>
