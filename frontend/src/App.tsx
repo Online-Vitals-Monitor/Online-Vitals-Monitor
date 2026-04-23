@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import { SessionProvider } from "./contexts/sessionContext";
-import MonitorView from "./pages/monitorView";
 import ValuesView from "./pages/controlVitalsView/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
@@ -28,8 +27,8 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Homepage />} />
                   <Route element={<RequireSession />}>
-                    <Route path="/monitor" element={<MonitorView />} />
-                    <Route path="/monitortest" element={<MonitorViewNew />} />
+                    <Route path="/monitor" element={<MonitorViewNew />} />
+                    <Route path="/monitortest" element={<Navigate to="/monitor" replace />} />
                     <Route path="/values" element={<ValuesView />} />
                   </Route>
                 </Routes>
