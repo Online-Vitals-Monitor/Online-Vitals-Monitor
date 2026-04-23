@@ -1,18 +1,19 @@
 .monitor-grid {
+  --monitor-gap: 4px;
   display: grid;
-  grid-template-columns: 1fr 400px;
-  grid-template-rows: repeat(5, 1fr);
-  box-sizing: border-box;
-
+  grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 360px);
+  grid-template-rows: repeat(5, minmax(0, 1fr));
   grid-template-areas:
     "wave-ecg   num-ecg"
     "wave-resp  num-resp"
     "wave-pleth num-pleth"
     "wave-etco2 num-etco2"
     "wave-bp    num-bp";
-
-  height: 100vh;
-  width: 100vw;
+  gap: var(--monitor-gap);
+  height: calc(100vh - var(--app-nav-height, 80px));
+  width: 100%;
+  max-width: 100%;
+  padding: var(--monitor-gap);
   background-color: black;
   overflow: hidden;
 }
@@ -22,10 +23,15 @@
   overflow: hidden;
   position: relative;
   align-items: center;
-  /* border-bottom: 1px solid red; */
-  margin: 2px;
-  display: flex;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.waveform-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .numerics-container {
@@ -33,22 +39,25 @@
   overflow: hidden;
   position: relative;
   align-content: center;
-  border-bottom: 2px solid black;
   background-color: #181818;
-  margin: 2px;
   height: 100%;
-  padding: 10px;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(8px, 1vw, 12px);
+  border-radius: 6px;
 }
 
 .numerics-value {
-  font-size: clamp(2rem, 10vh, 8vw);
+  font-size: clamp(1.75rem, 7vh, 5rem);
   font-weight: bold;
-  line-height: 0.9;
+  line-height: 0.85;
+  min-width: 0;
 }
 
 .numerics-title,
 .numerics-unit {
-  font-size: clamp(1rem, 3vh, 2rem);
+  font-size: clamp(0.85rem, 2vh, 1.4rem);
+  min-width: 0;
 }
 
 /*-------------------------------------------------*/
@@ -84,14 +93,11 @@
 /* resp */
 .numerics-resp {
   display: grid;
-
   grid-template-columns: auto 1fr;
   grid-template-rows: 0.2fr 1fr;
-
   grid-template-areas:
     "title title"
     "val  unit";
-  /* "val unit"; */
   gap: 0 15px;
 }
 
@@ -112,13 +118,12 @@
 /* spO2 */
 .numerics-pleth {
   display: grid;
-
   grid-template-columns: auto 1fr;
   grid-template-rows: 0.2fr 1fr;
-
   grid-template-areas:
     "title title"
     "val  unit";
+  gap: 0 15px;
 }
 
 /* .numerics-pleth .numerics-title {
@@ -138,14 +143,13 @@
 /* etco2 */
 .numerics-etco2 {
   display: grid;
-
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 0.2fr 0.5fr 0.5fr;
-
   grid-template-areas:
     "title title"
     "val  ."
     "val unit";
+  gap: 0 15px;
 }
 
 /* .numerics-etco2 .numerics-title {
@@ -164,13 +168,22 @@
 /* bp */
 .numerics-bp {
   display: grid;
-
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 0.2fr 1fr;
-
   grid-template-areas:
     "title title"
     "val  unit";
+  gap: 0 15px;
+}
+
+@media (max-width: 1100px) {
+  .monitor-grid {
+    grid-template-columns: minmax(0, 1fr) clamp(180px, 28vw, 260px);
+  }
+
+  .numerics-value {
+    font-size: clamp(1.4rem, 5.5vh, 3.4rem);
+  }
 }
 
 /* .numerics-bp .numerics-title {

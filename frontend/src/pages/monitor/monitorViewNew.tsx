@@ -67,25 +67,41 @@ const MonitorViewNew = () => {
 
   // measure layout elements (for fitting waveforms)
   const waveformContainerRef = useRef<HTMLDivElement>(null);
+  const waveformMeasureRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 300, height: 100 }); // default
 
   useEffect(() => {
     const computeDimensions = () => {
-      const wrapper = waveformContainerRef.current;
-      if (!wrapper) return;
-
-      const containerHeight = wrapper.offsetHeight;
-      const calculatedRowHeight = containerHeight / 5 - 10;
+      const cell = waveformMeasureRef.current;
+      if (!cell) return;
+      const { width, height } = cell.getBoundingClientRect();
 
       setDimensions({
-        width: Math.max(240, wrapper.offsetWidth - 500), // 450 px for right column rn
-        height: Math.max(50, calculatedRowHeight),
+        width: Math.max(180, Math.floor(width)),
+        height: Math.max(48, Math.floor(height)),
       });
     };
 
     computeDimensions();
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(computeDimensions)
+        : null;
+
+    if (resizeObserver) {
+      if (waveformContainerRef.current) resizeObserver.observe(waveformContainerRef.current);
+      if (waveformMeasureRef.current) {
+        resizeObserver.observe(waveformMeasureRef.current);
+      }
+    }
+
     window.addEventListener("resize", computeDimensions);
-    return () => window.removeEventListener("resize", computeDimensions);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", computeDimensions);
+    };
   }, []);
 
   const ecgBeat = useMemo(
@@ -169,12 +185,8 @@ const MonitorViewNew = () => {
           {/* LEFT COLUMN */}
           <div
             className="waveform-container"
-            style={{
-              gridArea: `wave-${wave.id}`,
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-            }}
+            ref={wave.id === "ecg" ? waveformMeasureRef : undefined}
+            style={{ gridArea: `wave-${wave.id}` }}
           >
             <WaveformChart
               elementId={`${wave.id}_waveform`}
