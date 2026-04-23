@@ -30,7 +30,7 @@ const About = () => {
                 <h2 className="section-title">Our Solution</h2>
                 <p>
                   Our app aims to provide educators and learners with a more versatile, reliable, and customizable 
-                  vitals monitor that can adapt to a wide range of training scenarios. Allows for multiple concurrent 
+                  vitals monitor that can adapt to a wide range of training scenarios. It allows for multiple concurrent 
                   users and sessions and requires no setup to access or use.
                 </p>
               </article>
@@ -77,8 +77,8 @@ const About = () => {
                 </p>
                 <figure className="screenshot-figure">
                   <img 
-                    src="" 
-                    alt="homepage screenshot with session creation and joining options highlighted"
+                    src="images/session_mgmt.png" 
+                    alt="create or join existing session capture from the home page"
                     className="screenshot-image"
                   />
                 </figure>
@@ -92,8 +92,8 @@ const About = () => {
                 </p>
                 <figure className="screenshot-figure">
                   <img 
-                    src="" 
-                    alt="side by side of controller and monitor pages somehow showing vitals being edited and updated in real time?"
+                    src="images/monitor_controller_sidebyside.png" 
+                    alt="side by side of controller and monitor pages"
                     className="screenshot-image"
                   />
                 </figure>
@@ -170,7 +170,7 @@ const About = () => {
                     <span className="team-name">Madelyn Sadler</span>
                     <span className="team-role">Backend Development, Waveforms</span>
                     <div className="team-links">
-                      <a href="mailto:sadlerm@oregonstate.edu">Email</a>
+                      <a href="mailto:maddiemsadler@gmail.com">Email</a>
                       <a href="https://github.com/MadelynSadler">GitHub</a>
                     </div>
                   </div>
