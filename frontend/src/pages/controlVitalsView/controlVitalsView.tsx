@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { getVitals, updateVitals, Vitals } from "../../api/vitalsApi";
-import { useDebouncedCallback, useApiErrorHandler } from "./cvvHooks";
+import { useDebouncedCallback } from "./cvvHooks";
+// import { useApiErrorHandler } from "./cvvHooks";
 import { presetConfigs, vitalsConfig } from "./vitalsConfigs";
 import { useSession } from "../../contexts/sessionContext";
 import VitalControl from "./vitalControl";
