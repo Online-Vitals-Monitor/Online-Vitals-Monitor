@@ -79,9 +79,9 @@ const ControlVitalsView: React.FC = () => {
       setPendingVitals(data);
       setErrorMessage(null);
     } catch (err) {
-      handleError(err, "Failed to load vitals. Please try again.");
+      console.error("Failed to load vitals. Please try again.", err);
     }
-  }, [handleError]);
+  }, []);
 
   useEffect(() => {
     document.title = "Controller";
@@ -135,7 +135,7 @@ const ControlVitalsView: React.FC = () => {
       await updateVitals(updated);
       setErrorMessage(null);
     } catch (err) {
-      handleError(err, "Failed to update vitals.");
+      console.error("Failed to update vitals.", err);
     }
   }, 500);
 
@@ -199,7 +199,7 @@ const ControlVitalsView: React.FC = () => {
       setVitals(pendingVitals);
       setErrorMessage(null);
     } catch (err) {
-      handleError(err, "Failed to save vitals. Please try again.");
+      console.error("Failed to save vitals. Please try again.", err);
     }
   };
 
