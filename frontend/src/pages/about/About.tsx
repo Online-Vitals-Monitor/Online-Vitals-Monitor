@@ -161,7 +161,7 @@ const About = () => {
                     <span className="team-name">Lyle McCaffrey</span>
                     <span className="team-role">Frontend Development</span>
                     <div className="team-links">
-                      <a href="mailto:mccaffrl@oregonstate.edu">Email</a>
+                      <a href="mailto:lylemccaffrey@gmail.com">Email</a>
                       <a href="https://github.com/LyleMcCaffrey">GitHub</a>
                     </div>
                   </div>
@@ -206,7 +206,7 @@ const About = () => {
       {/* Contact footer */}
       <footer className="contact-footer">
         <div className="content-max-width">
-          <p>Questions? <a href="mailto:mccaffrl@oregonstate.edu" className="footer-link">Email Lyle</a></p> 
+          <p>Questions? <a href="mailto:lylemccaffrey@gmail.com" className="footer-link">Email Lyle</a></p> 
         </div>
       </footer>
     </div>
