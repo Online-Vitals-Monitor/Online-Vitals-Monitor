@@ -6,7 +6,7 @@ const About = () => {
       {/* Banner header */}
       <section className="about-hero-banner">
         <div className="about-hero-copy">
-          <h1 className="about-hero-title">Simluated Vitals Monitor</h1>
+          <h1 className="about-hero-title">Simulated Vitals Monitor</h1>
           <p className="about-hero-description">
             A browser-based patient vitals monitor designed for use in medical instruction and simulation
           </p>
@@ -168,7 +168,7 @@ const About = () => {
                   
                   <div className="team-item">
                     <span className="team-name">Madelyn Sadler</span>
-                    <span className="team-role">Backend Development, Waveforms</span>
+                    <span className="team-role">Backend & Waveform Development</span>
                     <div className="team-links">
                       <a href="mailto:maddiemsadler@gmail.com">Email</a>
                       <a href="https://github.com/MadelynSadler">GitHub</a>
