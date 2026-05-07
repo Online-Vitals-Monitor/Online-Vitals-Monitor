@@ -52,24 +52,25 @@
   font-weight: bold;
   line-height: 0.85;
   min-width: 0;
+  white-space: nowrap;
 }
 
 .numerics-title,
 .numerics-unit {
   font-size: clamp(0.85rem, 2vh, 1.4rem);
   min-width: 0;
+  white-space: nowrap;
 }
 
 /*-------------------------------------------------*/
 /* ecg */
 .numerics-ecg {
   display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: 0.2fr 0.2fr 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 0.2fr 1fr;
   grid-template-areas:
-    "title val"
-    "unit  val"
-    ". val";
+    "title title"
+    "val unit";
   gap: 0 15px;
 }
 
@@ -93,11 +94,11 @@
 /* resp */
 .numerics-resp {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: 0.2fr 1fr;
   grid-template-areas:
     "title title"
-    "val  unit";
+    "val unit";
   gap: 0 15px;
 }
 
@@ -118,11 +119,11 @@
 /* spO2 */
 .numerics-pleth {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: 0.2fr 1fr;
   grid-template-areas:
     "title title"
-    "val  unit";
+    "val unit";
   gap: 0 15px;
 }
 
@@ -143,11 +144,11 @@
 /* etco2 */
 .numerics-etco2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: 0.2fr 0.5fr 0.5fr;
   grid-template-areas:
     "title title"
-    "val  ."
+    "val ."
     "val unit";
   gap: 0 15px;
 }
@@ -168,11 +169,11 @@
 /* bp */
 .numerics-bp {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: 0.2fr 1fr;
   grid-template-areas:
     "title title"
-    "val  unit";
+    "val unit";
   gap: 0 15px;
 }
 
@@ -198,3 +199,22 @@
   font-size: 4vw;
   text-align: center;
 } */
+
+.numerics-ecg .numerics-unit,
+.numerics-resp .numerics-unit,
+.numerics-pleth .numerics-unit,
+.numerics-etco2 .numerics-unit,
+.numerics-bp .numerics-unit {
+  justify-self: end;
+  align-self: end;
+}
+
+
+
+.numerics-bp .numerics-value {
+  font-size: clamp(1.2rem, 5vh, 4rem);
+}
+
+.numerics-bp .numerics-unit {
+  font-size: clamp(0.7rem, 1.5vh, 1rem);
+}
