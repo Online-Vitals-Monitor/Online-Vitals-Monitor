@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import "./monitorViewNew.css";
-import { getVitals, Vitals } from "../../api/vitalsApi";
+import { Vitals } from "../../api/vitalsApi";
+// import { getVitals } from "../../api/vitalsApi"; // restore when backend vitals are available
 import WaveformChart from "../../components/WaveformChart";
 // import { useVitals } from "../../contexts/vitalsContext";
 // import VitalCard from "../../components/VitalCard";
@@ -192,7 +193,7 @@ const MonitorViewNew = () => {
               elementId={`${wave.id}_waveform`}
               beatData={wave.beatData}
               color={wave.color}
-              easing="Power2.inOut"
+              // easing="Power2.inOut"
               waveformType="ecg"
               width={dimensions.width}
               height={dimensions.height} // CHANGED THIS LINE

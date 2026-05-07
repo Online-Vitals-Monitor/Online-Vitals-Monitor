@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import "./monitorView.css";
-import { getVitals, Vitals } from "../api/vitalsApi";
+import { Vitals } from "../api/vitalsApi";
+// import { getVitals } from "../api/vitalsApi";
 import WaveformChart from "../components/WaveformChart";
 import { useVitals } from "../contexts/vitalsContext";
 import VitalCard from "../components/VitalCard";
@@ -172,7 +173,7 @@ const MonitorView: React.FC = () => {
               beatData={wave.beatData}
               color={wave.color}
               height={95}
-              easing="Power2.inOut"
+              // easing="Power2.inOut"
               waveformType="ecg"
               width={waveformWidth}
               mmPerSecond={wave.mmPerSecond}

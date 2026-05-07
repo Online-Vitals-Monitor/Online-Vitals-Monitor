@@ -2,10 +2,10 @@
 import { Link } from "react-router-dom";
 // import { useVitals } from "../../contexts/vitalsContext";
 import "./Navbar.css";
-interface NavbarProps {
-  isSessionActive: boolean;
-  setIsSessionActive: (active: boolean) => void;
-}
+// interface NavbarProps {
+//   isSessionActive: boolean;
+//   setIsSessionActive: (active: boolean) => void;
+// }
 
 //routes object: Add pages/routes here if needed
 // const routes = [
@@ -19,7 +19,8 @@ const routes = [
   { page: "Monitor", path: "/monitor" },
 ];
 
-const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
+// const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
+const NavbarNew = () => {
   //const navigate = useNavigate();
 
   // const handleMonitorButtonClick = () => {

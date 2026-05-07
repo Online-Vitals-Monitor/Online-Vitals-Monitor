@@ -16,7 +16,7 @@ type WaveformChartProps = {
   beatData: number[]; // one beat of data
   color: string;
   height: number;
-  easing?: string; // GSAP easing name
+  // easing?: string; // GSAP easing name
   waveformType?: "ecg"; // add | "other options" | in the future
   width: number;
   mmPerSecond?: number; // waveform speed - 25 mm/sec for standard ECG waveform speed
@@ -27,7 +27,7 @@ export default function WaveformChart({
   beatData,
   color,
   height,
-  easing = "Power2.inOut",
+  // easing = "Power2.inOut",
   waveformType = "ecg",
   width,
   mmPerSecond = 25,
