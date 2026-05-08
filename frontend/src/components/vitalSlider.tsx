@@ -36,7 +36,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
             if (strVal !== prevInputVal) {
             return strVal;
             }
-            return prevInputVal; // no change, so no re-render
+            return prevInputVal;
         });
     }, [currentVal]);
 
@@ -54,21 +54,20 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newInput = e.target.value;
-        setInputVal(newInput); // always update textbox immediately
+        setInputVal(newInput);
 
         if (typingTimeout.current) clearTimeout(typingTimeout.current);
         typingTimeout.current = setTimeout(() => {
             const parsed = parseFloat(newInput);
             if (!isNaN(parsed)) {
             let clamped = Math.min(Math.max(parsed, min), max);
-            onChange(clamped);          // update slider value/state
-            setInputVal(clamped.toString()); // forcibly reset input text to clamped value
+            onChange(clamped);
+            setInputVal(clamped.toString());
             }
         }, 1000);
     };
 
 
-    /* return */
     return(
         <Box sx={{ width: '100%', mb: 4}}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -81,6 +80,9 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                     sx={{
                         width: 150,
                         mr: 3,
+                        '& .MuiOutlinedInput-root': {
+                            backgroundColor: '#1f2937 !important',
+                        },
                         'input': {textAlign: 'center'},
                         'input::-webkit-outer-spin-button': { display: 'none' },
                         'input::-webkit-inner-spin-button': { display: 'none' },
@@ -126,15 +128,19 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
 
                 <TextField
                     type="number"
-                    value={currentVal.toString()}  // ensure string like inputVal
+                    value={currentVal.toString()}
                     variant="outlined"
                     size="small"
                     sx={{
                         width: 150,
-                        ml: 2,                       // your spacing
+                        ml: 2,
+                        pointerEvents: 'none',
+                        '& .MuiOutlinedInput-root': {
+                            backgroundColor: 'rgba(15, 23, 42, 0.75) !important',
+                        },
                         'input': { 
                         textAlign: 'center',
-                        color: '#e5e7eb'           // light grey to match your CSS override
+                        color: '#e5e7eb'
                         },
                         'input::-webkit-outer-spin-button': { display: 'none' },
                         'input::-webkit-inner-spin-button': { display: 'none' },
