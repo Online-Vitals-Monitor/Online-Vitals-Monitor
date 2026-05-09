@@ -103,20 +103,22 @@ const ControlVitalsView: React.FC = () => {
 
     setSelectedPreset(newPreset.name);
 
-    setVitals((prev) => {
-      const merged = { ...prev, ...newPreset.values };
-
-      if (updateMode === "push") {
-        setPendingVitals((prevPending) => ({
-          ...(prevPending ?? prev),
-          ...newPreset.values,
-        }));
-      } else {
+     if (updateMode === "push") {
+      setPendingVitals((prev) => ({
+        ...(prev ?? vitals),
+        ...newPreset.values,
+      }));
+      setUiVitals((prev) => ({
+        ...prev,
+        ...newPreset.values,
+      }));
+    } else {
+      setVitals((prev) => {
+        const merged = { ...prev, ...newPreset.values };
         debouncedUpdateVitals(merged);
-      }
-
-      return merged;
-    });
+        return merged;
+      });
+    }
   };
 
   // Handler for onChange (during dragging) - only updates UI
@@ -184,6 +186,7 @@ const ControlVitalsView: React.FC = () => {
 
       if (currentMode === "live") {
         setVitals(updated);
+        setSelectedPreset("");
         debouncedUpdateVitals(updated);
       } else {
         setPendingVitals(updated);
@@ -195,9 +198,10 @@ const ControlVitalsView: React.FC = () => {
   // Save handler for push mode
   const handleSaveClick = async () => {
     if (updateMode !== "push" || !pendingVitals) return;
+    setVitals(pendingVitals); 
+    setSelectedPreset("");
     try {
       await updateVitals(pendingVitals);
-      setVitals(pendingVitals);
   //    setErrorMessage(null);
     } catch (err) {
       console.error("Failed to save vitals. Please try again.", err);
@@ -263,6 +267,11 @@ const ControlVitalsView: React.FC = () => {
                 unitDeconverter ? unitDeconverter(value, etco2Unit) : value
               )
             }
+            committedVal={
+              unitConverter
+                ? unitConverter(vitals[key as keyof Vitals], etco2Unit)
+                : (vitals[key as keyof Vitals] as number)
+            }
             onChangeCommitted={(value) =>
               handleVitalChangeCommitted(
                 key,
@@ -318,6 +327,7 @@ const ControlVitalsView: React.FC = () => {
                   if (v === "push") {
                     setPendingVitals(vitals);
                   }
+                  setSelectedPreset(""); 
                   setUpdateMode(v);
                 }
               }}

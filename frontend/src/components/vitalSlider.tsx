@@ -11,6 +11,7 @@ interface vitalSliderProps {
     min: number;                //min number range for slider
     max: number;                //max number range for slider
     currentVal: number;         //current value
+    committedVal?: number;
     onChange: (value: number) => void;
     onChangeCommitted?: (value: number) => void;
 }
@@ -21,21 +22,22 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
     min,
     max,
     currentVal,
+    committedVal,
     onChange,
     onChangeCommitted
 }) => {
     const [inputVal, setInputVal] = useState(
         currentVal !== undefined && currentVal !== null ? currentVal.toString() : ''
     );
+    const isDragging = useRef(false);
     const typingTimeout = useRef<NodeJS.Timeout | null>(null);
 
     // keep text field in sync when currentVal changes externally
-    useEffect(() => {
+     useEffect(() => {
+        if (isDragging.current) return;
         const strVal = currentVal !== undefined && currentVal !== null ? currentVal.toString() : '';
         setInputVal(prevInputVal => {
-            if (strVal !== prevInputVal) {
-            return strVal;
-            }
+            if (strVal !== prevInputVal) return strVal;
             return prevInputVal;
         });
     }, [currentVal]);
@@ -108,8 +110,15 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                     <Slider
                         aria-label={title}
                         value={currentVal}                               
-                        onChange={(_, newValue) => onChange(newValue as number)} 
-                        onChangeCommitted={(_, newValue) => onChangeCommitted && onChangeCommitted(newValue as number)}
+                        onChange={(_, newValue) => {
+                            isDragging.current = true;
+                            setInputVal((newValue as number).toString());
+                            onChange(newValue as number);
+                        }}
+                         onChangeCommitted={(_, newValue) => {
+                            isDragging.current = false;
+                            onChangeCommitted && onChangeCommitted(newValue as number);
+                        }}
                         valueLabelDisplay="auto"
                         step={step}
                         min={min}
@@ -128,7 +137,7 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
 
                 <TextField
                     type="number"
-                    value={currentVal.toString()}
+                    value={(committedVal ?? currentVal).toString()}
                     variant="outlined"
                     size="small"
                     sx={{
