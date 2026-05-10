@@ -179,8 +179,31 @@ const MonitorViewNew = () => {
       mmPerSecond: 25,
     },
   ];
+
+  //  toggle function for full screen mode
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      waveformContainerRef.current?.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  // double click puts it in full screen
   return (
-    <div className="monitor-grid" ref={waveformContainerRef}>
+    <div className="monitor-grid" ref={waveformContainerRef} onDoubleClick={toggleFullScreen}>
+
+      {/* Add a full screen button */}
+      <button 
+        className="fullscreen-btn" 
+        onClick={toggleFullScreen}
+        title="Toggle Fullscreen"
+      >
+        ⛶
+      </button>
+      
       {waveformRows.map((wave) => (
         <Fragment key={wave.id}>
           {/* LEFT COLUMN */}
