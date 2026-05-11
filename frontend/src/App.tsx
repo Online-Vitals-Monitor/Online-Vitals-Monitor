@@ -5,6 +5,7 @@ import MonitorView from "./pages/monitorView";
 import ValuesView from "./pages/controlVitalsView/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
+import About from "./pages/about/About";
 import RequireSession from "./components/RequireSession";
 import { VitalsProvider } from "./contexts/vitalsContext";
 
@@ -27,6 +28,7 @@ const App = () => {
                 />
                 <Routes>
                   <Route path="/" element={<Homepage />} />
+                  <Route path="/about" element={<About />} />
                   <Route element={<RequireSession />}>
                     <Route path="/monitor" element={<MonitorView />} />
                     <Route path="/monitortest" element={<MonitorViewNew />} />

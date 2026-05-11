@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { getVitals, updateVitals, Vitals } from "../../api/vitalsApi";
-import { useDebouncedCallback, useApiErrorHandler } from "./cvvHooks";
+import { useDebouncedCallback } from "./cvvHooks";
+// import { useApiErrorHandler } from "./cvvHooks";
 import { presetConfigs, vitalsConfig } from "./vitalsConfigs";
 import { useSession } from "../../contexts/sessionContext";
 import VitalControl from "./vitalControl";
@@ -19,8 +20,8 @@ import {
   SelectChangeEvent,
   Backdrop,
   Drawer,
-  Snackbar,
-  Alert,
+  // Snackbar,
+  // Alert,
 } from "@mui/material";
 
 const ControlVitalsView: React.FC = () => {
@@ -43,7 +44,7 @@ const ControlVitalsView: React.FC = () => {
   const [etco2Unit, setEtco2Unit] = useState<"kPa" | "mmHg">("kPa");
   const etco2Max = etco2Unit === "kPa" ? 20 : 150;
   const [uiVitals, setUiVitals] = useState<Vitals>(vitals);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [showSessionId, setShowSessionId] = useState<boolean>(() => {
     if (typeof window === "undefined") return true; // SSR safety if needed
@@ -55,7 +56,7 @@ const ControlVitalsView: React.FC = () => {
   const pendingVitalsRef = useRef(pendingVitals);
   const updateModeRef = useRef(updateMode);
 
-  const handleError = useApiErrorHandler(setErrorMessage);
+  // const handleError = useApiErrorHandler(setErrorMessage);
 
   useEffect(() => {
     vitalsRef.current = vitals;
@@ -81,11 +82,11 @@ const ControlVitalsView: React.FC = () => {
       const data = await getVitals(publicID);
       setVitals(data);
       setPendingVitals(data);
-      setErrorMessage(null);
+      //    setErrorMessage(null);
     } catch (err) {
-      handleError(err, "Failed to load vitals. Please try again.");
+      console.error("Failed to load vitals. Please try again.", err);
     }
-  }, [handleError]);
+  }, []);
 
   useEffect(() => {
     document.title = "Controller";
@@ -198,9 +199,9 @@ const ControlVitalsView: React.FC = () => {
     try {
       await updateVitals(publicID, pendingVitals);
       setVitals(pendingVitals);
-      setErrorMessage(null);
+      //    setErrorMessage(null);
     } catch (err) {
-      handleError(err, "Failed to save vitals. Please try again.");
+      console.error("Failed to save vitals. Please try again.", err);
     }
   };
 
@@ -424,6 +425,8 @@ const ControlVitalsView: React.FC = () => {
         )}
       </Box>
 
+      {/* Notification disabled for now, might edit and re-enable later */}
+      {/*
       {errorMessage && (
         <Snackbar
           open
@@ -435,6 +438,7 @@ const ControlVitalsView: React.FC = () => {
           </Alert>
         </Snackbar>
       )}
+      */}
     </Box>
   );
 };
