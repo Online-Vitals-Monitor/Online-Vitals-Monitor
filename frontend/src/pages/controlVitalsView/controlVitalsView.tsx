@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useParams } from "react-router-dom";
+//import { useParams } from "react-router-dom";
 import { getVitals, updateVitals, Vitals } from "../../api/vitalsApi";
 import { useDebouncedCallback } from "./cvvHooks";
 // import { useApiErrorHandler } from "./cvvHooks";
@@ -77,8 +77,9 @@ const ControlVitalsView: React.FC = () => {
 
   // fetch vitals from API
   const fetchVitals = useCallback(async () => {
+    if (!publicID) return;
     try {
-      const { publicID } = session!;
+      //const { publicID } = session!;
       const data = await getVitals(publicID);
       setVitals(data);
       setPendingVitals(data);
@@ -86,7 +87,7 @@ const ControlVitalsView: React.FC = () => {
     } catch (err) {
       console.error("Failed to load vitals. Please try again.", err);
     }
-  }, []);
+  }, [publicID]);
 
   useEffect(() => {
     document.title = "Controller";
@@ -139,9 +140,9 @@ const ControlVitalsView: React.FC = () => {
     async (updated: Vitals) => {
       try {
         await updateVitals(publicID, updated);
-        setErrorMessage(null);
+        //setErrorMessage(null);
       } catch (err) {
-        handleError(err, "Failed to update vitals.");
+        //handleError(err, "Failed to update vitals.");
       }
     },
     500,

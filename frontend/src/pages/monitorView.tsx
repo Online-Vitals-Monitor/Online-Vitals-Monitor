@@ -1,7 +1,14 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { useParams } from "react-router-dom";
 import "./monitorView.css";
 import { getVitals, Vitals } from "../api/vitalsApi";
+import { useSession } from "../contexts/sessionContext";
 import WaveformChart from "../components/WaveformChart";
 import { useVitals } from "../contexts/vitalsContext";
 import VitalCard from "../components/VitalCard";
@@ -38,12 +45,12 @@ const MonitorView: React.FC = () => {
   });
 
   const { state } = useVitals(); //from context get array of selected vitals
+  const { session } = useSession(); //get session info from context
   const selected: string[] = state?.selected ?? [];
+  const publicID =
+    useParams<{ publicID: string }>().publicID ?? session?.publicID;
 
-  const { publicID } = useParams<{ publicID: string }>();
-
-  const fetchVitals = async () => {
-    // from backend
+  const fetchVitals = useCallback(async () => {
     if (!publicID) return;
     try {
       const data = await getVitals(publicID);
@@ -51,15 +58,15 @@ const MonitorView: React.FC = () => {
     } catch (err) {
       console.error("Failed to fetch vitals:", err);
     }
-  };
+  }, [publicID]);
 
   useEffect(() => {
     if (!publicID) return;
     document.title = "Monitor";
     fetchVitals();
-    const interval = setInterval(fetchVitals, 5000); // 5 seconds
+    const interval = setInterval(fetchVitals, 2000);
     return () => clearInterval(interval);
-  }, [publicID]);
+  }, [publicID, fetchVitals]);
 
   // measure layout elements (for fitting waveforms)
   const waveformContainerRef = useRef<HTMLDivElement>(null);
