@@ -38,17 +38,23 @@ export default function WaveformChart({
 
   // set up rolling buffer
   const bufferRef = useRef<number[]>([]); // set up buffer for waveform
-  useEffect(() => {
-    bufferRef.current = new Array(width).fill(0);
-  }, [width]);
-
-  // set up one single beat
   const beat = useMemo(() => beatData, [beatData]);
 
   const beatIndexRef = useRef(0);
 
+  useEffect(() => {
+    // pre-fill with real samples so charts do not start flat while the buffer warms up
+    const safeBeat = beat.length > 0 ? beat : [0];
+    bufferRef.current = Array.from(
+      { length: width },
+      (_, i) => safeBeat[i % safeBeat.length],
+    );
+    beatIndexRef.current = width % safeBeat.length;
+  }, [beat, width]);
+
   // generate the next beat
   const nextSample = useCallback(() => {
+    if (beat.length === 0) return 0; // future-proof against a generator accidentally returning no samples
     const s = beat[beatIndexRef.current];
     beatIndexRef.current = (beatIndexRef.current + 1) % beat.length;
     return s;
