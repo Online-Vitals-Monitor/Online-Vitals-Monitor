@@ -57,7 +57,7 @@
 
 .numerics-title,
 .numerics-unit {
-  font-size: clamp(0.85rem, 2vh, 1.4rem);
+  font-size: clamp(1rem, 3.35vh, 2.65rem);
   min-width: 0;
   white-space: nowrap;
 }
@@ -216,7 +216,7 @@
 }
 
 .numerics-bp .numerics-unit {
-  font-size: clamp(0.7rem, 1.5vh, 1rem);
+  font-size: clamp(0.7rem, 2.5vh, 2rem);
 }
 
 /* Full screen mode */
