@@ -1,9 +1,17 @@
+:root {
+  --app-nav-height: 80px; /* change this to adjust navbar accommodation */
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 .app {
-    background: linear-gradient(#000e09, #010305);
-    min-height: 100vh;
-    width: 100%;
+  background: linear-gradient(#000e09, #010305);
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-header {
+  min-height: 100vh;
 }

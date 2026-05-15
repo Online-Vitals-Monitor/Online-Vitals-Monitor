@@ -17,6 +17,7 @@ async function getSingleVitalsRowId(): Promise<string | null> {
   const { data, error } = await supabase
     .from("vitals")
     .select("id")
+    .order("id", { ascending: true })
     .limit(1)
     .single();
 
@@ -30,10 +31,15 @@ async function getSingleVitalsRowId(): Promise<string | null> {
 // GET - return current vitals
 router.get("/", async (_req, res) => {
   try {
+    const id = await getSingleVitalsRowId();
+    if (!id) {
+      return res.status(500).json({ error: "no vitals row found" });
+    }
+
     const { data, error } = await supabase
       .from("vitals")
       .select("*")
-      .limit(1)
+      .eq("id", id)
       .single();
 
     if (error) {

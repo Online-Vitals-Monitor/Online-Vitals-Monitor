@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { SessionProvider } from "./contexts/sessionContext";
-import MonitorView from "./pages/monitorView";
 import ValuesView from "./pages/controlVitalsView/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
 import Homepage from "./pages/homepage/Homepage";
@@ -14,7 +12,7 @@ import MonitorViewNew from "./pages/monitor/monitorViewNew";
 import "./App.css";
 
 const App = () => {
-  const [sessionActive, setSessionActive] = useState(false);
+  // const [sessionActive, setSessionActive] = useState(false);
   return (
     <>
       <div className="app">
@@ -22,16 +20,17 @@ const App = () => {
           <VitalsProvider>
             <SessionProvider>
               <Router>
-                <NavbarNew
+                {/* <NavbarNew
                   isSessionActive={sessionActive}
                   setIsSessionActive={setSessionActive}
-                />
+                /> */}
+                <NavbarNew />
                 <Routes>
                   <Route path="/" element={<Homepage />} />
                   <Route path="/about" element={<About />} />
                   <Route element={<RequireSession />}>
-                    <Route path="/monitor" element={<MonitorView />} />
-                    <Route path="/monitortest" element={<MonitorViewNew />} />
+                    <Route path="/monitor" element={<MonitorViewNew />} />
+                    <Route path="/monitortest" element={<Navigate to="/monitor" replace />} />
                     <Route path="/values" element={<ValuesView />} />
                   </Route>
                 </Routes>
