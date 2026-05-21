@@ -24,7 +24,7 @@ const HowItWorks = () => {
           <div className="step-number">03</div>
           <div className="step-content">
             <h3>Stream Real Time Waveforms</h3>
-            <p>The dynamic system translates numeric values into visual waveforms a clinical environment.</p>
+            <p>The dynamic system translates numeric values into visual waveforms in a clinical environment.</p>
           </div>
         </div>
         <div className="step-card">
