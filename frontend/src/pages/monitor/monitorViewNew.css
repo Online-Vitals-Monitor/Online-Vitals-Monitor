@@ -284,19 +284,44 @@
 }
 
 .audio-toggle {
-  border: 1px solid rgba(0, 255, 79, 0.42);
+  border: 1px solid rgba(255, 80, 80, 0.58);
   border-radius: 6px;
   padding: 0.2rem 0.44rem;
-  color: #00ff4f;
-  background: rgba(0, 255, 79, 0.08);
+  color: #ff5a5a;
+  background: rgba(255, 80, 80, 0.12);
   cursor: pointer;
   font: inherit;
   font-size: clamp(0.82rem, 0.95vw, 1rem);
+  transform-origin: center;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.audio-toggle:hover {
+  background: rgba(255, 80, 80, 0.24);
+  border-color: rgba(255, 110, 110, 0.82);
+  box-shadow: 0 0 10px rgba(255, 80, 80, 0.2);
+  transform: scale(1.06);
+}
+
+.audio-toggle:active {
+  background: rgba(255, 80, 80, 0.34);
+  transform: scale(0.98);
 }
 
 .audio-toggle.active {
   color: #031208;
+  border-color: rgba(0, 255, 79, 0.72);
   background: #00ff4f;
+}
+
+.audio-toggle.active:hover {
+  background: #2fff71;
+  border-color: rgba(89, 255, 137, 0.9);
+  box-shadow: 0 0 10px rgba(0, 255, 79, 0.22);
+}
+
+.audio-toggle.active:active {
+  background: rgba(67, 255, 0, 1);
 }
 
 .audio-volume-control {
