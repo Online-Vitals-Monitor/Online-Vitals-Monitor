@@ -1,6 +1,7 @@
 .monitor-grid {
   --monitor-gap: 4px;
   display: grid;
+  position: relative;
   grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 360px);
   grid-template-rows: repeat(5, minmax(0, 1fr));
   grid-template-areas:
@@ -262,4 +263,63 @@
 }
 .monitor-grid:fullscreen .fullscreen-btn:hover {
   opacity: 1;
+}
+
+.monitor-audio-controls {
+  position: absolute;
+  left: clamp(52px, 3.5vw, 64px);
+  bottom: clamp(8px, 1vw, 16px);
+  z-index: 90;
+
+  display: flex;
+  align-items: center;
+  gap: 0.46rem;
+  padding: 0.24rem 0.44rem;
+  color: #e6fff0;
+  background: rgba(8, 12, 10, 0.78);
+  border: 1px solid rgba(0, 255, 79, 0.26);
+  border-radius: 8px;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.audio-toggle {
+  border: 1px solid rgba(0, 255, 79, 0.42);
+  border-radius: 6px;
+  padding: 0.2rem 0.44rem;
+  color: #00ff4f;
+  background: rgba(0, 255, 79, 0.08);
+  cursor: pointer;
+  font: inherit;
+  font-size: clamp(0.82rem, 0.95vw, 1rem);
+}
+
+.audio-toggle.active {
+  color: #031208;
+  background: #00ff4f;
+}
+
+.audio-volume-control {
+  display: flex;
+  align-items: center;
+  gap: 0.36rem;
+  font-size: clamp(0.78rem, 0.95vw, 0.95rem);
+  white-space: nowrap;
+}
+
+.audio-volume-control input {
+  width: clamp(80px, 7vw, 112px);
+  accent-color: #00ff4f;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .monitor-audio-controls {
+    align-items: flex-start;
+    left: auto;
+    min-width: 220px;
+    width: min(280px, calc(100vw - 24px));
+    flex-direction: column;
+    gap: 0.35rem;
+  }
 }
