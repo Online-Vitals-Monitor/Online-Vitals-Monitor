@@ -32,7 +32,7 @@ describe("Frontend Sessions", () => {
     );
 
   it("creates a new session and shows session banner", async () => {
-    const mockCreate = jest
+    const mockCreate = vi
       .spyOn(sessionApiModule.sessionApi, "createSession")
       .mockResolvedValue({ id: "TEST_SESSION_001" });
 
@@ -65,7 +65,7 @@ describe("Frontend Sessions", () => {
   });
 
   it("shows error when joining a session fails with API error", async () => {
-    const mockJoin = jest
+    const mockJoin = vi
       .spyOn(sessionApiModule.sessionApi, "joinSession")
       .mockRejectedValue(new Error("Backend unavailable"));
 
