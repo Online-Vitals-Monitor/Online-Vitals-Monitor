@@ -11,6 +11,7 @@ interface vitalSliderProps {
     min: number;                //min number range for slider
     max: number;                //max number range for slider
     currentVal: number;         //current value
+    committedVal?: number;
     onChange: (value: number) => void;
     onChangeCommitted?: (value: number) => void;
 }
@@ -21,22 +22,23 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
     min,
     max,
     currentVal,
+    committedVal,
     onChange,
     onChangeCommitted
 }) => {
     const [inputVal, setInputVal] = useState(
         currentVal !== undefined && currentVal !== null ? currentVal.toString() : ''
     );
+    const isDragging = useRef(false);
     const typingTimeout = useRef<NodeJS.Timeout | null>(null);
 
     // keep text field in sync when currentVal changes externally
-    useEffect(() => {
+     useEffect(() => {
+        if (isDragging.current) return;
         const strVal = currentVal !== undefined && currentVal !== null ? currentVal.toString() : '';
         setInputVal(prevInputVal => {
-            if (strVal !== prevInputVal) {
-            return strVal;
-            }
-            return prevInputVal; // no change, so no re-render
+            if (strVal !== prevInputVal) return strVal;
+            return prevInputVal;
         });
     }, [currentVal]);
 
@@ -54,21 +56,20 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newInput = e.target.value;
-        setInputVal(newInput); // always update textbox immediately
+        setInputVal(newInput);
 
         if (typingTimeout.current) clearTimeout(typingTimeout.current);
         typingTimeout.current = setTimeout(() => {
             const parsed = parseFloat(newInput);
             if (!isNaN(parsed)) {
             let clamped = Math.min(Math.max(parsed, min), max);
-            onChange(clamped);          // update slider value/state
-            setInputVal(clamped.toString()); // forcibly reset input text to clamped value
+            onChange(clamped);
+            setInputVal(clamped.toString());
             }
         }, 1000);
     };
 
 
-    /* return */
     return(
         <Box sx={{ width: '100%', mb: 4}}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -81,6 +82,9 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                     sx={{
                         width: 150,
                         mr: 3,
+                        '& .MuiOutlinedInput-root': {
+                            backgroundColor: '#1f2937 !important',
+                        },
                         'input': {textAlign: 'center'},
                         'input::-webkit-outer-spin-button': { display: 'none' },
                         'input::-webkit-inner-spin-button': { display: 'none' },
@@ -106,8 +110,15 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
                     <Slider
                         aria-label={title}
                         value={currentVal}                               
-                        onChange={(_, newValue) => onChange(newValue as number)} 
-                        onChangeCommitted={(_, newValue) => onChangeCommitted && onChangeCommitted(newValue as number)}
+                        onChange={(_, newValue) => {
+                            isDragging.current = true;
+                            setInputVal((newValue as number).toString());
+                            onChange(newValue as number);
+                        }}
+                         onChangeCommitted={(_, newValue) => {
+                            isDragging.current = false;
+                            onChangeCommitted && onChangeCommitted(newValue as number);
+                        }}
                         valueLabelDisplay="auto"
                         step={step}
                         min={min}
@@ -126,15 +137,19 @@ const VitalSlider: React.FC<vitalSliderProps> = ({
 
                 <TextField
                     type="number"
-                    value={currentVal.toString()}  // ensure string like inputVal
+                    value={(committedVal ?? currentVal).toString()}
                     variant="outlined"
                     size="small"
                     sx={{
                         width: 150,
-                        ml: 2,                       // your spacing
+                        ml: 2,
+                        pointerEvents: 'none',
+                        '& .MuiOutlinedInput-root': {
+                            backgroundColor: 'rgba(15, 23, 42, 0.75) !important',
+                        },
                         'input': { 
                         textAlign: 'center',
-                        color: '#e5e7eb'           // light grey to match your CSS override
+                        color: '#e5e7eb'
                         },
                         'input::-webkit-outer-spin-button': { display: 'none' },
                         'input::-webkit-inner-spin-button': { display: 'none' },
