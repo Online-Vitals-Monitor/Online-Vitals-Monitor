@@ -265,6 +265,19 @@
   opacity: 1;
 }
 
+.monitor-grid:fullscreen .audio-volume-control {
+  display: none;
+}
+
+.monitor-grid:fullscreen .monitor-audio-controls {
+  opacity: 0.45;
+}
+
+.monitor-grid:fullscreen .monitor-audio-controls:hover,
+.monitor-grid:fullscreen .monitor-audio-controls:active {
+  opacity: 1;
+}
+
 .monitor-audio-controls {
   position: absolute;
   left: clamp(52px, 3.5vw, 64px);
