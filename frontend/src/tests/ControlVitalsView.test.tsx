@@ -38,7 +38,7 @@ const switchToPushMode = () => {
 
 describe("ControlVitalsView", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     getVitalsMock.mockResolvedValue(defaultVitals);
     updateVitalsMock.mockResolvedValue({});
   });

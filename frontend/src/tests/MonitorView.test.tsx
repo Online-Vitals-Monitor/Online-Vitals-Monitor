@@ -7,9 +7,11 @@ import { vi } from "vitest";
 // mock so we're not polling from the true API
 // vi.mock('../api/vitalsApi');
 
-vi.mock('../components/WaveformChart', () => () => (
-  <div data-testid="mock-waveform-chart" />
-));
+vi.mock('../components/WaveformChart', () => {
+  return {
+    default: () => <div data-testid="mock-waveform-chart" />
+  };
+});
 
 describe('MonitorView', () => {
   it('renders Heart Rate card with data', async () => {

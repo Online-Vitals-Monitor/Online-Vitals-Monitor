@@ -8,8 +8,8 @@ import Heropage from "../pages/homepage/Heropage";
 vi.mock("../pages/monitorView", () => () => <div data-testid="mock-monitor">Mock Monitor</div>);
 
 const mockedNavigate = vi.fn();
-vi.mock("react-router-dom", () => {
-  const actual = jest.requireActual("react-router-dom");
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useNavigate: () => mockedNavigate,
@@ -18,7 +18,7 @@ vi.mock("react-router-dom", () => {
 
 describe("Frontend Sessions", () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     mockedNavigate.mockReset();
   });
 
