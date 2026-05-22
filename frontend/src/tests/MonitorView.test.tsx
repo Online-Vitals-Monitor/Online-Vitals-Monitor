@@ -1,12 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import MonitorView from '../pages/monitorView';
 import { VitalsProvider } from '../contexts/vitalsContext';
+import { vi } from "vitest";
 // import * as vitalsApi from '../api/vitalsApi';
 
 // mock so we're not polling from the true API
-// jest.mock('../api/vitalsApi');
+// vi.mock('../api/vitalsApi');
 
-jest.mock('../components/WaveformChart', () => () => (
+vi.mock('../components/WaveformChart', () => () => (
   <div data-testid="mock-waveform-chart" />
 ));
 
@@ -22,7 +23,7 @@ describe('MonitorView', () => {
     //   eTCO2: 35
     // };
 
-    // (vitalsApi.getVitals as jest.Mock).mockResolvedValue(mockVitals);
+    // (vitalsApi.getVitals as Mock).mockResolvedValue(mockVitals);
     render(
       <VitalsProvider>
         <MonitorView />
