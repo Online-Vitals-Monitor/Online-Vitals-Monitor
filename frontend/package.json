@@ -31,8 +31,8 @@
     "dev": "vite",
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm run start",
-    "client": "npm run dev",
-    "build": "npm run build"
+    "client": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build"
   },
   "eslintConfig": {
     "extends": [
