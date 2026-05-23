@@ -244,7 +244,7 @@ const ControlVitalsView: React.FC = () => {
           </FormControl>
 
           <Typography
-            variant="h6"
+            variant="h5"
             className="control-vitals-header-current"
           >
             Current Values
