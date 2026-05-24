@@ -6,6 +6,7 @@ import "./controlVitalsView.css";
 interface VitalControlProps {
   title: string;
   value: number;
+  committedVal?: number;
   onChange: (value: number) => void;
   onChangeCommitted?: (value: number) => void;
   step: number;
@@ -14,7 +15,7 @@ interface VitalControlProps {
 }
 
 const VitalControl: React.FC<VitalControlProps> = memo(
-  ({ title, value, onChange, onChangeCommitted, step, min, max }) => (
+  ({ title, value, committedVal, onChange, onChangeCommitted, step, min, max }) => (
     <Box className="vital-control-row">
       <VitalSlider
         title={title}
@@ -22,6 +23,7 @@ const VitalControl: React.FC<VitalControlProps> = memo(
         min={min}
         max={max}
         currentVal={value}
+        committedVal={committedVal}
         onChange={onChange}
         onChangeCommitted={onChangeCommitted}
       />
