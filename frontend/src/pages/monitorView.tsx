@@ -9,6 +9,8 @@ import { useParams } from "react-router-dom";
 import "./monitorView.css";
 import { getVitals, Vitals } from "../api/vitalsApi";
 import { useSession } from "../contexts/sessionContext";
+import { Vitals } from "../api/vitalsApi";
+// import { getVitals } from "../api/vitalsApi";
 import WaveformChart from "../components/WaveformChart";
 import { useVitals } from "../contexts/vitalsContext";
 import VitalCard from "../components/VitalCard";
@@ -130,7 +132,7 @@ const MonitorView: React.FC = () => {
       label: `SpO2 Pleth  ${vitals.o2Saturation || 0}%`,
       beatData: plethBeat,
       color: "#f3d66e",
-      mmPerSecond: 12.5,
+      mmPerSecond: 25,
     },
     {
       id: "etco2",
@@ -175,7 +177,7 @@ const MonitorView: React.FC = () => {
               beatData={wave.beatData}
               color={wave.color}
               height={95}
-              easing="Power2.inOut"
+              // easing="Power2.inOut"
               waveformType="ecg"
               width={waveformWidth}
               mmPerSecond={wave.mmPerSecond}
