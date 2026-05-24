@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import "./monitorViewNew.css";
 import { Vitals } from "../../api/vitalsApi";
-// import { getVitals } from "../../api/vitalsApi"; // restore when backend vitals are available
+import { getVitals } from "../../api/vitalsApi"; // comment out if using mock db
 import WaveformChart from "../../components/WaveformChart";
 // import { useVitals } from "../../contexts/vitalsContext";
 // import VitalCard from "../../components/VitalCard";
@@ -45,22 +45,22 @@ const MonitorViewNew = () => {
 
   const fetchVitals = async () => {
     // from backend
-    // try {
-    //   const data = await getVitals();
-    //   setVitals(data);
-    // } catch (err) {
-    //   console.error("Failed to fetch vitals:", err);
-    // }
+    try {
+      const data = await getVitals();
+      setVitals(data);
+    } catch (err) {
+      console.error("Failed to fetch vitals:", err);
+    }
 
-    // mock data for testing / when database is down
-    setVitals({
-      heartRate: 80,
-      respRate: 14, 
-      o2Saturation: 99,
-      systolicBP: 120,
-      diastolicBP: 80,
-      eTCO2: 35,
-    });
+    // // mock data for testing / when database is down
+    // setVitals({
+    //   heartRate: 80,
+    //   respRate: 14, 
+    //   o2Saturation: 99,
+    //   systolicBP: 120,
+    //   diastolicBP: 80,
+    //   eTCO2: 35,
+    // });
   };
 
   useEffect(() => {
