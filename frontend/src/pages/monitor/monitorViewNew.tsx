@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import "./monitorViewNew.css";
 import { Vitals } from "../../api/vitalsApi";
-// import { getVitals } from "../../api/vitalsApi"; // restore when backend vitals are available
+import { getVitals } from "../../api/vitalsApi"; // comment out if using mock db
 import WaveformChart from "../../components/WaveformChart";
 // import { useVitals } from "../../contexts/vitalsContext";
 // import VitalCard from "../../components/VitalCard";
