@@ -9,8 +9,6 @@ import { useParams } from "react-router-dom";
 import "./monitorView.css";
 import { getVitals, Vitals } from "../api/vitalsApi";
 import { useSession } from "../contexts/sessionContext";
-import { Vitals } from "../api/vitalsApi";
-// import { getVitals } from "../api/vitalsApi";
 import WaveformChart from "../components/WaveformChart";
 import { useVitals } from "../contexts/vitalsContext";
 import VitalCard from "../components/VitalCard";

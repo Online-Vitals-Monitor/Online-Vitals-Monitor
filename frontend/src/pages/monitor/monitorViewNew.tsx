@@ -1,7 +1,15 @@
-import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  Fragment,
+  useCallback,
+} from "react";
 import "./monitorViewNew.css";
 import { getVitals, Vitals } from "../../api/vitalsApi";
 import { useParams } from "react-router-dom";
+import { useSession } from "../../contexts/sessionContext";
 import WaveformChart from "../../components/WaveformChart";
 // import { useVitals } from "../../contexts/vitalsContext";
 // import VitalCard from "../../components/VitalCard";
@@ -37,43 +45,30 @@ const MonitorViewNew = () => {
     sessionID: "",
   });
 
-  const { publicID } = useParams<{ publicID: string }>();
+  const { publicID: paramID } = useParams<{ publicID: string }>();
+  const { session } = useSession();
+  const publicID = paramID ?? session?.publicID;
 
   // const { state } = useVitals(); //from context get array of selected vitals
   // const selected: string[] = state?.selected ?? [];
 
-  const fetchVitals = async () => {
-    // from backend
+  const fetchVitals = useCallback(async () => {
+    if (!publicID) return;
     try {
-      const data = await getVitals(publicID!);
+      const data = await getVitals(publicID);
       setVitals(data);
     } catch (err) {
       console.error("Failed to fetch vitals:", err);
     }
-    // try {
-    //   const data = await getVitals();
-    //   setVitals(data);
-    // } catch (err) {
-    //   console.error("Failed to fetch vitals:", err);
-    // }
-
-    // mock data for testing / when database is down
-    setVitals({
-      heartRate: 80,
-      respRate: 14,
-      o2Saturation: 99,
-      systolicBP: 120,
-      diastolicBP: 80,
-      eTCO2: 35,
-    });
-  };
+  }, [publicID]);
 
   useEffect(() => {
+    if (!publicID) return;
     document.title = "Monitor";
     fetchVitals();
-    const interval = setInterval(fetchVitals, 5000); // 5 seconds
+    const interval = setInterval(fetchVitals, 2000); // 2 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [publicID, fetchVitals]);
 
   // measure layout elements (for fitting waveforms)
   const waveformContainerRef = useRef<HTMLDivElement>(null);

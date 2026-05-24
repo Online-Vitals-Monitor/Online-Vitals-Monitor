@@ -24,22 +24,11 @@ router.get("/:publicID", async (req, res) => {
       .eq("publicID", publicID)
       .single();
 
-  if (error) {
-    console.error("getSingleVitalsRowId error:", error);
-    return null;
-  }
-  return (data as any)?.id ?? null;
-}
-
-// GET - return current vitals
-router.get("/", async (_req, res) => {
-  try {
-    const id = await getSingleVitalsRowId();
-    if (!id) {
-      return res.status(500).json({ error: "no vitals row found" });
+    if (sessionError || !session) {
+      return res.status(404).json({ error: "Session not found" });
     }
 
-    const { data, error } = await supabase
+    const { data: vitals, error: vitalsError } = await supabase
       .from("vitals")
       .select("*")
       .eq("sessionID", session.id)

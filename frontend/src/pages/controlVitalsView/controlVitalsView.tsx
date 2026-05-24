@@ -256,7 +256,10 @@ const ControlVitalsView: React.FC = () => {
               title={`${title}${key === "eTCO2" ? ` (${etco2Unit})` : ""}`}
               value={
                 unitConverter
-                  ? unitConverter(sliderValues[key as keyof Vitals], etco2Unit)
+                  ? unitConverter(
+                      sliderValues[key as keyof Vitals] as number,
+                      etco2Unit,
+                    )
                   : (sliderValues[key as keyof Vitals] as number)
               }
               onChange={(value) =>
@@ -267,7 +270,10 @@ const ControlVitalsView: React.FC = () => {
               }
               committedVal={
                 unitConverter
-                  ? unitConverter(vitals[key as keyof Vitals], etco2Unit)
+                  ? unitConverter(
+                      vitals[key as keyof Vitals] as number,
+                      etco2Unit,
+                    )
                   : (vitals[key as keyof Vitals] as number)
               }
               onChangeCommitted={(value) =>
@@ -430,7 +436,7 @@ const ControlVitalsView: React.FC = () => {
               className="control-vitals-session-display"
               sx={{ mt: 1, textAlign: "center", color: "#ced8cd" }}
             >
-              CURRENT SESSION: <strong>{session.id}</strong>
+              CURRENT SESSION: <strong>{session.publicID}</strong>
             </Typography>
           )}
         </Box>
