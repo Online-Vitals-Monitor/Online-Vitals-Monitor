@@ -13,6 +13,8 @@ import { useSession } from "../../contexts/sessionContext";
 import WaveformChart from "../../components/WaveformChart";
 // import { useVitals } from "../../contexts/vitalsContext";
 // import VitalCard from "../../components/VitalCard";
+import { useVitalsAudio } from "./useVitalsAudio";
+
 import {
   generateBpWaveform,
   generateEcgWaveform,
@@ -44,6 +46,8 @@ const MonitorViewNew = () => {
     eTCO2: 0,
     sessionID: "",
   });
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioVolume, setAudioVolume] = useState(0.35);
 
   const { publicID: paramID } = useParams<{ publicID: string }>();
   const { session } = useSession();
@@ -69,6 +73,25 @@ const MonitorViewNew = () => {
     const interval = setInterval(fetchVitals, 2000); // 2 seconds
     return () => clearInterval(interval);
   }, [publicID, fetchVitals]);
+
+  const { isAudioReady, startAudio } = useVitalsAudio({
+    enabled: audioEnabled,
+    heartRate: vitals.heartRate,
+    o2Saturation: vitals.o2Saturation,
+    volume: audioVolume,
+  });
+
+  const handleAudioToggle = async () => {
+    if (audioEnabled) {
+      setAudioEnabled(false);
+      return;
+    }
+
+    const didStart = await startAudio();
+    if (didStart) {
+      setAudioEnabled(true);
+    }
+  };
 
   // measure layout elements (for fitting waveforms)
   const waveformContainerRef = useRef<HTMLDivElement>(null);
@@ -211,6 +234,34 @@ const MonitorViewNew = () => {
       >
         ⛶
       </button>
+
+      <div className="monitor-audio-controls">
+        <button
+          className={`audio-toggle ${audioEnabled ? "active" : ""}`}
+          onClick={handleAudioToggle}
+          type="button"
+        >
+          {audioEnabled
+            ? "Sound On"
+            : isAudioReady
+              ? "Sound Off"
+              : "Enable Sound"}
+        </button>
+
+        <label className="audio-volume-control">
+          Volume
+          <input
+            aria-label="Monitor sound volume"
+            max="100"
+            min="0"
+            onChange={(event) =>
+              setAudioVolume(Number(event.target.value) / 100)
+            }
+            type="range"
+            value={Math.round(audioVolume * 100)}
+          />
+        </label>
+      </div>
 
       {waveformRows.map((wave) => (
         <Fragment key={wave.id}>
