@@ -2,15 +2,14 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { SessionProvider } from "../contexts/sessionContext";
 import * as sessionApiModule from "../api/sessionApi";
+import { vi } from "vitest";
 import Heropage from "../pages/homepage/Heropage";
 
-jest.mock("../pages/monitorView", () => () => (
-  <div data-testid="mock-monitor">Mock Monitor</div>
-));
+vi.mock("../pages/monitorView", () => () => <div data-testid="mock-monitor">Mock Monitor</div>);
 
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => {
-  const actual = jest.requireActual("react-router-dom");
+const mockedNavigate = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useNavigate: () => mockedNavigate,
@@ -19,7 +18,7 @@ jest.mock("react-router-dom", () => {
 
 describe("Frontend Sessions", () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
     mockedNavigate.mockReset();
   });
 
@@ -33,7 +32,7 @@ describe("Frontend Sessions", () => {
     );
 
   it("creates a new session and shows session banner", async () => {
-    const mockCreate = jest
+    const mockCreate = vi
       .spyOn(sessionApiModule.sessionApi, "createSession")
       .mockResolvedValue({
         publicID: "TEST_SESSION_001",
@@ -70,7 +69,7 @@ describe("Frontend Sessions", () => {
   });
 
   it("shows error when joining a session fails with API error", async () => {
-    const mockJoin = jest
+    const mockJoin = vi
       .spyOn(sessionApiModule.sessionApi, "joinSession")
       .mockRejectedValue(new Error("Backend unavailable"));
 
