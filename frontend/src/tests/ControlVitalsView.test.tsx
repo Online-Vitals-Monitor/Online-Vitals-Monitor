@@ -1,12 +1,13 @@
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import ControlVitalsView from "../pages/controlVitalsView/controlVitalsView";
 import * as vitalsApi from "../api/vitalsApi";
+import { vi, Mock } from "vitest"; // Add this import!
 import { SessionProvider } from "../contexts/sessionContext";
 
-jest.mock("../api/vitalsApi");
+vi.mock("../api/vitalsApi");
 
-const getVitalsMock = vitalsApi.getVitals as jest.Mock;
-const updateVitalsMock = vitalsApi.updateVitals as jest.Mock;
+const getVitalsMock = vitalsApi.getVitals as Mock;
+const updateVitalsMock = vitalsApi.updateVitals as Mock;
 
 const defaultVitals = {
   heartRate: 60,
@@ -37,7 +38,7 @@ const switchToPushMode = () => {
 
 describe("ControlVitalsView", () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     getVitalsMock.mockResolvedValue(defaultVitals);
     updateVitalsMock.mockResolvedValue({});
   });

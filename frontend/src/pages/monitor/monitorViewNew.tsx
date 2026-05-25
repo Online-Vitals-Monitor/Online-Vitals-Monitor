@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import "./monitorViewNew.css";
 import { Vitals } from "../../api/vitalsApi";
-// import { getVitals } from "../../api/vitalsApi"; // restore when backend vitals are available
+import { getVitals } from "../../api/vitalsApi"; // comment out if using mock db
 import WaveformChart from "../../components/WaveformChart";
 // import { useVitals } from "../../contexts/vitalsContext";
 // import VitalCard from "../../components/VitalCard";
+import { useVitalsAudio } from "./useVitalsAudio";
+
 import {
   generateBpWaveform,
   generateEcgWaveform,
@@ -35,28 +37,30 @@ const MonitorViewNew = () => {
     diastolicBP: 0,
     eTCO2: 0,
   });
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioVolume, setAudioVolume] = useState(0.35);
 
   // const { state } = useVitals(); //from context get array of selected vitals
   // const selected: string[] = state?.selected ?? [];
 
   const fetchVitals = async () => {
     // from backend
-    // try {
-    //   const data = await getVitals();
-    //   setVitals(data);
-    // } catch (err) {
-    //   console.error("Failed to fetch vitals:", err);
-    // }
+    try {
+      const data = await getVitals();
+      setVitals(data);
+    } catch (err) {
+      console.error("Failed to fetch vitals:", err);
+    }
 
-    // mock data for testing / when database is down
-    setVitals({
-      heartRate: 80,
-      respRate: 14, 
-      o2Saturation: 99,
-      systolicBP: 120,
-      diastolicBP: 80,
-      eTCO2: 35,
-    });
+    // // mock data for testing / when database is down
+    // setVitals({
+    //   heartRate: 80,
+    //   respRate: 14, 
+    //   o2Saturation: 99,
+    //   systolicBP: 120,
+    //   diastolicBP: 80,
+    //   eTCO2: 35,
+    // });
   };
 
   useEffect(() => {
@@ -65,6 +69,25 @@ const MonitorViewNew = () => {
     const interval = setInterval(fetchVitals, 5000); // 5 seconds
     return () => clearInterval(interval);
   }, []);
+
+  const { isAudioReady, startAudio } = useVitalsAudio({
+    enabled: audioEnabled,
+    heartRate: vitals.heartRate,
+    o2Saturation: vitals.o2Saturation,
+    volume: audioVolume,
+  });
+
+  const handleAudioToggle = async () => {
+    if (audioEnabled) {
+      setAudioEnabled(false);
+      return;
+    }
+
+    const didStart = await startAudio();
+    if (didStart) {
+      setAudioEnabled(true);
+    }
+  };
 
   // measure layout elements (for fitting waveforms)
   const waveformContainerRef = useRef<HTMLDivElement>(null);
@@ -204,6 +227,28 @@ const MonitorViewNew = () => {
         ⛶
       </button>
       
+      <div className="monitor-audio-controls">
+        <button
+          className={`audio-toggle ${audioEnabled ? "active" : ""}`}
+          onClick={handleAudioToggle}
+          type="button"
+        >
+          {audioEnabled ? "Sound On" : isAudioReady ? "Sound Off" : "Enable Sound"}
+        </button>
+
+        <label className="audio-volume-control">
+          Volume
+          <input
+            aria-label="Monitor sound volume"
+            max="100"
+            min="0"
+            onChange={(event) => setAudioVolume(Number(event.target.value) / 100)}
+            type="range"
+            value={Math.round(audioVolume * 100)}
+          />
+        </label>
+      </div>
+
       {waveformRows.map((wave) => (
         <Fragment key={wave.id}>
           {/* LEFT COLUMN */}

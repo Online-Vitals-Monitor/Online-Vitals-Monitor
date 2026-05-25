@@ -103,20 +103,22 @@ const ControlVitalsView: React.FC = () => {
 
     setSelectedPreset(newPreset.name);
 
-    setVitals((prev) => {
-      const merged = { ...prev, ...newPreset.values };
-
-      if (updateMode === "push") {
-        setPendingVitals((prevPending) => ({
-          ...(prevPending ?? prev),
-          ...newPreset.values,
-        }));
-      } else {
+     if (updateMode === "push") {
+      setPendingVitals((prev) => ({
+        ...(prev ?? vitals),
+        ...newPreset.values,
+      }));
+      setUiVitals((prev) => ({
+        ...prev,
+        ...newPreset.values,
+      }));
+    } else {
+      setVitals((prev) => {
+        const merged = { ...prev, ...newPreset.values };
         debouncedUpdateVitals(merged);
-      }
-
-      return merged;
-    });
+        return merged;
+      });
+    }
   };
 
   // Handler for onChange (during dragging) - only updates UI
@@ -184,6 +186,7 @@ const ControlVitalsView: React.FC = () => {
 
       if (currentMode === "live") {
         setVitals(updated);
+        setSelectedPreset("");
         debouncedUpdateVitals(updated);
       } else {
         setPendingVitals(updated);
@@ -195,9 +198,10 @@ const ControlVitalsView: React.FC = () => {
   // Save handler for push mode
   const handleSaveClick = async () => {
     if (updateMode !== "push" || !pendingVitals) return;
+    setVitals(pendingVitals); 
+    setSelectedPreset("");
     try {
       await updateVitals(pendingVitals);
-      setVitals(pendingVitals);
   //    setErrorMessage(null);
     } catch (err) {
       console.error("Failed to save vitals. Please try again.", err);
@@ -207,243 +211,251 @@ const ControlVitalsView: React.FC = () => {
   const sliderValues = uiVitals;
 
   return (
-    <Box className="control-vitals-root">
-      {/* Header */}
-      <Box className="control-vitals-header">
-        <Typography
-          variant="h5"
-          className="control-vitals-header-title"
-        >
-          New Values
-        </Typography>
-
-        <FormControl className="control-vitals-preset-form">
-          <InputLabel id="preset-select-label">
-            Preset (applied immediately)
-          </InputLabel>
-          <Select
-            labelId="preset-select-label"
-            id="preset-select"
-            value={selectedPreset}
-            label="Preset (applied immediately)"
-            onChange={handlePresetChange}
+    <div className="control-vitals-container">
+      <Box className="control-vitals-root">
+        {/* Header */}
+        <Box className="control-vitals-header">
+          <Typography
+            variant="h5"
+            className="control-vitals-header-title"
           >
-            {presetConfigs
-            .filter(preset => preset.name !== "Reset Defaults")
-            .map((preset) => (
-              <MenuItem key={preset.name} value={preset.name}>
-                {preset.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            New Values
+          </Typography>
 
-        <Typography
-          variant="h6"
-          className="control-vitals-header-current"
-        >
-          Current Values
-        </Typography>
-      </Box>
+          <FormControl className="control-vitals-preset-form">
+            <InputLabel id="preset-select-label">
+              Preset (applied immediately)
+            </InputLabel>
+            <Select
+              labelId="preset-select-label"
+              id="preset-select"
+              value={selectedPreset}
+              label="Preset (applied immediately)"
+              onChange={handlePresetChange}
+            >
+              {presetConfigs
+              .filter(preset => preset.name !== "Reset Defaults")
+              .map((preset) => (
+                <MenuItem key={preset.name} value={preset.name}>
+                  {preset.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-      {/* Vital Sliders */}
-      {vitalsConfig.map(({ key, title, step, min, max, unitConverter, unitDeconverter }) => (
-        <VitalControl
-          key={key}
-          title={`${title}${key === "eTCO2" ? ` (${etco2Unit})` : ""}`}
-          value={
-            unitConverter
-              ? unitConverter(sliderValues[key as keyof Vitals], etco2Unit)
-              : (sliderValues[key as keyof Vitals] as number)
-          }
-          onChange={(value) =>
-            handleVitalChange(
-              key,
-              unitDeconverter ? unitDeconverter(value, etco2Unit) : value
-            )
-          }
-          onChangeCommitted={(value) =>
-            handleVitalChangeCommitted(
-              key,
-              unitDeconverter ? unitDeconverter(value, etco2Unit) : value
-            )
-          }
-          step={key === "eTCO2" ? (etco2Unit === "kPa" ? 0.1 : 1) : step}
-          min={min}
-          max={key === "eTCO2" ? etco2Max : max}
-        />
-      ))}
-
-      {/* Toggle, Save Button, and Display Settings */}
-      <Box className="control-vitals-bottom">
-        <div
-          className={`toggle-save-row ${
-            updateMode === "push" ? "with-save" : "no-save"
-          }`}
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            className="control-vitals-reset-btn"
-            onClick={() => {
-              const syntheticEvent = {
-                target: { value: "Reset Defaults" }
-              } as SelectChangeEvent;
-              handlePresetChange(syntheticEvent);
-            }}
+          <Typography
+            variant="h5"
+            className="control-vitals-header-current"
           >
-            Reset Default Values
-          </Button>
+            Current Values
+          </Typography>
+        </Box>
 
-          <div className="toggle-save-spacer" />
+        {/* Vital Sliders */}
+        {vitalsConfig.map(({ key, title, step, min, max, unitConverter, unitDeconverter }) => (
+          <VitalControl
+            key={key}
+            title={`${title}${key === "eTCO2" ? ` (${etco2Unit})` : ""}`}
+            value={
+              unitConverter
+                ? unitConverter(sliderValues[key as keyof Vitals], etco2Unit)
+                : (sliderValues[key as keyof Vitals] as number)
+            }
+            onChange={(value) =>
+              handleVitalChange(
+                key,
+                unitDeconverter ? unitDeconverter(value, etco2Unit) : value
+              )
+            }
+            committedVal={
+              unitConverter
+                ? unitConverter(vitals[key as keyof Vitals], etco2Unit)
+                : (vitals[key as keyof Vitals] as number)
+            }
+            onChangeCommitted={(value) =>
+              handleVitalChangeCommitted(
+                key,
+                unitDeconverter ? unitDeconverter(value, etco2Unit) : value
+              )
+            }
+            step={key === "eTCO2" ? (etco2Unit === "kPa" ? 0.1 : 1) : step}
+            min={min}
+            max={key === "eTCO2" ? etco2Max : max}
+          />
+        ))}
 
-          {updateMode === "push" && (
+        {/* Toggle, Save Button, and Display Settings */}
+        <Box className="control-vitals-bottom">
+          <div
+            className={`toggle-save-row ${
+              updateMode === "push" ? "with-save" : "no-save"
+            }`}
+          >
             <Button
               variant="contained"
               color="primary"
-              onClick={handleSaveClick}
-              className="control-vitals-save-btn"
+              className="control-vitals-reset-btn"
+              onClick={() => {
+                const syntheticEvent = {
+                  target: { value: "Reset Defaults" }
+                } as SelectChangeEvent;
+                handlePresetChange(syntheticEvent);
+              }}
             >
-              Save New Vitals
+              Reset Default Values
             </Button>
-          )}
 
-          <ToggleButtonGroup
-            color="primary"
-            value={updateMode}
-            exclusive
-            onChange={(_, v) => {
-              if (v) {
-                if (v === "push") {
-                  setPendingVitals(vitals);
+            <div className="toggle-save-spacer" />
+
+            {updateMode === "push" && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSaveClick}
+                className="control-vitals-save-btn"
+              >
+                Save New Vitals
+              </Button>
+            )}
+
+            <ToggleButtonGroup
+              color="primary"
+              value={updateMode}
+              exclusive
+              onChange={(_, v) => {
+                if (v) {
+                  if (v === "push") {
+                    setPendingVitals(vitals);
+                  }
+                  setSelectedPreset(""); 
+                  setUpdateMode(v);
                 }
-                setUpdateMode(v);
-              }
-            }}
-            aria-label="Update Mode"
-          >
-            <ToggleButton value="live">Live Updates</ToggleButton>
-            <ToggleButton value="push">Push Updates</ToggleButton>
-          </ToggleButtonGroup>
-        </div>
-
-        <Button
-          variant="contained"
-          className="control-vitals-display-btn"
-          onClick={() => setDisplayMenuOpen(true)}
-        >
-          Open Display Settings
-        </Button>
-
-        <Backdrop
-          open={displayMenuOpen}
-          sx={{ zIndex: (theme) => theme.zIndex.drawer - 1, color: "#fff" }}
-          onClick={() => setDisplayMenuOpen(false)}
-        />
-
-        <Drawer
-          anchor="right"
-          open={displayMenuOpen}
-          onClose={() => setDisplayMenuOpen(false)}
-          slotProps={{
-            paper: {
-              className: "control-vitals-drawer-paper",
-            },
-          }}
-        >
-          <Typography
-            variant="h6"
-            className="control-vitals-drawer-title"
-          >
-            Display Settings
-          </Typography>
-
-          <Typography
-            variant="subtitle1"
-            className="control-vitals-drawer-subtitle"
-          >
-            ETCO₂ Units
-          </Typography>
-
-          <ToggleButtonGroup
-            value={etco2Unit}
-            exclusive
-            onChange={(_, newVal) => {
-              if (newVal) setEtco2Unit(newVal);
-            }}
-            aria-label="etco2-units"
-            color="primary"
-            size="small"
-          >
-            <ToggleButton value="kPa" aria-label="kPa">
-              kPa
-            </ToggleButton>
-            <ToggleButton value="mmHg" aria-label="mmHg">
-              mmHg
-            </ToggleButton>
-          </ToggleButtonGroup>
-
-          <Typography
-            variant="subtitle1"
-            className="control-vitals-drawer-subtitle"
-            sx={{ mt: 3 }}
-          >
-            Session ID Display
-          </Typography>
-
-          <ToggleButtonGroup
-            value={showSessionId}
-            exclusive
-            onChange={(_, newVal) => {
-              if (newVal !== null) setShowSessionId(newVal);
-            }}
-            aria-label="show-session-id"
-            color="primary"
-            size="small"
-          >
-            <ToggleButton value={true} aria-label="Show session ID">
-              Show
-            </ToggleButton>
-            <ToggleButton value={false} aria-label="Hide session ID">
-              Hide
-            </ToggleButton>
-          </ToggleButtonGroup>
+              }}
+              aria-label="Update Mode"
+            >
+              <ToggleButton value="live">Live Updates</ToggleButton>
+              <ToggleButton value="push">Push Updates</ToggleButton>
+            </ToggleButtonGroup>
+          </div>
 
           <Button
-            className="control-vitals-close-menu-btn"
-            onClick={() => setDisplayMenuOpen(false)}
+            variant="contained"
+            className="control-vitals-display-btn"
+            onClick={() => setDisplayMenuOpen(true)}
           >
-            Close Menu
+            Open Display Settings
           </Button>
-        </Drawer>
 
-        {showSessionId && session && (
-          <Typography 
-            variant="body2" 
-            className="control-vitals-session-display"
-            sx={{ mt: 1, textAlign: 'center', color: '#ced8cd' }}
+          <Backdrop
+            open={displayMenuOpen}
+            sx={{ zIndex: (theme) => theme.zIndex.drawer - 1, color: "#fff" }}
+            onClick={() => setDisplayMenuOpen(false)}
+          />
+
+          <Drawer
+            anchor="right"
+            open={displayMenuOpen}
+            onClose={() => setDisplayMenuOpen(false)}
+            slotProps={{
+              paper: {
+                className: "control-vitals-drawer-paper",
+              },
+            }}
           >
-            Current session: <strong>{session.id}</strong>
-          </Typography>
-        )}
-        
-      </Box>
+            <Typography
+              variant="h6"
+              className="control-vitals-drawer-title"
+            >
+              Display Settings
+            </Typography>
 
-      {/* Notification disabled for now, might edit and re-enable later */}
-      {/*
-      {errorMessage && (
-        <Snackbar
-          open
-          autoHideDuration={6000}
-          onClose={() => setErrorMessage(null)}
-        >
-          <Alert severity="error" onClose={() => setErrorMessage(null)}>
-            {errorMessage}
-          </Alert>
-        </Snackbar>
-      )}
-      */}
-    </Box>
+            <Typography
+              variant="subtitle1"
+              className="control-vitals-drawer-subtitle"
+            >
+              ETCO₂ Units
+            </Typography>
+
+            <ToggleButtonGroup
+              value={etco2Unit}
+              exclusive
+              onChange={(_, newVal) => {
+                if (newVal) setEtco2Unit(newVal);
+              }}
+              aria-label="etco2-units"
+              color="primary"
+              size="small"
+            >
+              <ToggleButton value="kPa" aria-label="kPa">
+                kPa
+              </ToggleButton>
+              <ToggleButton value="mmHg" aria-label="mmHg">
+                mmHg
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            <Typography
+              variant="subtitle1"
+              className="control-vitals-drawer-subtitle"
+              sx={{ mt: 3 }}
+            >
+              Session ID Display
+            </Typography>
+
+            <ToggleButtonGroup
+              value={showSessionId}
+              exclusive
+              onChange={(_, newVal) => {
+                if (newVal !== null) setShowSessionId(newVal);
+              }}
+              aria-label="show-session-id"
+              color="primary"
+              size="small"
+            >
+              <ToggleButton value={true} aria-label="Show session ID">
+                Show
+              </ToggleButton>
+              <ToggleButton value={false} aria-label="Hide session ID">
+                Hide
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            <Button
+              className="control-vitals-close-menu-btn"
+              onClick={() => setDisplayMenuOpen(false)}
+            >
+              Close Menu
+            </Button>
+          </Drawer>
+
+          {showSessionId && session && (
+            <Typography 
+              variant="body2" 
+              className="control-vitals-session-display"
+              sx={{ mt: 1, textAlign: 'center', color: '#ced8cd' }}
+            >
+              CURRENT SESSION: <strong>{session.id}</strong>
+            </Typography>
+          )}
+          
+        </Box>
+
+        {/* Notification disabled for now, might edit and re-enable later */}
+        {/*
+        {errorMessage && (
+          <Snackbar
+            open
+            autoHideDuration={6000}
+            onClose={() => setErrorMessage(null)}
+          >
+            <Alert severity="error" onClose={() => setErrorMessage(null)}>
+              {errorMessage}
+            </Alert>
+          </Snackbar>
+        )}
+        */}
+      </Box>
+    </div>
   );
 };
 
