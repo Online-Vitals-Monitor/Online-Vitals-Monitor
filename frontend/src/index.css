@@ -1,6 +1,26 @@
 @import "tailwindcss";
 
 @font-face {
+  font-family: "Regular";
+  src: url("/fonts/regular.otf");
+}
+
+@font-face {
+  font-family: "Medium";
+  src: url("/fonts/medium.otf");
+}
+
+@font-face {
+  font-family: "SemiBold";
+  src: url("/fonts/semibold.otf");
+}
+
+@font-face {
+  font-family: "Bold";
+  src: url("/fonts/bold.otf");
+}
+
+@font-face {
   font-family: "Inter";
   src: url(../public/fonts/Inter/Inter-VariableFont_opsz\,wght.ttf)
     format("truetype");
