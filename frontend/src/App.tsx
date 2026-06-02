@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { SessionProvider } from "./contexts/sessionContext";
 import ValuesView from "./pages/controlVitalsView/controlVitalsView";
 import NavbarNew from "./components/navbar/NavbarNew";
@@ -30,7 +35,10 @@ const App = () => {
                   <Route path="/about" element={<About />} />
                   <Route element={<RequireSession />}>
                     <Route path="/monitor" element={<MonitorViewNew />} />
-                    <Route path="/monitortest" element={<Navigate to="/monitor" replace />} />
+                    <Route
+                      path="/monitortest"
+                      element={<Navigate to="/monitor" replace />}
+                    />
                     <Route path="/values" element={<ValuesView />} />
                   </Route>
                 </Routes>
