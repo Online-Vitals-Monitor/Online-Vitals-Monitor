@@ -49,13 +49,15 @@ footer {
 
 }
 
+/* Removed for now, leaving it here in case it's needed later
 .footer-right-section {
     display: flex;
     justify-content: center;
-    align-items: center; /* Pushes content to the far right */
+    align-items: center; */ /* Pushes content to the far right */ /*
     text-align: left;
     line-height: 50px;
 }
+*/
 
 .footer-right-section h1 {
     font-size: 20px;
