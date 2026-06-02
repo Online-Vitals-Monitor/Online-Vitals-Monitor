@@ -8,15 +8,14 @@ export interface Vitals {
   sessionID: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL
-
-const getBaseUrl = () => API_URL;
+const BASE_URL = import.meta.env.DEV 
+  ? '' 
+  : 'https://online-vitals-backend.vercel.app';
 
 export async function getVitals(publicID: string): Promise<Vitals> {
-  const baseUrl = getBaseUrl();
-  console.log("Fetching from:", `${baseUrl}/api/vitals/${publicID}`);
+  console.log("Fetching from:", `${BASE_URL}/api/vitals/${publicID}`);
 
-  const res = await fetch(`${baseUrl}/api/vitals/${publicID}`);
+  const res = await fetch(`${BASE_URL}/api/vitals/${publicID}`);
 
   if (!res.ok) {
     const errorText = await res.text();
@@ -31,9 +30,8 @@ export async function updateVitals(
   publicID: string,
   newVitals: Partial<Vitals>,
 ): Promise<Vitals> {
-  const baseUrl = getBaseUrl();
 
-  const res = await fetch(`${baseUrl}/api/vitals/${publicID}`, {
+  const res = await fetch(`${BASE_URL}/api/vitals/${publicID}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(newVitals),

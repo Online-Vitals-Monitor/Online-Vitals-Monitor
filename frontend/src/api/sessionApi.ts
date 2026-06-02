@@ -1,4 +1,7 @@
-const API_BASE = "http://localhost:4000";
+const API_BASE = import.meta.env.DEV 
+  ? "" 
+  : "https://online-vitals-backend.vercel.app";
+
 const SESSION_URL = `${API_BASE}/api/sessions`;
 
 export interface SessionInfo {
