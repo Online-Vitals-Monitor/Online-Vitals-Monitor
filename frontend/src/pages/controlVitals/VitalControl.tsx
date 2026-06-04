@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { Box } from "@mui/material";
-import VitalSlider from "../../components/vitalSlider";
-import "./controlVitalsView.css";
+import VitalSlider from "@/components/vitals/VitalSlider";
+import "./ControlVitalsView.css";
 
 interface VitalControlProps {
   title: string;
@@ -15,7 +15,16 @@ interface VitalControlProps {
 }
 
 const VitalControl: React.FC<VitalControlProps> = memo(
-  ({ title, value, committedVal, onChange, onChangeCommitted, step, min, max }) => (
+  ({
+    title,
+    value,
+    committedVal,
+    onChange,
+    onChangeCommitted,
+    step,
+    min,
+    max,
+  }) => (
     <Box className="vital-control-row">
       <VitalSlider
         title={title}
@@ -28,7 +37,7 @@ const VitalControl: React.FC<VitalControlProps> = memo(
         onChangeCommitted={onChangeCommitted}
       />
     </Box>
-  )
+  ),
 );
 
 export default VitalControl;

@@ -1,5 +1,11 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import ControlVitalsView from "../pages/controlVitalsView/controlVitalsView";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
+import ControlVitalsView from "../pages/controlVitals/ControlVitalsView";
 import * as vitalsApi from "../api/vitalsApi";
 import { vi, Mock } from "vitest"; // Add this import!
 import { SessionProvider } from "../contexts/sessionContext";
@@ -22,7 +28,7 @@ const renderView = () =>
   render(
     <SessionProvider>
       <ControlVitalsView />
-    </SessionProvider>
+    </SessionProvider>,
   );
 
 const setupWithVitals = async () => {
@@ -72,8 +78,8 @@ describe("ControlVitalsView", () => {
 
     await waitFor(() =>
       expect(updateVitalsMock).toHaveBeenCalledWith(
-        expect.objectContaining({ heartRate: 70 })
-      )
+        expect.objectContaining({ heartRate: 70 }),
+      ),
     );
   });
 
@@ -81,20 +87,20 @@ describe("ControlVitalsView", () => {
     await setupWithVitals();
 
     expect(
-      screen.queryByRole("button", { name: /Save New Vitals/i })
+      screen.queryByRole("button", { name: /Save New Vitals/i }),
     ).not.toBeInTheDocument();
 
     switchToPushMode();
 
     expect(
-      screen.getByRole("button", { name: /Save New Vitals/i })
+      screen.getByRole("button", { name: /Save New Vitals/i }),
     ).toBeInTheDocument();
 
     const liveButton = screen.getByRole("button", { name: /Live Updates/i });
     fireEvent.click(liveButton);
 
     expect(
-      screen.queryByRole("button", { name: /Save New Vitals/i })
+      screen.queryByRole("button", { name: /Save New Vitals/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -109,7 +115,9 @@ describe("ControlVitalsView", () => {
         switchToPushMode();
       }
 
-      const heartRateSlider = screen.getByRole("slider", { name: /Heart Rate/i });
+      const heartRateSlider = screen.getByRole("slider", {
+        name: /Heart Rate/i,
+      });
 
       await act(async () => {
         fireEvent.change(heartRateSlider, { target: { value: "140" } });
@@ -120,21 +128,23 @@ describe("ControlVitalsView", () => {
       if (expectImmediateSave) {
         await waitFor(() =>
           expect(updateVitalsMock).toHaveBeenCalledWith(
-            expect.objectContaining({ heartRate: 140 })
-          )
+            expect.objectContaining({ heartRate: 140 }),
+          ),
         );
       } else {
         expect(updateVitalsMock).not.toHaveBeenCalledWith(
-          expect.objectContaining({ heartRate: 140 })
+          expect.objectContaining({ heartRate: 140 }),
         );
 
-        const saveButton = screen.getByRole("button", { name: /Save New Vitals/i });
+        const saveButton = screen.getByRole("button", {
+          name: /Save New Vitals/i,
+        });
         fireEvent.click(saveButton);
 
         await waitFor(() =>
           expect(updateVitalsMock).toHaveBeenCalledWith(
-            expect.objectContaining({ heartRate: 140 })
-          )
+            expect.objectContaining({ heartRate: 140 }),
+          ),
         );
       }
     });

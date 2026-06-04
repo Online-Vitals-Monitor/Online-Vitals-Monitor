@@ -1,221 +1,70 @@
-// import * as React from "react";
-// import {
-//   AppBar,
-//   Box,
-//   Toolbar,
-//   Typography,
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   Container,
-//   Button,
-//   IconButton,
-//   ToggleButton,
-//   ToggleButtonGroup,
-// } from "@mui/material";
-// import MenuIcon from "@mui/icons-material/Menu";
-// import { Link } from "react-router-dom";
+// import { useState } from "react";
+import { Link } from "react-router-dom";
 // import { useVitals } from "../../contexts/vitalsContext";
+import "./Navbar.css";
+// interface NavbarProps {
+//   isSessionActive: boolean;
+//   setIsSessionActive: (active: boolean) => void;
+// }
 
-// //routes object: Add pages/routes here if needed
+//routes object: Add pages/routes here if needed
 // const routes = [
 //   { page: "Monitor", path: "/" },
 //   { page: "Control Vitals", path: "/values" },
 // ];
 
-// //array storing possible vital types: Added new vitals here if needed
-// const vitalLabels = [
-//   { value: "heartRate", label: "Heart Rate" },
-//   { value: "respRate", label: "Respiratory Rate" },
-//   { value: "o2Saturation", label: "Oxygen Saturation" },
-//   { value: "systolicBP", label: "Systolic Blood Pressure" },
-//   { value: "diastolicBP", label: "Diastolic Blood Pressure" },
-//   { value: "eTCO2", label: "End-Tidal Carbon Dioxide" },
-// ];
+const routes = [
+  { page: "Home", path: "/" },
+  { page: "Control Vitals", path: "/values" },
+  { page: "Monitor", path: "/monitor" },
+  { page: "About", path: "/about" },
+];
 
-// //navbar based off of: https://mui.com/material-ui/react-app-bar/
-// const Navbar: React.FC = () => {
-//   const [openSettings, setOpenSettings] = React.useState(false);
+// const NavbarNew = ({ isSessionActive, setIsSessionActive }: NavbarProps) => {
+const Navbar = () => {
+  //const navigate = useNavigate();
 
-//   //global context of selected vitals
-//   const { state, dispatch } = useVitals();
-//   const selectedFromContext = state.selected;
+  // const handleMonitorButtonClick = () => {
+  //   setIsSessionActive(!isSessionActive);
+  //   navigate("/monitor");
+  // };
 
-//   //temp selected vitals from menu when modal is open
-//   const [tempSelected, setTempSelected] =
-//     React.useState<string[]>(selectedFromContext);
+  return (
+    <>
+      <nav>
+        <div className="logo-container">
+          <img
+            className="logo"
+            src="/images/vm-logo.png"
+            alt="vitals-monitor"
+          />
+        </div>
+        <div className="main-nav-buttons">
+          <ul>
+            {routes.map((route) => (
+              <li key={route.path}>
+                <Link to={route.path}>{route.page}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-//   React.useEffect(() => {
-//     setTempSelected(selectedFromContext);
-//   }, [selectedFromContext]);
-
-//   //open handler for the settings dialog
-//   const handleOpenSettings = () => {
-//     setTempSelected(selectedFromContext);
-//     setOpenSettings(true);
-//   };
-
-//   //close handler for the settings dialog
-//   const handleCloseSettings = () => {
-//     setTempSelected(selectedFromContext);
-//     setOpenSettings(false);
-//   };
-
-//   //commit vital selection changes into the context
-//   const handleSaveAndClose = () => {
-//     dispatch({ type: "SET_SELECTED", payload: tempSelected as any });
-//     setOpenSettings(false);
-//   };
-
-//   return (
-//     <AppBar
-//       position="fixed"
-//       elevation={1}
-//       sx={{
-//         backgroundColor: "#020617",
-//         color: "#ffffff",
-//         borderBottom: "2px solid grey",
-//       }}
-//     >
-//       <Container maxWidth="xl">
-//         <Toolbar
-//           disableGutters
-//           sx={{
-//             display: "flex",
-//             justifyContent: "space-between",
-//             flexWrap: "wrap",
-//           }}
-//         >
-//           {/*we will put the logo here when we find one*/}
-//           <Typography
-//             variant="h6"
-//             noWrap
-//             component={Link}
-//             to="/"
-//             sx={{
-//               mr: 2,
-//               fontFamily: "monospace",
-//               letterSpacing: ".2rem",
-//               color: "inherit",
-//               textDecoration: "none",
-//               flexShrink: 0,
-//             }}
-//           >
-//             Vitals Monitor
-//           </Typography>
-
-//           <Box
-//             sx={{
-//               ml: "auto",
-//               display: "flex",
-//             }}
-//           >
-//             {routes.map((route) => (
-//               <Button
-//                 key={route.page}
-//                 component={Link}
-//                 to={route.path}
-//                 sx={{ my: 2, color: "#ffffff", display: "block" }}
-//               >
-//                 {route.page}
-//               </Button>
-//             ))}
-
-//             {/*settings menu*/}
-//             <IconButton
-//               onClick={handleOpenSettings}
-//               sx={{ ml: 2, color: "#ffffff" }}
-//             >
-//               <MenuIcon />
-//             </IconButton>
-
-//             <Dialog
-//               open={openSettings}
-//               onClose={handleCloseSettings}
-//               fullWidth
-//               maxWidth="md"
-//             >
-//               <DialogTitle sx={{ fontWeight: "bold", color: "red" }}>
-//                 Settings
-//               </DialogTitle>
-//               <DialogContent
-//                 sx={{
-//                   display: "flex",
-//                   flexDirection: "column",
-//                   gap: 3,
-//                   mt: 2,
-//                 }}
-//               >
-//                 <Box sx={{ mb: 3 }}>
-//                   <Typography variant="h6" sx={{ mb: 1 }}>
-//                     Visibility
-//                   </Typography>
-//                   <Typography variant="body1" sx={{ mb: 1 }}>
-//                     Select vitals to display:
-//                   </Typography>
-
-//                   <ToggleButtonGroup
-//                     value={tempSelected}
-//                     onChange={(event, newVitals) => {
-//                       //sanitize array if nothing is selected
-//                       const sanitzedArray = Array.isArray(newVitals)
-//                         ? newVitals
-//                         : [];
-//                       setTempSelected(sanitzedArray);
-//                     }}
-//                     aria-label="vital visibility"
-//                     size="small"
-//                   >
-//                     {vitalLabels.map((vital) => (
-//                       <ToggleButton
-//                         key={vital.value}
-//                         value={vital.value}
-//                         aria-label={vital.label}
-//                       >
-//                         {vital.label}
-//                       </ToggleButton>
-//                     ))}
-//                   </ToggleButtonGroup>
-//                 </Box>
-//                 <Box sx={{ mb: 3 }}>
-//                   <Typography variant="h6" sx={{ mb: 1 }}>
-//                     Size
-//                   </Typography>
-//                   <Typography variant="body1" sx={{ mb: 1 }}>
-//                     Adjust vital size here: (Add later)
-//                   </Typography>
-//                 </Box>
-//                 <Box sx={{ mb: 3 }}>
-//                   <Typography variant="h6" sx={{ mb: 1 }}>
-//                     Arrangement
-//                   </Typography>
-//                   <Typography variant="body1" sx={{ mb: 1 }}>
-//                     Rerrange the vitals on hte monitor view: (Add later)
-//                   </Typography>
-//                 </Box>
-//                 <Button
-//                   variant="contained"
-//                   color="error"
-//                   onClick={handleCloseSettings}
-//                 >
-//                   Discard Changes & Close
-//                 </Button>
-//                 <Button
-//                   variant="contained"
-//                   color="error"
-//                   onClick={handleSaveAndClose}
-//                 >
-//                   Save & Close
-//                 </Button>
-//               </DialogContent>
-//             </Dialog>
-//           </Box>
-//         </Toolbar>
-//       </Container>
-//     </AppBar>
-//   );
-// };
-
-// export {default Navbar};
-
-export {};
+        {/* Disabling the session status button for now (didnt really have a concrete idea for this concept, 
+        so dont want to commit to anything yet) */}
+        {/* SESSION STATUS BUTTON */}
+        <div className="nav-right">
+          {/*<button
+            onClick={handleMonitorButtonClick}
+            className={`status-btn ${isSessionActive ? "active" : "inactive"}`}
+          > */}
+          {/* Dynamic Text based on state */}
+          {/* <span className="status-dot"></span>
+            {isSessionActive ? "Monitor: Active" : "Start Session"}
+          </button>*/}
+        </div>
+        {/* END OF SESSION STATUS BUTTON */}
+      </nav>
+    </>
+  );
+};
+export default Navbar;

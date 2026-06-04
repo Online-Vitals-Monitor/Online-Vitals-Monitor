@@ -1,5 +1,4 @@
-import { Vitals } from "../../api/vitalsApi";
-
+import { Vitals } from "@/api/vitalsApi";
 export interface PresetConfig {
   name: string;
   values: Partial<Vitals>;
@@ -38,7 +37,8 @@ export const presetConfigs: PresetConfig[] = [
       eTCO2: 4.0,
     },
   },
-  { name: "Hypoxia", 
+  {
+    name: "Hypoxia",
     values: {
       heartRate: 60,
       respRate: 25,

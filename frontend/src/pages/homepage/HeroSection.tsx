@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSession } from "../../contexts/sessionContext";
-import "./BlenderHeroPage.css";
+import { useSession } from "@/contexts/sessionContext";
+import "./HeroSection.css";
 
 const BlenderHeroPage = () => {
   const [newSessionId, setNewSessionId] = useState("");

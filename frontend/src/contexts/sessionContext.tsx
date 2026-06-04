@@ -1,11 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-} from "react";
-import { SessionInfo, sessionApi } from "../api/sessionApi";
-
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { SessionInfo, sessionApi } from "@/api/sessionApi";
 type SessionState = {
   session: SessionInfo | null;
   isConnected: boolean;
@@ -15,7 +9,9 @@ type SessionState = {
 
 const SessionContext = createContext<SessionState | undefined>(undefined);
 
-export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SessionProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   // For testing: start as if already connected to a session
   const [session, setSession] = useState<SessionInfo | null>({
     id: "test-session-123",
