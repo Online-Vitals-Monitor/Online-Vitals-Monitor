@@ -1,0 +1,8 @@
+.homepage-container {
+  display: grid;
+  grid-template-rows: 100vh auto auto;
+  grid-template-areas:
+    "hero"
+    "how-it-works"
+    "footer";
+}
