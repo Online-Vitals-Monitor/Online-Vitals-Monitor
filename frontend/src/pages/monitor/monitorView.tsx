@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
-import "./monitorViewNew.css";
-import { Vitals } from "../../api/vitalsApi";
-import { getVitals } from "../../api/vitalsApi"; // comment out if using mock db
-import WaveformChart from "../../components/WaveformChart";
-// import { useVitals } from "../../contexts/vitalsContext";
-// import VitalCard from "../../components/VitalCard";
+import "./MonitorView.css";
+import { getVitals, Vitals } from "@/api/vitalsApi";
+import WaveformChart from "@/components/WaveformChart";
 import { useVitalsAudio } from "./useVitalsAudio";
 
 import {
@@ -13,7 +10,7 @@ import {
   generateEtco2Waveform,
   generatePlethWaveform,
   generateRespWaveform,
-} from "../../utils/waveforms";
+} from "@/utils/waveforms";
 
 //map of keys for vital cards
 // const vitalInfo: Record<
@@ -55,7 +52,7 @@ const MonitorViewNew = () => {
     // // mock data for testing / when database is down
     // setVitals({
     //   heartRate: 80,
-    //   respRate: 14, 
+    //   respRate: 14,
     //   o2Saturation: 99,
     //   systolicBP: 120,
     //   diastolicBP: 80,
@@ -114,7 +111,8 @@ const MonitorViewNew = () => {
         : null;
 
     if (resizeObserver) {
-      if (waveformContainerRef.current) resizeObserver.observe(waveformContainerRef.current);
+      if (waveformContainerRef.current)
+        resizeObserver.observe(waveformContainerRef.current);
       if (waveformMeasureRef.current) {
         resizeObserver.observe(waveformMeasureRef.current);
       }
@@ -216,24 +214,31 @@ const MonitorViewNew = () => {
 
   // double click puts it in full screen
   return (
-    <div className="monitor-grid" ref={waveformContainerRef} onDoubleClick={toggleFullScreen}>
-
+    <div
+      className="monitor-grid"
+      ref={waveformContainerRef}
+      onDoubleClick={toggleFullScreen}
+    >
       {/* Add a full screen button */}
-      <button 
-        className="fullscreen-btn" 
+      <button
+        className="fullscreen-btn"
         onClick={toggleFullScreen}
         title="Toggle Fullscreen"
       >
         ⛶
       </button>
-      
+
       <div className="monitor-audio-controls">
         <button
           className={`audio-toggle ${audioEnabled ? "active" : ""}`}
           onClick={handleAudioToggle}
           type="button"
         >
-          {audioEnabled ? "Sound On" : isAudioReady ? "Sound Off" : "Enable Sound"}
+          {audioEnabled
+            ? "Sound On"
+            : isAudioReady
+              ? "Sound Off"
+              : "Enable Sound"}
         </button>
 
         <label className="audio-volume-control">
@@ -242,7 +247,9 @@ const MonitorViewNew = () => {
             aria-label="Monitor sound volume"
             max="100"
             min="0"
-            onChange={(event) => setAudioVolume(Number(event.target.value) / 100)}
+            onChange={(event) =>
+              setAudioVolume(Number(event.target.value) / 100)
+            }
             type="range"
             value={Math.round(audioVolume * 100)}
           />

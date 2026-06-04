@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { getVitals, updateVitals, Vitals } from "../../api/vitalsApi";
+import { getVitals, updateVitals, Vitals } from "@/api/vitalsApi";
 import { useDebouncedCallback } from "./cvvHooks";
 // import { useApiErrorHandler } from "./cvvHooks";
 import { presetConfigs, vitalsConfig } from "./vitalsConfigs";
-import { useSession } from "../../contexts/sessionContext";
-import VitalControl from "./vitalControl";
-import "./controlVitalsView.css"
+import { useSession } from "@/contexts/sessionContext";
+import VitalControl from "./VitalControl";
+import "./ControlVitalsView.css";
 import {
   Box,
   Typography,
@@ -78,7 +78,7 @@ const ControlVitalsView: React.FC = () => {
       const data = await getVitals();
       setVitals(data);
       setPendingVitals(data);
-  //    setErrorMessage(null);
+      //    setErrorMessage(null);
     } catch (err) {
       console.error("Failed to load vitals. Please try again.", err);
     }
@@ -103,7 +103,7 @@ const ControlVitalsView: React.FC = () => {
 
     setSelectedPreset(newPreset.name);
 
-     if (updateMode === "push") {
+    if (updateMode === "push") {
       setPendingVitals((prev) => ({
         ...(prev ?? vitals),
         ...newPreset.values,
@@ -133,14 +133,17 @@ const ControlVitalsView: React.FC = () => {
   }, []);
 
   // Debouncing for API calls
-  const debouncedUpdateVitals = useDebouncedCallback(async (updated: Vitals) => {
-    try {
-      await updateVitals(updated);
-  //    setErrorMessage(null);
-    } catch (err) {
-      console.error("Failed to update vitals.", err);
-    }
-  }, 500);
+  const debouncedUpdateVitals = useDebouncedCallback(
+    async (updated: Vitals) => {
+      try {
+        await updateVitals(updated);
+        //    setErrorMessage(null);
+      } catch (err) {
+        console.error("Failed to update vitals.", err);
+      }
+    },
+    500,
+  );
 
   // Handler for committed values (onChangeCommitted) - runs complex logic
   const handleVitalChangeCommitted = useCallback(
@@ -172,14 +175,8 @@ const ControlVitalsView: React.FC = () => {
       }
 
       if (key === "systolicBP" || key === "diastolicBP") {
-        updated.systolicBP = Math.min(
-          Math.max(updated.systolicBP, min),
-          max
-        );
-        updated.diastolicBP = Math.min(
-          Math.max(updated.diastolicBP, min),
-          max
-        );
+        updated.systolicBP = Math.min(Math.max(updated.systolicBP, min), max);
+        updated.diastolicBP = Math.min(Math.max(updated.diastolicBP, min), max);
       }
 
       setUiVitals(updated);
@@ -192,17 +189,17 @@ const ControlVitalsView: React.FC = () => {
         setPendingVitals(updated);
       }
     },
-    [debouncedUpdateVitals]
+    [debouncedUpdateVitals],
   );
 
   // Save handler for push mode
   const handleSaveClick = async () => {
     if (updateMode !== "push" || !pendingVitals) return;
-    setVitals(pendingVitals); 
+    setVitals(pendingVitals);
     setSelectedPreset("");
     try {
       await updateVitals(pendingVitals);
-  //    setErrorMessage(null);
+      //    setErrorMessage(null);
     } catch (err) {
       console.error("Failed to save vitals. Please try again.", err);
     }
@@ -215,10 +212,7 @@ const ControlVitalsView: React.FC = () => {
       <Box className="control-vitals-root">
         {/* Header */}
         <Box className="control-vitals-header">
-          <Typography
-            variant="h5"
-            className="control-vitals-header-title"
-          >
+          <Typography variant="h5" className="control-vitals-header-title">
             New Values
           </Typography>
 
@@ -234,55 +228,54 @@ const ControlVitalsView: React.FC = () => {
               onChange={handlePresetChange}
             >
               {presetConfigs
-              .filter(preset => preset.name !== "Reset Defaults")
-              .map((preset) => (
-                <MenuItem key={preset.name} value={preset.name}>
-                  {preset.name}
-                </MenuItem>
-              ))}
+                .filter((preset) => preset.name !== "Reset Defaults")
+                .map((preset) => (
+                  <MenuItem key={preset.name} value={preset.name}>
+                    {preset.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
 
-          <Typography
-            variant="h5"
-            className="control-vitals-header-current"
-          >
+          <Typography variant="h5" className="control-vitals-header-current">
             Current Values
           </Typography>
         </Box>
 
         {/* Vital Sliders */}
-        {vitalsConfig.map(({ key, title, step, min, max, unitConverter, unitDeconverter }) => (
-          <VitalControl
-            key={key}
-            title={`${title}${key === "eTCO2" ? ` (${etco2Unit})` : ""}`}
-            value={
-              unitConverter
-                ? unitConverter(sliderValues[key as keyof Vitals], etco2Unit)
-                : (sliderValues[key as keyof Vitals] as number)
-            }
-            onChange={(value) =>
-              handleVitalChange(
-                key,
-                unitDeconverter ? unitDeconverter(value, etco2Unit) : value
-              )
-            }
-            committedVal={
-              unitConverter
-                ? unitConverter(vitals[key as keyof Vitals], etco2Unit)
-                : (vitals[key as keyof Vitals] as number)
-            }
-            onChangeCommitted={(value) =>
-              handleVitalChangeCommitted(
-                key,
-                unitDeconverter ? unitDeconverter(value, etco2Unit) : value
-              )
-            }
-            step={key === "eTCO2" ? (etco2Unit === "kPa" ? 0.1 : 1) : step}
-            min={min}
-            max={key === "eTCO2" ? etco2Max : max}
-          />
-        ))}
+        {vitalsConfig.map(
+          ({ key, title, step, min, max, unitConverter, unitDeconverter }) => (
+            <VitalControl
+              key={key}
+              title={`${title}${key === "eTCO2" ? ` (${etco2Unit})` : ""}`}
+              value={
+                unitConverter
+                  ? unitConverter(sliderValues[key as keyof Vitals], etco2Unit)
+                  : (sliderValues[key as keyof Vitals] as number)
+              }
+              onChange={(value) =>
+                handleVitalChange(
+                  key,
+                  unitDeconverter ? unitDeconverter(value, etco2Unit) : value,
+                )
+              }
+              committedVal={
+                unitConverter
+                  ? unitConverter(vitals[key as keyof Vitals], etco2Unit)
+                  : (vitals[key as keyof Vitals] as number)
+              }
+              onChangeCommitted={(value) =>
+                handleVitalChangeCommitted(
+                  key,
+                  unitDeconverter ? unitDeconverter(value, etco2Unit) : value,
+                )
+              }
+              step={key === "eTCO2" ? (etco2Unit === "kPa" ? 0.1 : 1) : step}
+              min={min}
+              max={key === "eTCO2" ? etco2Max : max}
+            />
+          ),
+        )}
 
         {/* Toggle, Save Button, and Display Settings */}
         <Box className="control-vitals-bottom">
@@ -297,7 +290,7 @@ const ControlVitalsView: React.FC = () => {
               className="control-vitals-reset-btn"
               onClick={() => {
                 const syntheticEvent = {
-                  target: { value: "Reset Defaults" }
+                  target: { value: "Reset Defaults" },
                 } as SelectChangeEvent;
                 handlePresetChange(syntheticEvent);
               }}
@@ -327,7 +320,7 @@ const ControlVitalsView: React.FC = () => {
                   if (v === "push") {
                     setPendingVitals(vitals);
                   }
-                  setSelectedPreset(""); 
+                  setSelectedPreset("");
                   setUpdateMode(v);
                 }
               }}
@@ -362,10 +355,7 @@ const ControlVitalsView: React.FC = () => {
               },
             }}
           >
-            <Typography
-              variant="h6"
-              className="control-vitals-drawer-title"
-            >
+            <Typography variant="h6" className="control-vitals-drawer-title">
               Display Settings
             </Typography>
 
@@ -429,15 +419,14 @@ const ControlVitalsView: React.FC = () => {
           </Drawer>
 
           {showSessionId && session && (
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body2"
               className="control-vitals-session-display"
-              sx={{ mt: 1, textAlign: 'center', color: '#ced8cd' }}
+              sx={{ mt: 1, textAlign: "center", color: "#ced8cd" }}
             >
               CURRENT SESSION: <strong>{session.id}</strong>
             </Typography>
           )}
-          
         </Box>
 
         {/* Notification disabled for now, might edit and re-enable later */}
