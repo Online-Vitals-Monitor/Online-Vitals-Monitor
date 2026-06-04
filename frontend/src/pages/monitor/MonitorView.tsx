@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import "./MonitorView.css";
 import { getVitals, Vitals } from "@/api/vitalsApi";
 import WaveformChart from "@/components/WaveformChart";
-import { useVitalsAudio } from "./UseVitalsAudio";
+import { useVitalsAudio } from "./useVitalsAudio";
 
 import {
   generateBpWaveform,
