@@ -3,9 +3,10 @@ import { MemoryRouter } from "react-router-dom";
 import { SessionProvider } from "../contexts/sessionContext";
 import * as sessionApiModule from "../api/sessionApi";
 import { vi } from "vitest";
-import Heropage from "../pages/homepage/Heropage";
-
-vi.mock("../pages/monitorView", () => () => <div data-testid="mock-monitor">Mock Monitor</div>);
+import HeroSection from "@/pages/homepage/HeroSection";
+vi.mock("@/pages/monitor/MonitorView", () => () => (
+  <div data-testid="mock-monitor">Mock Monitor</div>
+));
 
 const mockedNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
@@ -26,9 +27,9 @@ describe("Frontend Sessions", () => {
     render(
       <MemoryRouter>
         <SessionProvider>
-          <Heropage />
+          <HeroSection />
         </SessionProvider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
   it("creates a new session and shows session banner", async () => {
@@ -56,11 +57,11 @@ describe("Frontend Sessions", () => {
     renderHero();
 
     fireEvent.click(
-      screen.getByRole("button", { name: /join existing session/i })
+      screen.getByRole("button", { name: /join existing session/i }),
     );
 
     expect(
-      await screen.findByText(/Please enter a session ID/i)
+      await screen.findByText(/Please enter a session ID/i),
     ).toBeInTheDocument();
   });
 
@@ -75,12 +76,10 @@ describe("Frontend Sessions", () => {
       target: { value: "ABC123" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: /join existing session/i })
+      screen.getByRole("button", { name: /join existing session/i }),
     );
 
-    expect(
-      await screen.findByText(/Backend unavailable/i)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/Backend unavailable/i)).toBeInTheDocument();
     expect(mockJoin).toHaveBeenCalledWith("ABC123");
   });
 

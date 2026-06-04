@@ -1,20 +1,20 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import MonitorView from '../pages/monitorView';
-import { VitalsProvider } from '../contexts/vitalsContext';
+import { render, screen, waitFor } from "@testing-library/react";
+import MonitorView from "@/pages/monitor/MonitorView";
+import { VitalsProvider } from "../contexts/vitalsContext";
 import { vi } from "vitest";
 // import * as vitalsApi from '../api/vitalsApi';
 
 // mock so we're not polling from the true API
 // vi.mock('../api/vitalsApi');
 
-vi.mock('../components/WaveformChart', () => {
+vi.mock("../components/WaveformChart", () => {
   return {
-    default: () => <div data-testid="mock-waveform-chart" />
+    default: () => <div data-testid="mock-waveform-chart" />,
   };
 });
 
-describe('MonitorView', () => {
-  it('renders Heart Rate card with data', async () => {
+describe("MonitorView", () => {
+  it("renders Heart Rate card with data", async () => {
     // fake data to try
     // const mockVitals = {
     //   heartRate: 72,
@@ -29,13 +29,14 @@ describe('MonitorView', () => {
     render(
       <VitalsProvider>
         <MonitorView />
-      </VitalsProvider>
+      </VitalsProvider>,
     );
 
     // verify heart rate card
     expect(screen.getByText(/Heart Rate/i)).toBeInTheDocument();
-    await waitFor(() => { // for async load
-      expect(screen.getByText('80')).toBeInTheDocument();
+    await waitFor(() => {
+      // for async load
+      expect(screen.getByText("80")).toBeInTheDocument();
     });
   });
 });

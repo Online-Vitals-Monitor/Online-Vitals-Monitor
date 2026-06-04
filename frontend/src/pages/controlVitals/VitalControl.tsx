@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { Box } from "@mui/material";
-import VitalSlider from "../../components/vitalSlider";
+import VitalSlider from "@/components/vitals/VitalSlider";
 import "./ControlVitalsView.css";
 
 interface VitalControlProps {

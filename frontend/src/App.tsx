@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import { SessionProvider } from "@/contexts/sessionContext";
 import ControlVitalsView from "@/pages/controlVitals/ControlVitalsView";
-import NavbarNew from "@/components/navbar/NavbarNew";
+import Navbar from "@/components/navbar/Navbar";
 import Homepage from "@/pages/homepage/Homepage";
 import About from "@/pages/about/About";
 import RequireSession from "@/components/RequireSession";
@@ -23,11 +23,7 @@ const App = () => {
           <VitalsProvider>
             <SessionProvider>
               <Router>
-                {/* <NavbarNew
-                  isSessionActive={sessionActive}
-                  setIsSessionActive={setSessionActive}
-                /> */}
-                <NavbarNew />
+                <Navbar />
                 <Routes>
                   <Route path="/" element={<Homepage />} />
                   <Route path="/about" element={<About />} />

@@ -1,7 +1,6 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useSession } from "../contexts/sessionContext";
-
+import { useSession } from "@/contexts/sessionContext";
 const RequireSession: React.FC = () => {
   const { isConnected } = useSession();
   const location = useLocation();
