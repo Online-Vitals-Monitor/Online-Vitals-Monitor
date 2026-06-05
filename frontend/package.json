@@ -8,6 +8,7 @@
     "@mui/icons-material": "^7.3.4",
     "@mui/material": "^7.3.4",
     "@supabase/supabase-js": "^2.81.1",
+    "@tailwindcss/vite": "^4.3.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/user-event": "^13.5.0",
     "bootstrap": "^5.3.8",
@@ -16,52 +17,43 @@
     "chartjs-plugin-streaming": "^2.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "glob": "^13.0.6",
     "gsap": "^3.13.0",
     "lucide-react": "^0.563.0",
     "ogl": "^1.0.11",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^6.30.3",
-    "react-scripts": "5.0.1",
     "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^4.3.0",
     "three": "^0.167.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/react": "^16.3.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.9.1",
     "@types/react": "^19.2.3",
     "@types/react-dom": "^19.2.2",
     "@types/react-router-dom": "^5.3.3",
     "@types/three": "^0.182.0",
+    "@vitejs/plugin-react": "^6.0.2",
     "jest": "^30.2.0",
+    "jsdom": "^29.1.1",
     "ts-jest": "^29.4.5",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.0",
+    "vite": "^8.0.16",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.7"
+  },
+  "optionalDependencies": {
+    "@rolldown/binding-win32-x64-msvc": "^1.0.2"
   }
 }

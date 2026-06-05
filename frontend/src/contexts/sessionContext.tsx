@@ -5,8 +5,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { SessionInfo, sessionApi } from "../api/sessionApi";
-
+import { SessionInfo, sessionApi } from "@/api/sessionApi";
 type SessionState = {
   session: SessionInfo | null;
   isConnected: boolean;

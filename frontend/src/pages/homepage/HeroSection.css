@@ -1,0 +1,123 @@
+.hero-img-wrap {
+  width: 100%;
+}
+
+/* Grid container: left column holds content, right is reserved space */
+.hero-img {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  position: relative;
+  padding: 0 5%;
+}
+
+/* Dark overlay for text readability */
+.hero-img::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Content sits in the LEFT column, above the overlay */
+.hero-content-wrapper {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  color: #ffffff;
+  max-width: 600px;
+}
+
+.hero-title {
+  font-family: "Monasans", sans-serif;
+
+  font-size: 58px;
+  line-height: 56px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.hero-title span {
+  /* color: #4e8cc2; */
+  color: #5a9ad1;
+}
+
+.hero-description {
+  font-family: "Albert Sans", sans-serif;
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 200;
+  margin: 0;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.hero-btn {
+  background-color: #ddd;
+  border: none;
+  color: black;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 30px;
+  font-family: "Roboto", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  /* letter-spacing: 1px; */
+}
+
+.hero-btn:hover {
+  opacity: 0.9;
+}
+
+.hero-btn-primary {
+  background-color: #5a9ad1;
+  color: white;
+  border: 2px solid #437aaa;
+  /* text-shadow: 1px 1px #555; */
+}
+
+.hero-btn-secondary {
+  background-color: #ff7a01;
+  color: white;
+  border: 2px solid #c46002;
+  /* text-shadow: 1px 1px #afaeae; */
+}
+
+/* Stack to single column on smaller screens */
+@media (max-width: 768px) {
+  /* Your existing .hero-img stays the same, but height adjusts */
+  .hero-img {
+    /* change height from 100vh to 100% */
+    height: 100%;
+    /* keep your existing background-image, etc */
+  }
+
+  .hero-content-wrapper {
+    max-width: 100%;
+  }
+
+  .hero-title {
+    font-size: 2.25rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+}
