@@ -1,0 +1,125 @@
+.session-select-root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+}
+
+.session-select-box {
+  margin-top: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 400px;
+}
+
+.user-instructions {
+  width: 320px;
+  max-width: 90vw;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #495057;
+}
+
+.user-instructions p {
+  margin: 0 0 0.5rem 0;
+}
+
+.user-instructions p:last-child {
+  margin-bottom: 0;
+}
+
+.session-input {
+  width: 320px;
+  max-width: 90vw;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.session-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.session-buttons {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.session-btn {
+  flex: 1;
+  max-width: 200px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.session-btn.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.session-btn.primary:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+}
+
+.session-btn.secondary {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 2px solid #dee2e6;
+}
+
+.session-btn.secondary:hover {
+  background-color: #e9ecef;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.session-error {
+  color: #d32f2f;
+  background: #ffebee;
+  border: 1px solid #f44336;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .session-select-box {
+    margin-top: 3rem;
+    padding: 0 1rem;
+  }
+  
+  .user-instructions,
+  .session-input {
+    width: 100%;
+    max-width: none;
+  }
+  
+  .session-buttons {
+    flex-direction: column;
+  }
+  
+  .session-btn {
+    max-width: none;
+  }
+}

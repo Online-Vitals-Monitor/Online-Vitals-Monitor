@@ -35,7 +35,11 @@ describe("Frontend Sessions", () => {
   it("creates a new session and shows session banner", async () => {
     const mockCreate = vi
       .spyOn(sessionApiModule.sessionApi, "createSession")
-      .mockResolvedValue({ id: "TEST_SESSION_001" });
+      .mockResolvedValue({
+        publicID: "TEST_SESSION_001",
+        createdAt: new Date().toISOString(),
+        lastSeen: new Date().toISOString(),
+      });
 
     renderHero();
 

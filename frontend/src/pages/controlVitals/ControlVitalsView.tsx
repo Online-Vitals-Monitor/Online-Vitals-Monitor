@@ -31,9 +31,11 @@ const ControlVitalsView: React.FC = () => {
     systolicBP: 0,
     diastolicBP: 0,
     eTCO2: 0,
+    sessionID: "",
   });
 
   const { session } = useSession();
+  const publicID = session?.publicID ?? "";
   const [updateMode, setUpdateMode] = useState<"live" | "push">("live");
   const [pendingVitals, setPendingVitals] = useState<Vitals | null>(null);
   const [selectedPreset, setSelectedPreset] = useState("");
@@ -74,15 +76,17 @@ const ControlVitalsView: React.FC = () => {
 
   // fetch vitals from API
   const fetchVitals = useCallback(async () => {
+    if (!publicID) return;
     try {
-      const data = await getVitals();
+      //const { publicID } = session!;
+      const data = await getVitals(publicID);
       setVitals(data);
       setPendingVitals(data);
       //    setErrorMessage(null);
     } catch (err) {
       console.error("Failed to load vitals. Please try again.", err);
     }
-  }, []);
+  }, [publicID]);
 
   useEffect(() => {
     document.title = "Controller";
@@ -136,10 +140,10 @@ const ControlVitalsView: React.FC = () => {
   const debouncedUpdateVitals = useDebouncedCallback(
     async (updated: Vitals) => {
       try {
-        await updateVitals(updated);
-        //    setErrorMessage(null);
+        await updateVitals(publicID, updated);
+        //setErrorMessage(null);
       } catch (err) {
-        console.error("Failed to update vitals.", err);
+        //handleError(err, "Failed to update vitals.");
       }
     },
     500,
@@ -198,7 +202,8 @@ const ControlVitalsView: React.FC = () => {
     setVitals(pendingVitals);
     setSelectedPreset("");
     try {
-      await updateVitals(pendingVitals);
+      await updateVitals(publicID, pendingVitals);
+      setVitals(pendingVitals);
       //    setErrorMessage(null);
     } catch (err) {
       console.error("Failed to save vitals. Please try again.", err);
@@ -250,7 +255,10 @@ const ControlVitalsView: React.FC = () => {
               title={`${title}${key === "eTCO2" ? ` (${etco2Unit})` : ""}`}
               value={
                 unitConverter
-                  ? unitConverter(sliderValues[key as keyof Vitals], etco2Unit)
+                  ? unitConverter(
+                      sliderValues[key as keyof Vitals] as number,
+                      etco2Unit,
+                    )
                   : (sliderValues[key as keyof Vitals] as number)
               }
               onChange={(value) =>
@@ -261,7 +269,10 @@ const ControlVitalsView: React.FC = () => {
               }
               committedVal={
                 unitConverter
-                  ? unitConverter(vitals[key as keyof Vitals], etco2Unit)
+                  ? unitConverter(
+                      vitals[key as keyof Vitals] as number,
+                      etco2Unit,
+                    )
                   : (vitals[key as keyof Vitals] as number)
               }
               onChangeCommitted={(value) =>
@@ -424,7 +435,7 @@ const ControlVitalsView: React.FC = () => {
               className="control-vitals-session-display"
               sx={{ mt: 1, textAlign: "center", color: "#ced8cd" }}
             >
-              CURRENT SESSION: <strong>{session.id}</strong>
+              CURRENT SESSION: <strong>{session.publicID}</strong>
             </Typography>
           )}
         </Box>

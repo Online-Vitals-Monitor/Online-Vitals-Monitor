@@ -1,15 +1,17 @@
-// backend/src/supabase.ts
 import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-dotenv.config();
+import ws from "ws";
 
-const url = process.env.SUPABASE_URL!;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!url || !serviceRoleKey) {
+if (!supabaseUrl || !supabaseKey) {
   throw new Error(
-    "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in backend .env"
+    "Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in backend .env",
   );
 }
 
-export const supabase = createClient(url, serviceRoleKey);
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  realtime: {
+    transport: ws as any, // ← cast to any to bypass type mismatch
+  },
+});

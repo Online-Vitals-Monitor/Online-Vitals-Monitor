@@ -20,8 +20,8 @@ const App = () => {
     <>
       <div className="app">
         <div className="app-header">
-          <VitalsProvider>
-            <SessionProvider>
+          <SessionProvider>
+            <VitalsProvider>
               <Router>
                 <Navbar />
                 <Routes>
@@ -37,8 +37,8 @@ const App = () => {
                   </Route>
                 </Routes>
               </Router>
-            </SessionProvider>
-          </VitalsProvider>
+            </VitalsProvider>
+          </SessionProvider>
         </div>
       </div>
     </>

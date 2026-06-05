@@ -1,0 +1,58 @@
+.control-root {
+  padding: 24px 128px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Header row: "New Values" | Preset select | "Current Values" */
+.control-header-row {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 2rem;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+.control-header-title {
+  font-weight: bold;
+  text-align: left;
+}
+
+.control-header-current {
+  font-weight: bold;
+  text-align: right;
+}
+
+.control-preset-form {
+  min-width: 280px;
+  max-width: 400px;
+  width: 320px;
+  flex-shrink: 0;
+}
+
+/* Bottom section: update mode toggle, save button, display settings */
+.control-bottom {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.control-display-button {
+  margin-top: 16px;
+  font-weight: bold;
+  background-color: #757575;
+}
+
+/* Drawer styling */
+.control-drawer-paper {
+  width: 300px;
+  padding: 16px;
+  background-color: #fff;
+}

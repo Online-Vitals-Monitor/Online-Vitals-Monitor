@@ -1,7 +1,16 @@
-import React, { useState, useEffect, useMemo, useRef, Fragment } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  Fragment,
+  useCallback,
+} from "react";
 import "./MonitorView.css";
 import { getVitals, Vitals } from "@/api/vitalsApi";
 import WaveformChart from "@/components/WaveformChart";
+import { useParams } from "react-router-dom";
+import { useSession } from "../../contexts/sessionContext";
 import { useVitalsAudio } from "./useVitalsAudio";
 
 import {
@@ -33,39 +42,35 @@ const MonitorViewNew = () => {
     systolicBP: 0,
     diastolicBP: 0,
     eTCO2: 0,
+    sessionID: "",
   });
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [audioVolume, setAudioVolume] = useState(0.35);
 
+  const { publicID: paramID } = useParams<{ publicID: string }>();
+  const { session } = useSession();
+  const publicID = paramID ?? session?.publicID;
+
   // const { state } = useVitals(); //from context get array of selected vitals
   // const selected: string[] = state?.selected ?? [];
 
-  const fetchVitals = async () => {
-    // from backend
+  const fetchVitals = useCallback(async () => {
+    if (!publicID) return;
     try {
-      const data = await getVitals();
+      const data = await getVitals(publicID);
       setVitals(data);
     } catch (err) {
       console.error("Failed to fetch vitals:", err);
     }
-
-    // // mock data for testing / when database is down
-    // setVitals({
-    //   heartRate: 80,
-    //   respRate: 14,
-    //   o2Saturation: 99,
-    //   systolicBP: 120,
-    //   diastolicBP: 80,
-    //   eTCO2: 35,
-    // });
-  };
+  }, [publicID]);
 
   useEffect(() => {
+    if (!publicID) return;
     document.title = "Monitor";
     fetchVitals();
-    const interval = setInterval(fetchVitals, 5000); // 5 seconds
+    const interval = setInterval(fetchVitals, 2000); // 2 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [publicID, fetchVitals]);
 
   const { isAudioReady, startAudio } = useVitalsAudio({
     enabled: audioEnabled,

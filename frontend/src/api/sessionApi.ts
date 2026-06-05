@@ -1,47 +1,101 @@
+const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
+const SESSION_URL = `${API_BASE}/api/sessions`;
+
 export interface SessionInfo {
-  id: string;
-  // May want additional fields such as:
-  // createdAt?: string;
-  // owner?: string
-  // status?: "active" | "ended";
+  //id: string;
+  publicID: string;
+  createdAt: string;
+  lastSeen: string;
 }
 
 export interface SessionApi {
-  // Create a new session.
   createSession: (requestedId?: string) => Promise<SessionInfo>;
-  
-  // Join an existing session with the given ID.
   joinSession: (id: string) => Promise<SessionInfo>;
-
-  // Get the current session for this user/tab, if any.
   getCurrentSession: () => Promise<SessionInfo | null>;
 }
 
-//Temporary stub implementation to work on frontend
-const fakeSessionStore: { current: SessionInfo | null } = { current: null };
+// export async function createSession() {
+//   const res = await fetch(API_URL, {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//   });
+
+//   if (!res.ok) throw new Error("Failed to create session");
+//   return res.json();
+// }
 
 export const sessionApi: SessionApi = {
   async createSession(requestedId?: string): Promise<SessionInfo> {
-    // TODO: replace with backend POST /api/session
-    const id = (requestedId && requestedId.trim()) || 
-        Math.random().toString(36).substring(2, 8).toUpperCase();
-    const session: SessionInfo = { id };
-    fakeSessionStore.current = session;
-    return session;
+    const res = await fetch(SESSION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestedId }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to create session");
+    }
+
+    const data = await res.json();
+
+    // store public ID in browser
+    localStorage.setItem("sessionId", data.publicID);
+
+    return {
+      publicID: data.publicID,
+      createdAt: data.createdAt,
+      lastSeen: data.lastSeen,
+    };
   },
 
-  async joinSession(id: string): Promise<SessionInfo> {
-    const trimmed = id.trim();
+  async joinSession(publicID: string): Promise<SessionInfo> {
+    const trimmed = publicID.trim();
+
     if (!trimmed) {
-        throw new Error("Session ID is required to join a session.");
+      throw new Error("Session ID is required to join a session.");
     }
-    
-    // Simulate "not connected to backend" for join
-    throw new Error("Join session not hooked up to database yet");
-    },
+
+    const res = await fetch(`${SESSION_URL}/join`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ publicID: trimmed }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Session not found");
+    }
+
+    const data = await res.json();
+
+    localStorage.setItem("sessionId", data.publicID);
+
+    return {
+      publicID: data.publicID,
+      createdAt: data.createdAt,
+      lastSeen: data.lastSeen,
+    };
+  },
 
   async getCurrentSession(): Promise<SessionInfo | null> {
-    // TODO: replace with backend GET /api/session
-    return fakeSessionStore.current;
+    const stored = localStorage.getItem("sessionId");
+
+    if (!stored) {
+      return null; // STOP HERE
+    }
+
+    const res = await fetch(`${SESSION_URL}/${stored}`);
+
+    if (!res.ok) {
+      localStorage.removeItem("sessionId");
+      return null;
+    }
+
+    const data = await res.json();
+
+    return {
+      publicID: data.publicID,
+      createdAt: data.createdAt,
+      lastSeen: data.lastSeen,
+    };
   },
 };
