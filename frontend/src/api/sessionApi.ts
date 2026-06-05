@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:4000";
+const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
 const SESSION_URL = `${API_BASE}/api/sessions`;
 
 export interface SessionInfo {
