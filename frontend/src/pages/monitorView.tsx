@@ -11,7 +11,7 @@ import { getVitals, Vitals } from "../api/vitalsApi";
 import { useSession } from "../contexts/sessionContext";
 import WaveformChart from "../components/WaveformChart";
 import { useVitals } from "../contexts/vitalsContext";
-import VitalCard from "../components/VitalCard";
+import VitalCard from "@/components/vitals/VitalCard";
 import {
   generateBpWaveform,
   generateEcgWaveform,

@@ -108,7 +108,7 @@ const BlenderHeroPage = () => {
             {session && (
               <div className="hero-current-session">
                 <p>
-                  Current session: <strong>{session.id}</strong>
+                  Current session: <strong> {session.publicID}</strong>
                 </p>
               </div>
             )}

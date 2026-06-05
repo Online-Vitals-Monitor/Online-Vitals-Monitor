@@ -19,7 +19,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import VitalSlider from "../components/vitalSlider";
+import VitalSlider from "@/components/vitals/VitalSlider";
 
 // Stylin
 const valueStyle = {
