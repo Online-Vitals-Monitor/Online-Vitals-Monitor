@@ -24,3 +24,4 @@ app.use("/api/vitals", vitalsRouter);
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+// cache bust Fri Jun  5 05:14:37 PDT 2026
