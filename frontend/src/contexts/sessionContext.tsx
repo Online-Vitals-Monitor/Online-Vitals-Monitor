@@ -8,6 +8,7 @@ import React, {
 import { SessionInfo, sessionApi } from "@/api/sessionApi";
 type SessionState = {
   session: SessionInfo | null;
+  isLoading: boolean;
   isConnected: boolean;
   connectNew: (requestedId?: string) => Promise<void>;
   connectExisting: (id: string) => Promise<void>;
@@ -19,7 +20,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [session, setSession] = useState<SessionInfo | null>(null);
-
+  const [isLoading, setIsLoading] = useState(true);
   // initialize session on app start
   const initialized = React.useRef(false);
 
@@ -40,6 +41,8 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
         setSession(created);
       } catch (err) {
         console.error("Session init failed", err);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -63,6 +66,7 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
         isConnected: !!session,
         connectNew,
         connectExisting,
+        isLoading,
       }}
     >
       {children}

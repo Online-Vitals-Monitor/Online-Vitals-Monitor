@@ -32,6 +32,7 @@ type ContextValue = {
 
 //create the typed context
 const VitalsContext = createContext<ContextValue | undefined>(undefined);
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 //reducer
 const vitalsReducer = (state: State, action: Action) => {
@@ -70,7 +71,7 @@ export const VitalsProvider: React.FC<ProviderProps> = ({ children }) => {
     const publicID = session.publicID;
 
     async function loadVitals() {
-      const res = await fetch(`http://localhost:4000/api/vitals/${publicID}`);
+      const res = await fetch(`${API_BASE}/api/vitals/${publicID}`);
 
       const data = await res.json();
       setVitals(data);
