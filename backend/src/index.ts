@@ -9,7 +9,16 @@ import sessionsRouter from "./sessionsRouter";
 const app = express();
 const PORT = 4000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      process.env.FRONTEND_URL ?? "",
+    ],
+  }),
+);
+
 app.use(express.json());
 
 app.use("/api/sessions", sessionsRouter);
