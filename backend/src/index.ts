@@ -14,7 +14,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://online-vitals-monitor-session-deplo.vercel.app/",
+      "https://online-vitals-monitor-session-deplo.vercel.app",
       process.env.FRONTEND_URL ?? "",
     ],
   }),
